@@ -47,7 +47,8 @@
 
   function modoActual() {
     var m = leer(K_MODO);
-    if (m === 'marco' || m === 'fuera') return m;
+    if (m === 'marco' && !C.marcoListo) m = 'fuera'; // el modo «dentro» aún no funciona: la página sale en blanco
+    if (m === 'marco' || m === 'fuera' || m === 'safari') return m;
     return C.marcoListo ? 'marco' : 'fuera';
   }
 
@@ -59,9 +60,16 @@
     var cancelado = false;
     $('splash-ajustes').onclick = function (ev) { ev.preventDefault(); cancelado = true; ajustes(); };
 
-    if (modo === 'fuera') {
+    if (modo === 'fuera' || modo === 'safari') {
       $('splash-estado').textContent = 'Abriendo…';
-      setTimeout(function () { if (!cancelado) location.replace(enlace); }, 900);
+      setTimeout(function () {
+        if (cancelado) return;
+        if (modo === 'safari' && esIOS) location.href = 'x-safari-' + enlace;
+        else location.href = enlace;
+      }, 1500);
+      // Si a los 8 s seguimos aquí, algo no ha ido bien: se ofrece la otra forma.
+      setTimeout(function () { if (!cancelado) { $('splash-ayuda').style.display = 'block'; } }, 8000);
+      $('splash-abrir-fuera').onclick = function (ev) { ev.preventDefault(); location.href = (esIOS ? 'x-safari-' : '') + enlace; };
       return;
     }
     // Modo marco: la app dentro, a pantalla completa, con nuestro icono.
@@ -98,10 +106,12 @@
     $('mensaje').textContent = ''; $('mensaje').className = 'mensaje';
 
     var modo = modoActual();
+    $('op-marco').style.display = C.marcoListo ? 'flex' : 'none';
     $('modo-marco').checked = modo === 'marco';
     $('modo-fuera').checked = modo === 'fuera';
-    $('modo-marco').onchange = $('modo-fuera').onchange = function () {
-      escribir(K_MODO, $('modo-marco').checked ? 'marco' : 'fuera');
+    $('modo-safari').checked = modo === 'safari';
+    $('modo-marco').onchange = $('modo-fuera').onchange = $('modo-safari').onchange = function () {
+      escribir(K_MODO, $('modo-marco').checked ? 'marco' : ($('modo-safari').checked ? 'safari' : 'fuera'));
     };
 
     $('btn-pegar').onclick = function () {
