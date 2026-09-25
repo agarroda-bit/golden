@@ -30,7 +30,7 @@
     if (!m && C.base && /^[A-Za-z0-9_-]{16,}$/.test(texto)) {
       // Solo la clave: se monta el enlace con la dirección de la app.
       var uk = new URL(C.base);
-      if (C.vista) uk.searchParams.set('v', C.vista);
+      if (C.vista) uk.searchParams.set(C.param || 'v', C.vista);
       uk.searchParams.set('k', texto);
       return { ok: true, url: uk.toString(), aviso: '' };
     }
@@ -40,7 +40,8 @@
     if (!/\/macros\/s\/[A-Za-z0-9_-]+\/exec$/.test(u.pathname)) return { ok: false, error: 'Ese enlace no es el de la app (tiene que acabar en /exec…).' };
     if (!u.searchParams.get('k')) return { ok: false, error: 'Al enlace le falta la clave (la parte k=…). Copia el enlace completo, no el de sin clave.' };
     var aviso = '';
-    if (C.vista && u.searchParams.get('v') !== C.vista) { u.searchParams.set('v', C.vista); aviso = 'He añadido v=' + C.vista + ' al enlace.'; }
+    var P = C.param || 'v';
+    if (C.vista && u.searchParams.get(P) !== C.vista) { u.searchParams.set(P, C.vista); aviso = 'He añadido ' + P + '=' + C.vista + ' al enlace.'; }
     if (C.prefijo && u.pathname.indexOf('/macros/s/' + C.prefijo) !== 0) aviso += (aviso ? ' ' : '') + 'Ojo: este enlace no parece el de ' + C.titulo + ' (esperaba uno que empieza por ' + C.prefijo + '…). Si es el bueno, adelante.';
     return { ok: true, url: u.toString(), aviso: aviso };
   }
@@ -149,6 +150,7 @@
 
   document.addEventListener('DOMContentLoaded', function () {
     var enlace = leer(K_ENLACE);
+    if (enlace) { var r = validar(enlace); if (r.ok && r.url !== enlace) { enlace = r.url; escribir(K_ENLACE, enlace); } }
     if (!enlace || location.hash === '#ajustes') ajustes(); else arrancar(enlace);
   });
 })();
