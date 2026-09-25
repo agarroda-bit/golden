@@ -71,7 +71,7 @@
   <div class="nombre">GOLDEN OCLOCK</div>
   <div class="sub">App oficial</div>
   <div id="splash-estado">Cargando…</div>
-  <div id="splash-ayuda">¿No carga? <a href="#" id="splash-abrir-fuera">Ábrela fuera</a> o entra en Ajustes y elige «Abrir en Safari».</div>
+  <div id="splash-ayuda">¿Se queda en blanco? <a href="#" id="splash-abrir-fuera">Ábrela en Safari</a>, o toca Ajustes y elige «En Safari».</div>
   <a href="#ajustes" id="splash-ajustes">Ajustes</a>
 </div>
 
@@ -101,10 +101,12 @@
 
   <h2>Cómo se abre</h2>
   <div class="caja">
-    <label class="opcion"><input type="radio" name="modo" id="modo-marco">
-      <span>Dentro, a pantalla completa<small>Como una app de verdad. Necesita el ajuste de Apps Script del encargo del 25/09.</small></span></label>
     <label class="opcion"><input type="radio" name="modo" id="modo-fuera">
-      <span>En Safari<small>Funciona siempre. Se ve la barra de Safari arriba.</small></span></label>
+      <span>En la ventana del icono<small>Recomendado. Se abre la app con una barrita arriba.</small></span></label>
+    <label class="opcion"><input type="radio" name="modo" id="modo-safari">
+      <span>En Safari<small>Si en la ventana del icono se queda en blanco. Abre Safari, igual que el enlace de siempre.</small></span></label>
+    <label class="opcion" id="op-marco" style="display:none"><input type="radio" name="modo" id="modo-marco">
+      <span>Dentro, a pantalla completa<small>Sin barra. Todavía no está disponible.</small></span></label>
   </div>
 
   <div class="fila" style="margin-top:22px">
