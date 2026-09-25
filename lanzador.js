@@ -27,7 +27,14 @@
   function validar(texto) {
     texto = String(texto || '').trim();
     var m = texto.match(/https:\/\/script\.google\.com\/[^\s"'<>]+/);
-    if (!m) return { ok: false, error: 'No veo ningún enlace de script.google.com. Copia el enlace entero.' };
+    if (!m && C.base && /^[A-Za-z0-9_-]{16,}$/.test(texto)) {
+      // Solo la clave: se monta el enlace con la dirección de la app.
+      var uk = new URL(C.base);
+      if (C.vista) uk.searchParams.set('v', C.vista);
+      uk.searchParams.set('k', texto);
+      return { ok: true, url: uk.toString(), aviso: '' };
+    }
+    if (!m) return { ok: false, error: 'Eso no parece ni la clave ni el enlace. Copia el valor de la clave entero, sin espacios.' };
     var u;
     try { u = new URL(m[0]); } catch (e) { return { ok: false, error: 'El enlace está cortado. Cópialo otra vez entero.' }; }
     if (!/\/macros\/s\/[A-Za-z0-9_-]+\/exec$/.test(u.pathname)) return { ok: false, error: 'Ese enlace no es el de la app (tiene que acabar en /exec…).' };
@@ -109,7 +116,7 @@
       if (!t) { msg(''); return null; }
       var r = validar(t);
       if (!r.ok) { msg(r.error, 'no'); return null; }
-      msg('Enlace correcto.' + (r.aviso ? ' ' + r.aviso : ''), r.aviso ? 'ojo' : 'ok');
+      msg('Correcto.' + (r.aviso ? ' ' + r.aviso : ''), r.aviso ? 'ojo' : 'ok');
       return r;
     }
     $('btn-guardar').onclick = function () {
