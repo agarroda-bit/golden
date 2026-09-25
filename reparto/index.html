@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GOLDEN EXPRESS</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Reparto">
+<meta name="application-name" content="Reparto">
+<meta name="theme-color" content="#002E6D">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="../iconos/icono_reparto_180.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../iconos/favicon_reparto.png">
+<style>
+  :root { color-scheme: dark; }
+  html, body { margin:0; height:100%; background:#002E6D; color:#FFFFFF;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  * { box-sizing:border-box; }
+  #marco { position:fixed; left:0; right:0; top:env(safe-area-inset-top); bottom:0; width:100%;
+    height:calc(100% - env(safe-area-inset-top)); border:0; background:#002E6D; }
+  #splash { position:fixed; inset:0; z-index:5; display:none; flex-direction:column; align-items:center;
+    justify-content:center; background:#002E6D; color:#FFFFFF; transition:opacity .35s; }
+  #splash.fuera { opacity:0; }
+  #splash img { height:120px; }
+  #splash .nombre { margin-top:18px; font-size:20px; font-weight:800; letter-spacing:.14em; color:#FFFFFF; }
+  #splash .sub { margin-top:4px; font-size:13px; letter-spacing:.2em; text-transform:uppercase; color:#FFCD00; }
+  #splash-estado { margin-top:26px; font-size:14px; color:#C9D8EE; }
+  #splash-ayuda { display:none; margin:22px 24px 0; padding:14px 16px; border-radius:12px; background:#0A3B80;
+    border:1px solid #2A5AA0; font-size:14px; line-height:1.45; color:#FFFFFF; text-align:center; max-width:360px; }
+  #splash-ayuda a { color:#FFCD00; font-weight:700; }
+  #splash-ajustes { position:absolute; bottom:calc(22px + env(safe-area-inset-bottom)); font-size:13px;
+    color:#C9D8EE; text-decoration:none; padding:10px 18px; }
+  #ajustes { display:none; padding:calc(24px + env(safe-area-inset-top)) 16px calc(32px + env(safe-area-inset-bottom));
+    max-width:520px; margin:0 auto; color:#FFFFFF; }
+  .cab { display:flex; align-items:center; gap:14px; margin-bottom:22px; }
+  .cab img { height:58px; }
+  .cab .t1 { font-size:19px; font-weight:800; letter-spacing:.1em; color:#FFFFFF; }
+  .cab .t2 { font-size:12px; letter-spacing:.2em; text-transform:uppercase; color:#FFCD00; margin-top:3px; }
+  h2 { font-size:13px; letter-spacing:.14em; text-transform:uppercase; color:#FFCD00; margin:26px 0 10px; }
+  .caja { background:#0A3B80; border:1px solid #2A5AA0; border-radius:14px; padding:16px; font-size:15px;
+    line-height:1.5; color:#FFFFFF; }
+  .caja b { color:#FFFFFF; overflow-wrap:anywhere; }
+  .caja ol { margin:6px 0 0; padding-left:20px; }
+  .caja li { margin:6px 0; color:#FFFFFF; }
+  #aviso-instalar { display:none; border-color:#FFCD00; }
+  #aviso-instalar .tit { font-weight:800; color:#FFCD00; margin-bottom:4px; }
+  textarea { width:100%; min-height:92px; margin-top:10px; padding:12px; border-radius:12px; border:1px solid #2A5AA0;
+    background:#002E6D; color:#FFFFFF; font-size:15px; font-family:inherit; resize:vertical; }
+  .fila { display:flex; gap:10px; flex-wrap:wrap; margin-top:12px; }
+  button { appearance:none; border:0; border-radius:12px; padding:13px 18px; font-size:15px; font-weight:700;
+    font-family:inherit; cursor:pointer; }
+  .principal { background:#FFCD00; color:#002E6D; flex:1; }
+  .secundario { background:transparent; color:#FFFFFF; border:1px solid #2A5AA0; }
+  .peligro { background:transparent; color:#FF6B6B; border:1px solid #7A2A2A; }
+  .mensaje { margin-top:10px; font-size:14px; min-height:20px; color:#C9D8EE; }
+  .mensaje.ok, .ok { color:#4ADE80; }
+  .mensaje.no, .no { color:#FF6B6B; }
+  .mensaje.ojo { color:#FFCD00; }
+  label.opcion { display:flex; gap:12px; align-items:flex-start; padding:10px 0; font-size:15px; color:#FFFFFF; }
+  label.opcion input { margin-top:4px; width:18px; height:18px; accent-color:#FFCD00; }
+  label.opcion small { display:block; color:#C9D8EE; font-size:13px; margin-top:2px; }
+  .pie { margin-top:26px; font-size:12px; line-height:1.5; color:#C9D8EE; }
+</style>
+</head>
+<body>
+<div id="splash">
+  <img src="../iconos/logo_blanco.svg" alt="">
+  <div class="nombre">GOLDEN EXPRESS</div>
+  <div class="sub">Reparto</div>
+  <div id="splash-estado">Cargando…</div>
+  <div id="splash-ayuda">¿No carga? <a href="#" id="splash-abrir-fuera">Ábrela fuera</a> o entra en Ajustes y elige «Abrir en Safari».</div>
+  <a href="#ajustes" id="splash-ajustes">Ajustes</a>
+</div>
+
+<div id="ajustes">
+  <div class="cab"><img src="../iconos/logo_blanco.svg" alt=""><div><div class="t1">GOLDEN EXPRESS</div><div class="t2">Reparto · ajustes</div></div></div>
+
+  <div class="caja" id="aviso-instalar">
+    <div class="tit">Primero, ponla en la pantalla de inicio</div>
+    <ol>
+      <li>Toca el botón <b>Compartir</b> de Safari (el cuadrado con la flecha hacia arriba).</li>
+      <li>Baja y toca <b>«Añadir a pantalla de inicio»</b> → <b>Añadir</b>.</li>
+      <li>Abre el icono nuevo y pega ahí el enlace. Lo que pegues aquí, en Safari, no pasa al icono.</li>
+    </ol>
+  </div>
+
+  <h2>Enlace de la app</h2>
+  <div class="caja">
+    <div id="estado-guardado"></div>
+    <div style="margin-top:8px">Pega el enlace de la app de reparto sin contraseña del chat del 25/09 (empieza por <b>https://script.google.com/macros/s/AKfycbx4PX…</b> y lleva <b>v=reparto&amp;k=</b>). Se guarda <b>solo en este móvil</b>; no se sube a ningún sitio.</div>
+    <textarea id="campo" placeholder="https://script.google.com/macros/s/…/exec?…k=…" autocomplete="off" autocapitalize="off" spellcheck="false"></textarea>
+    <div class="fila">
+      <button class="secundario" id="btn-pegar" type="button">Pegar</button>
+      <button class="principal" id="btn-guardar" type="button">Guardar y abrir</button>
+    </div>
+    <div class="mensaje" id="mensaje"></div>
+  </div>
+
+  <h2>Cómo se abre</h2>
+  <div class="caja">
+    <label class="opcion"><input type="radio" name="modo" id="modo-marco">
+      <span>Dentro, a pantalla completa<small>Como una app de verdad. Necesita el ajuste de Apps Script del encargo del 25/09.</small></span></label>
+    <label class="opcion"><input type="radio" name="modo" id="modo-fuera">
+      <span>En Safari<small>Funciona siempre. Se ve la barra de Safari arriba.</small></span></label>
+  </div>
+
+  <div class="fila" style="margin-top:22px">
+    <button class="secundario" id="btn-abrir" type="button">Abrir la app</button>
+    <button class="peligro" id="btn-borrar" type="button">Borrar enlace de este móvil</button>
+  </div>
+
+  <div class="pie">Para volver aquí: al abrir el icono, toca «Ajustes» abajo mientras carga.</div>
+</div>
+
+<script>
+window.LZ = { id: 'reparto', titulo: 'GOLDEN EXPRESS', prefijo: 'AKfycbx4PX', vista: 'reparto', marcoListo: false };
+</script>
+<script src="../lanzador.js"></script>
+</body>
+</html>
