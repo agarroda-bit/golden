@@ -90,8 +90,8 @@
   <h2>Enlace de la app</h2>
   <div class="caja">
     <div id="estado-guardado"></div>
-    <div style="margin-top:8px">Pega el enlace de la app de reparto sin contraseña del chat del 25/09 (empieza por <b>https://script.google.com/macros/s/AKfycbx4PX…</b> y lleva <b>v=reparto&amp;k=</b>). Se guarda <b>solo en este móvil</b>; no se sube a ningún sitio.</div>
-    <textarea id="campo" placeholder="https://script.google.com/macros/s/…/exec?…k=…" autocomplete="off" autocapitalize="off" spellcheck="false"></textarea>
+    <div style="margin-top:8px">Pega <b>solo la clave</b> (el valor de <b>RD_CLAVE</b> en Apps Script → Configuración del proyecto → Propiedades) o el enlace entero del Reparto. Se guarda <b>solo en este móvil</b>; no se sube a ningún sitio.</div>
+    <textarea id="campo" placeholder="Pega aquí la clave o el enlace" autocomplete="off" autocapitalize="off" spellcheck="false"></textarea>
     <div class="fila">
       <button class="secundario" id="btn-pegar" type="button">Pegar</button>
       <button class="principal" id="btn-guardar" type="button">Guardar y abrir</button>
@@ -116,7 +116,7 @@
 </div>
 
 <script>
-window.LZ = { id: 'reparto', titulo: 'GOLDEN EXPRESS', prefijo: 'AKfycbx4PX', vista: 'reparto', marcoListo: false };
+window.LZ = { id: 'reparto', titulo: 'GOLDEN EXPRESS', prefijo: 'AKfycbx4PX', vista: 'reparto', base: 'https://script.google.com/macros/s/AKfycbx4PXbqTiwRsR0be34u_2uHerB-h6uJgqj9_GB5IKl_bZj0rUTwwoheXqAQ6l401BqC/exec', marcoListo: false };
 </script>
 <script src="../lanzador.js"></script>
 </body>
