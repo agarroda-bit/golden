@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Páginas · GOLDEN OCLOCK</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Páginas">
+<meta name="application-name" content="Páginas">
+<meta name="theme-color" content="#0B0B0B">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="../iconos/icono_paginas_180.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../iconos/favicon_paginas.png">
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: #0B0B0B; color: #F2F2F2;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  .envoltura { max-width: 720px; margin: 0 auto;
+    padding: calc(18px + env(safe-area-inset-top)) 16px calc(40px + env(safe-area-inset-bottom)); }
+  .cab { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+  .cab img { height: 52px; }
+  .cab .t1 { font-size: 18px; font-weight: 800; letter-spacing: .12em; color: #F2F2F2; }
+  .cab .t2 { font-size: 12px; letter-spacing: .2em; text-transform: uppercase; color: #F7AF35; margin-top: 3px; }
+  h2 { font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: #F7AF35; margin: 24px 0 10px; font-weight: 800; }
+  .apps { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .app { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 16px; background: #161616;
+    border: 1px solid #2A2A2A; color: #F2F2F2; text-decoration: none; }
+  .app img { width: 48px; height: 48px; border-radius: 11px; flex: none; }
+  .app .n { font-size: 15px; font-weight: 800; color: #F2F2F2; }
+  .app .d { font-size: 12px; color: #A3A3A3; margin-top: 2px; }
+  .caja { background: #161616; border: 1px solid #2A2A2A; border-radius: 14px; padding: 16px; color: #F2F2F2;
+    font-size: 15px; line-height: 1.5; }
+  input[type=search], input[type=password], input[type=text] { width: 100%; padding: 13px 14px; border-radius: 12px;
+    border: 1px solid #333333; background: #0B0B0B; color: #F2F2F2; font-size: 16px; font-family: inherit; }
+  button { appearance: none; border: 0; border-radius: 12px; padding: 12px 16px; font-size: 15px; font-weight: 700;
+    font-family: inherit; cursor: pointer; }
+  .principal { background: #F7AF35; color: #0B0B0B; }
+  .secundario { background: transparent; color: #F2F2F2; border: 1px solid #333333; }
+  .fila { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+  .fila > * { flex: 1; }
+  .error { color: #FF6B6B; font-size: 14px; margin-top: 10px; min-height: 20px; }
+  details.grupo { margin-top: 12px; border: 1px solid #2A2A2A; border-radius: 14px; background: #121212; overflow: hidden; }
+  details.grupo > summary { list-style: none; cursor: pointer; padding: 14px 16px; display: flex; align-items: baseline;
+    justify-content: space-between; gap: 10px; color: #F7AF35; }
+  details.grupo > summary::-webkit-details-marker { display: none; }
+  .g-nombre { font-size: 15px; font-weight: 800; color: #F7AF35; letter-spacing: .02em; }
+  .g-nota { font-size: 12px; color: #A3A3A3; margin-top: 2px; font-weight: 400; letter-spacing: 0; }
+  .g-num { font-size: 13px; color: #A3A3A3; flex: none; }
+  .item { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-top: 1px solid #222222; }
+  .item .txt { flex: 1; min-width: 0; }
+  .item a.tit { font-size: 15px; font-weight: 700; color: #F2F2F2; text-decoration: none; display: block; }
+  .item .que { font-size: 13px; color: #A3A3A3; margin-top: 3px; line-height: 1.35; }
+  .item .meta { font-size: 11px; color: #7A7A7A; margin-top: 4px; letter-spacing: .04em; }
+  .marca { display: inline-block; font-size: 10px; font-weight: 800; letter-spacing: .08em; padding: 2px 6px;
+    border-radius: 6px; margin-left: 6px; vertical-align: 2px; }
+  .m-int { color: #FF6B6B; border: 1px solid #7A2A2A; background: transparent; }
+  .m-ens { color: #F7AF35; border: 1px solid #6B4A12; background: transparent; }
+  .m-vie { color: #8A8A8A; border: 1px solid #3A3A3A; background: transparent; }
+  .item button { padding: 9px 12px; font-size: 13px; }
+  .copiar { background: transparent; color: #D4D4D4; border: 1px solid #333333; }
+  .abrir { background: #F7AF35; color: #0B0B0B; }
+  .viejo { display: none; }
+  body.ver-viejos .viejo { display: flex; }
+  .opciones { margin-top: 18px; font-size: 13px; color: #A3A3A3; display: flex; flex-direction: column; gap: 10px; }
+  .opciones label { display: flex; gap: 10px; align-items: center; color: #A3A3A3; }
+  .opciones input { accent-color: #F7AF35; width: 17px; height: 17px; }
+  .pie { margin-top: 22px; font-size: 12px; line-height: 1.5; color: #7A7A7A; }
+  .pie b { color: #A3A3A3; }
+  #aviso { display: none; position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(24px + env(safe-area-inset-bottom));
+    background: #F7AF35; color: #0B0B0B; font-weight: 700; font-size: 14px; padding: 10px 16px; border-radius: 12px; z-index: 9; }
+  .vacio { padding: 14px 16px; color: #A3A3A3; font-size: 14px; }
+</style>
+</head>
+<body>
+<div class="envoltura">
+  <div class="cab"><img src="../iconos/logo_oro.svg" alt=""><div><div class="t1">GOLDEN OCLOCK</div><div class="t2">Páginas y apps</div></div></div>
+
+  <h2>Apps</h2>
+  <div class="apps">
+    <a class="app" href="../app/" data-instalar><img src="../iconos/icono_app_180.png" alt=""><div><div class="n">GOLDEN</div><div class="d">La APP del negocio</div></div></a>
+    <a class="app" href="../reparto/" data-instalar><img src="../iconos/icono_reparto_180.png" alt=""><div><div class="n">Reparto</div><div class="d">Entregas en coche</div></div></a>
+  </div>
+
+  <div id="bloqueado" style="display:none">
+    <h2>Entrar</h2>
+    <div class="caja">
+      Escribe el código de tus páginas. Solo se pide una vez en cada móvil.
+      <div style="margin-top:12px"><input type="password" id="codigo" placeholder="Código" autocomplete="current-password" autocapitalize="off"></div>
+      <div class="fila"><button class="principal" id="entrar" type="button">Entrar</button></div>
+      <div class="error" id="error"></div>
+    </div>
+  </div>
+
+  <div id="abierto" style="display:none">
+    <div style="margin-top:22px"><input type="search" id="buscar" placeholder="Buscar página…" autocomplete="off"></div>
+    <div id="lista"></div>
+    <div class="opciones">
+      <label><input type="checkbox" id="ver-viejos"> Enseñar también las antiguas o de un solo uso</label>
+      <label id="op-safari"><input type="checkbox" id="forzar-safari"> Abrir las páginas en Safari (recomendado en el iPhone: ahí ya tienes la sesión de Claude)</label>
+    </div>
+    <div class="pie" id="pie"></div>
+  </div>
+</div>
+<div id="aviso"></div>
+
+<script>
+(function () {
+  'use strict';
+  var K_COD = 'lz_paginas_codigo', K_VIE = 'lz_paginas_viejos', K_SAF = 'lz_paginas_safari';
+  function leer(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function escribir(k, v) { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) {} }
+  function $(id) { return document.getElementById(id); }
+  var ua = navigator.userAgent || '';
+  var esIOS = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  var instalada = window.navigator.standalone === true || (window.matchMedia && matchMedia('(display-mode: standalone)').matches);
+
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function fecha(f) { if (!f) return ''; var p = f.split('-'); return p.length === 3 ? p[2] + '/' + p[1] + '/' + p[0] : f; }
+  function aviso(t) { var a = $('aviso'); a.textContent = t; a.style.display = 'block'; clearTimeout(aviso._t); aviso._t = setTimeout(function () { a.style.display = 'none'; }, 1800); }
+
+  function forzarSafari() { var v = leer(K_SAF); return v == null ? esIOS : v === '1'; }
+  function abrirFuera(url) {
+    if (esIOS && forzarSafari()) { location.href = 'x-safari-' + url; return; }
+    window.open(url, '_blank', 'noopener');
+  }
+
+  // Botones de las apps: desde el icono de Páginas se abren en Safari para poder instalarlas.
+  Array.prototype.forEach.call(document.querySelectorAll('[data-instalar]'), function (a) {
+    a.addEventListener('click', function (ev) {
+      if (esIOS && instalada) { ev.preventDefault(); location.href = 'x-safari-' + new URL(a.getAttribute('href'), location.href).toString(); }
+    });
+  });
+
+  function b64(s) { var b = atob(s), u = new Uint8Array(b.length); for (var i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return u; }
+  function descifrar(sobre, codigo) {
+    var enc = new TextEncoder();
+    return crypto.subtle.importKey('raw', enc.encode(codigo), 'PBKDF2', false, ['deriveKey']).then(function (base) {
+      return crypto.subtle.deriveKey({ name: 'PBKDF2', salt: b64(sobre.sal), iterations: sobre.iter, hash: 'SHA-256' },
+        base, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
+    }).then(function (clave) {
+      return crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64(sobre.iv) }, clave, b64(sobre.datos));
+    }).then(function (buf) { return JSON.parse(new TextDecoder().decode(buf)); });
+  }
+
+  var DATOS = null;
+  function pintar() {
+    var q = ($('buscar').value || '').trim().toLowerCase();
+    var html = '';
+    function fila(p) {
+      var marcas = (p.interno ? '<span class="marca m-int">INTERNO</span>' : '') +
+        (p.ensenar ? '<span class="marca m-ens">PARA ENSEÑAR</span>' : '') +
+        (p.viejo ? '<span class="marca m-vie">ANTIGUA</span>' : '');
+      return '<div class="item' + (p.viejo && !q ? ' viejo' : '') + '">' +
+        '<div class="txt"><a class="tit" href="' + esc(p.url) + '" data-url="' + esc(p.url) + '">' + esc(p.titulo) + marcas + '</a>' +
+        '<div class="que">' + esc(p.que) + '</div>' +
+        (p.fecha ? '<div class="meta">' + fecha(p.fecha) + '</div>' : '') + '</div>' +
+        '<button class="copiar" data-copiar="' + esc(p.url) + '" type="button">Copiar</button>' +
+        '<button class="abrir" data-url="' + esc(p.url) + '" type="button">Abrir</button></div>';
+    }
+    function casa(p) { return !q || (p.titulo + ' ' + (p.que || '')).toLowerCase().indexOf(q) >= 0; }
+    DATOS.grupos.forEach(function (g) {
+      var ps = g.paginas.filter(casa);
+      if (q && !ps.length) return;
+      var nuevos = ps.filter(function (p) { return !p.viejo; }).length;
+      html += '<details class="grupo"' + (g.abierto || q ? ' open' : '') + '><summary><div><div class="g-nombre">' + esc(g.nombre) + '</div>' +
+        (g.nota ? '<div class="g-nota">' + esc(g.nota) + '</div>' : '') + '</div><div class="g-num">' + nuevos + '</div></summary>' +
+        ps.map(fila).join('') + '</details>';
+    });
+    if (DATOS.herramientas && DATOS.herramientas.length) {
+      var hs = DATOS.herramientas.filter(casa);
+      if (hs.length) html += '<details class="grupo"' + (q ? ' open' : '') + '><summary><div><div class="g-nombre">Herramientas</div><div class="g-nota">Hojas y webs de trabajo</div></div><div class="g-num">' + hs.length + '</div></summary>' + hs.map(fila).join('') + '</details>';
+    }
+    if (!html) html = '<div class="vacio">No hay ninguna página con «' + esc(q) + '».</div>';
+    $('lista').innerHTML = html;
+  }
+
+  document.addEventListener('click', function (ev) {
+    var t = ev.target.closest ? ev.target.closest('[data-url],[data-copiar]') : null;
+    if (!t) return;
+    ev.preventDefault();
+    if (t.hasAttribute('data-copiar')) {
+      var u = t.getAttribute('data-copiar');
+      (navigator.clipboard ? navigator.clipboard.writeText(u) : Promise.reject()).then(function () { aviso('Enlace copiado'); },
+        function () { window.prompt('Copia el enlace:', u); });
+    } else abrirFuera(t.getAttribute('data-url'));
+  });
+
+  function abrir(datos) {
+    DATOS = datos;
+    $('bloqueado').style.display = 'none'; $('abierto').style.display = 'block';
+    $('ver-viejos').checked = leer(K_VIE) === '1';
+    document.body.classList.toggle('ver-viejos', $('ver-viejos').checked);
+    $('ver-viejos').onchange = function () { escribir(K_VIE, this.checked ? '1' : '0'); document.body.classList.toggle('ver-viejos', this.checked); };
+    $('op-safari').style.display = esIOS ? 'flex' : 'none';
+    $('forzar-safari').checked = forzarSafari();
+    $('forzar-safari').onchange = function () { escribir(K_SAF, this.checked ? '1' : '0'); };
+    $('buscar').oninput = pintar;
+    var total = datos.grupos.reduce(function (s, g) { return s + g.paginas.length; }, 0);
+    $('pie').innerHTML = '<b>' + total + ' páginas</b> · lista actualizada el ' + fecha(datos.actualizado) +
+      '. Las páginas son privadas: solo se abren con tu cuenta de Claude. Si Safari te pide entrar, entra una vez en claude.ai y ya queda.' +
+      ' · <a href="#" id="salir" style="color:#A3A3A3">Olvidar el código en este móvil</a>';
+    $('salir').onclick = function (e) { e.preventDefault(); escribir(K_COD, null); location.reload(); };
+    pintar();
+  }
+
+  fetch('../paginas.enc.json?t=' + Date.now(), { cache: 'no-store' }).then(function (r) {
+    if (!r.ok) throw new Error('No encuentro la lista (' + r.status + ')');
+    return r.json();
+  }).then(function (sobre) {
+    function intentar(cod, callado) {
+      return descifrar(sobre, cod).then(function (d) { escribir(K_COD, cod); abrir(d); },
+        function () { escribir(K_COD, null); $('bloqueado').style.display = 'block'; if (!callado) $('error').textContent = 'Ese código no es.'; });
+    }
+    $('entrar').onclick = function () { var c = $('codigo').value.trim(); if (c) { $('error').textContent = ''; intentar(c); } };
+    $('codigo').onkeydown = function (e) { if (e.key === 'Enter') $('entrar').onclick(); };
+    var guardado = leer(K_COD);
+    if (guardado) intentar(guardado, true); else $('bloqueado').style.display = 'block';
+  }).catch(function (e) {
+    $('bloqueado').style.display = 'block';
+    $('error').textContent = 'No se ha podido cargar la lista: ' + e.message + '. Comprueba la conexión.';
+  });
+})();
+</script>
+</body>
+</html>
