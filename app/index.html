@@ -90,8 +90,8 @@
   <h2>Enlace de la app</h2>
   <div class="caja">
     <div id="estado-guardado"></div>
-    <div style="margin-top:8px">Pega el enlace de la APP que usas ahora (empieza por <b>https://script.google.com/macros/s/AKfycbwOLq…</b> y lleva <b>k=</b> con la clave). Se guarda <b>solo en este móvil</b>; no se sube a ningún sitio.</div>
-    <textarea id="campo" placeholder="https://script.google.com/macros/s/…/exec?…k=…" autocomplete="off" autocapitalize="off" spellcheck="false"></textarea>
+    <div style="margin-top:8px">Pega <b>solo la clave</b> (el valor de <b>DB_CLAVE</b> en Apps Script → Configuración del proyecto → Propiedades) o el enlace entero de la APP. Se guarda <b>solo en este móvil</b>; no se sube a ningún sitio.</div>
+    <textarea id="campo" placeholder="Pega aquí la clave o el enlace" autocomplete="off" autocapitalize="off" spellcheck="false"></textarea>
     <div class="fila">
       <button class="secundario" id="btn-pegar" type="button">Pegar</button>
       <button class="principal" id="btn-guardar" type="button">Guardar y abrir</button>
@@ -116,7 +116,7 @@
 </div>
 
 <script>
-window.LZ = { id: 'app', titulo: 'GOLDEN OCLOCK', prefijo: 'AKfycbwOLq', vista: '', marcoListo: false };
+window.LZ = { id: 'app', titulo: 'GOLDEN OCLOCK', prefijo: 'AKfycbwOLq', vista: '', base: 'https://script.google.com/macros/s/AKfycbwOLqVhaEyF0_Q8HulkLjmeTECJQIsxuA3yK0MDHE63S3H_031GVNy0ZHiSHKRiiBLj/exec', marcoListo: false };
 </script>
 <script src="../lanzador.js"></script>
 </body>
