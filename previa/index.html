@@ -299,6 +299,101 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--amber); outline
 .pick button.on{background:var(--c); color:var(--dark); border-color:var(--c)}
 .sub{font-size:12px; letter-spacing:.16em; text-transform:uppercase; color:var(--dim); margin:0; align-self:flex-start}
 
+/* ---------- NUEVOS ---------- */
+.tile{position:relative}
+.tile .badge{position:absolute; top:12px; right:12px; font-size:10px; letter-spacing:.14em; font-weight:800; color:var(--dark); background:var(--amber); padding:3px 7px; border-radius:6px}
+.voicebtn{display:flex; align-items:center; gap:8px; background:var(--bg2); border:1px solid var(--line); border-radius:16px; padding:10px 14px; color:var(--mute); font-weight:800; font-size:15px}
+.voicebtn svg{width:20px; height:20px}
+.voicebtn.on{background:var(--ink); color:var(--dark); border-color:var(--ink)}
+.speak{position:absolute; top:14px; right:14px; width:40px; height:40px; border-radius:12px; border:1px solid color-mix(in srgb,var(--c) 45%,transparent); background:rgba(0,0,0,.25); color:var(--c); display:grid; place-items:center}
+.speak svg{width:20px; height:20px}
+.card{position:relative}
+.card .clabel{padding-right:46px}
+
+/* detector */
+.poly{width:100%; height:150px; border-radius:18px; background:#0c1a12; border:1px solid #1f4a33; position:relative; overflow:hidden}
+.poly canvas{width:100%; height:100%; display:block}
+.poly .bpm{position:absolute; top:10px; right:12px; font-family:var(--disp); color:#3ee08f; font-size:22px; font-variant-numeric:tabular-nums}
+.sensor{width:140px; height:140px; border-radius:50%; border:3px dashed var(--c); display:grid; place-items:center; text-align:center; color:var(--mute); font-size:14px; padding:18px; touch-action:none; -webkit-user-select:none; user-select:none; position:relative}
+.sensor.on{border-style:solid; background:color-mix(in srgb,var(--c) 22%,transparent); color:var(--ink); animation:hb .8s infinite}
+@keyframes hb{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--c) 50%,transparent)} 50%{box-shadow:0 0 0 18px transparent}}
+.secret{font-family:var(--disp); font-size:clamp(46px,14vw,74px); line-height:1; text-align:center}
+
+/* duelo */
+.duel{width:100%; flex:1; min-height:70vh; display:grid; grid-template-rows:1fr auto 1fr; gap:8px; touch-action:none; -webkit-user-select:none; user-select:none}
+.half{border-radius:24px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; text-align:center; padding:14px; position:relative; overflow:hidden; border:2px solid var(--line); background:var(--bg2); transition:background .1s}
+.half.top{transform:rotate(180deg)}
+.half b{font-family:var(--disp); font-weight:400; font-size:clamp(26px,8vw,40px); line-height:1; color:var(--ink)}
+.half span{color:var(--mute); font-size:14px}
+.half.p1{border-color:#4fc3ff} .half.p2{border-color:#ff4f7b}
+.half.win{background:color-mix(in srgb,#3ee08f 35%,var(--bg2))} .half.lose{background:color-mix(in srgb,var(--pink) 35%,var(--bg2))}
+.mid{display:flex; align-items:center; justify-content:center; min-height:84px; text-align:center}
+.mid b{font-family:var(--disp); font-weight:400; font-size:clamp(34px,11vw,56px); line-height:1; color:var(--c)}
+.rope{width:100%; height:26px; position:relative; border-radius:13px; background:repeating-linear-gradient(90deg,#8a5a34 0 10px,#b07a4a 10px 20px)}
+.rope i{position:absolute; top:-10px; width:10px; height:46px; margin-left:-5px; border-radius:4px; background:var(--ink); transition:left .08s}
+.rps{display:flex; gap:10px; justify-content:center}
+.rps button{width:74px; height:74px; border-radius:18px; border:1px solid var(--line); background:var(--card); color:var(--ink); font-family:var(--disp); font-size:13px}
+.rps button.sel{background:var(--ink); color:var(--dark)}
+.score{display:flex; gap:10px; justify-content:center; flex-wrap:wrap}
+
+/* voto */
+.vgrid{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; width:100%}
+.vgrid button{padding:18px 10px; border-radius:16px; border:1px solid var(--line); background:var(--bg2); color:var(--ink); font-weight:800; font-size:17px; word-break:break-word}
+.podium{display:grid; grid-template-columns:1fr 1.15fr 1fr; gap:8px; align-items:end; width:100%; min-height:250px}
+.step{display:flex; flex-direction:column; align-items:center; gap:6px; opacity:0; transform:translateY(20px); transition:all .5s cubic-bezier(.2,1.3,.4,1)}
+.step.show{opacity:1; transform:none}
+.step .nm{font-weight:800; font-size:16px; text-align:center; word-break:break-word; color:var(--ink)}
+.step .blk{width:100%; border-radius:14px 14px 4px 4px; display:grid; place-items:center; font-family:var(--disp); color:var(--dark); font-size:28px}
+.step .vv{font-size:13px; color:var(--mute)}
+
+/* llamada */
+.call{position:fixed; inset:0; z-index:70; display:flex; flex-direction:column; align-items:center; justify-content:space-between; text-align:center; padding:calc(60px + env(safe-area-inset-top,0px)) 24px calc(50px + env(safe-area-inset-bottom,0px));
+  background:linear-gradient(180deg,#2a3a4a 0%,#12161c 100%); color:#fff; font-family:-apple-system,system-ui,'Segoe UI',sans-serif}
+.call .who{display:flex; flex-direction:column; align-items:center; gap:10px}
+.call .av{width:110px; height:110px; border-radius:50%; background:#6b7c8e; display:grid; place-items:center; font-size:46px; font-weight:600; color:#fff}
+.call.ringing .av{animation:ring 1.2s infinite}
+@keyframes ring{0%,100%{box-shadow:0 0 0 0 rgba(255,255,255,.35)} 60%{box-shadow:0 0 0 26px rgba(255,255,255,0)}}
+.call h2{font-size:34px; font-weight:400; margin:0; color:#fff}
+.call p{margin:0; color:#c9d3dd; font-size:17px}
+.call .line{font-size:20px; line-height:1.35; color:#fff; max-width:32ch; min-height:3em}
+.call .btns{display:flex; gap:70px; justify-content:center}
+.call .cb{display:flex; flex-direction:column; align-items:center; gap:8px; color:#fff; font-size:14px; background:none; border:0}
+.call .cb i{width:74px; height:74px; border-radius:50%; display:grid; place-items:center}
+.call .cb svg{width:34px; height:34px}
+.call .cb.ok i{background:#34c759} .call .cb.no i{background:#ff3b30}
+
+/* confesionario */
+textarea.conf{width:100%; min-height:140px; background:var(--card); border:1px solid var(--line); color:var(--ink); border-radius:16px; padding:14px; font:inherit; font-size:18px; resize:vertical}
+
+/* quiz */
+.opts{display:flex; flex-direction:column; gap:10px; width:100%}
+.opts button{text-align:left; padding:16px 18px; border-radius:16px; border:1px solid var(--line); background:var(--bg2); color:var(--ink); font-weight:600; font-size:17px; line-height:1.3}
+.opts button.ok{background:#1f5c3d; border-color:#3ee08f} .opts button.ko{background:#5c1f33; border-color:var(--pink)}
+.lvls{display:flex; flex-direction:column; gap:10px; width:100%}
+.lvls button{display:grid; grid-template-columns:1fr auto; gap:2px 12px; text-align:left; padding:16px 18px; border-radius:18px; border:1px solid var(--line); background:var(--bg2); color:var(--ink)}
+.lvls b{font-family:var(--disp); font-weight:400; font-size:24px; line-height:1}
+.lvls span{grid-column:1; color:var(--mute); font-size:14px}
+.lvls em{grid-row:1/3; grid-column:2; align-self:center; font-style:normal; font-family:var(--disp); color:var(--dark); padding:6px 10px; border-radius:10px}
+
+/* cancion */
+.disc{width:min(64vw,240px); aspect-ratio:1; border-radius:50%; position:relative; border:0; padding:0;
+  background:repeating-radial-gradient(circle, #1b0d15 0 3px, #2a1622 3px 5px); box-shadow:0 20px 50px -10px rgba(0,0,0,.8), inset 0 0 0 2px #3a2030}
+.disc::after{content:''; position:absolute; inset:34%; border-radius:50%; background:var(--c); box-shadow:inset 0 0 0 10px color-mix(in srgb,var(--c) 70%,#000)}
+.disc.spin{animation:spin 1.4s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.disc img{position:absolute; inset:34%; width:32%; height:32%; border-radius:50%; object-fit:cover; z-index:2}
+.chips{display:flex; flex-wrap:wrap; gap:8px; justify-content:center}
+.chips button{border:1px solid var(--line); background:var(--bg2); color:var(--mute); border-radius:999px; padding:9px 14px; font-weight:800; font-size:14px}
+.chips button.on{background:var(--c); color:var(--dark); border-color:var(--c)}
+.song{display:flex; gap:14px; align-items:center; width:100%; background:var(--bg2); border:1px solid var(--line); border-radius:18px; padding:12px}
+.song img{width:74px; height:74px; border-radius:12px; flex:0 0 auto}
+.song b{display:block; font-size:19px; color:var(--ink); line-height:1.2}
+.song span{color:var(--mute); font-size:15px}
+.auto{width:100%; display:flex; flex-direction:column; gap:10px; background:var(--bg2); border:1px solid var(--line); border-radius:18px; padding:14px}
+.auto .cd{font-family:var(--disp); font-size:34px; text-align:center; color:var(--c); font-variant-numeric:tabular-nums}
+.alarm{position:fixed; inset:0; z-index:60; pointer-events:none; animation:alarm .25s 5 alternate; background:var(--c); opacity:0}
+@keyframes alarm{to{opacity:.55}}
+
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important; animation-iteration-count:1!important; transition-duration:.01ms!important}
 }
@@ -380,6 +475,127 @@ Q:["PREGUNTAS","Hazle una pregunta a alguien. Tiene que contestar con otra pregu
 K:["REY","Echa un poco de tu bebida en la copa del centro. Quien saque el cuarto rey, se la bebe."]
 };
 
+const LIEQ = [
+"¿Cuál es la última persona a la que le has escrito hoy?","¿Qué es lo más caro que te has comprado este año?","¿Has llorado este mes?","¿Cuántas veces has estado enamorado?","¿Cuál es tu peor manía?","¿Qué es lo último que has buscado en Google?","¿A qué hora te acostaste ayer?","¿Has mentido hoy a alguien de esta mesa?","¿Cuál es tu comida favorita?","¿Qué harías si te tocaran 100.000 euros?","¿Has suspendido alguna vez un examen importante?","¿Cuál es el mejor sitio donde has estado de viaje?","¿Te has colado alguna vez en el metro?","¿Cuánto tiempo llevas sin llamar a tu madre?","¿Has robado algo de pequeño?","¿Cuál es tu canción de la ducha?","¿Has tenido una cuenta falsa en redes?","¿Qué piensas de verdad de {A}?","¿Cuál ha sido tu peor trabajo?","¿Has cotilleado el móvil de alguien de aquí?","¿Te gusta alguien ahora mismo?","¿Cuál es tu mayor miedo?","¿Qué es lo más vergonzoso que te ha pasado en público?","¿Cuántos mensajes sin leer tienes ahora?","¿Has fingido estar enfermo este año?","¿A quién de aquí conociste primero?","¿Cuál es el último regalo que has hecho?","¿Qué famoso te pone más?","¿Has vuelto con un ex alguna vez?","¿Cuál es la mentira que más repites?","¿Qué es lo primero que miras de una persona?","¿Has mandado un audio borracho este año?","¿Cuál es tu mayor capricho?","¿Has dicho «te quiero» sin sentirlo?","¿Qué nota te pondrías como persona del 1 al 10?"
+];
+const VOTEQ = [
+"¿Quién de aquí es el peor ligando?","¿Quién tiene el peor gusto musical?","¿Quién sería el primero en morir en una peli de miedo?","¿Quién es el más pesado cuando bebe?","¿Quién acabará siendo millonario?","¿Quién miente mejor?","¿Quién tiene el móvil más cotilla?","¿Quién sería peor presidente del Gobierno?","¿Quién se enamora más rápido?","¿Quién es el más tacaño?","¿Quién llega siempre tarde?","¿Quién tiene más ex?","¿Quién sobreviviría menos en una isla desierta?","¿Quién sería el mejor padre o madre?","¿Quién es el más dramático?","¿Quién tiene el peor gusto vistiendo?","¿Quién es el más probable que acabe en la tele?","¿Quién guarda peor un secreto?","¿Quién es el que más se cree que liga?","¿Quién sería el peor compañero de piso?","¿Quién se ríe de sus propios chistes?","¿Quién tiene más cara?","¿Quién sería el primero en casarse?","¿Quién es el más friki?","¿Quién tiene la peor foto de perfil?","¿Quién se pone más celoso?","¿Quién es el mejor bailando?","¿Quién es el peor bailando?","¿Quién sería capaz de vender a su madre por dinero?","¿Quién es el alma de la fiesta?"
+];
+const VOTEQP = [
+"¿Quién es el más atractivo de la mesa?","¿Quién besa mejor, según vosotros?","¿Quién tiene más peligro de noche?","¿Quién acaba hoy con alguien?","¿Quién tiene el Tinder más activo?","¿Quién es el más infiel en potencia?","¿Quién manda los mensajes más atrevidos?","¿Quién es el más lanzado ligando?"
+];
+const CALLERS = [
+ {who:'Tu ex', init:'E', rate:.95, pitch:1.15, lines:["Hola... ¿Me echabas de menos?","He visto que estás de fiesta. ¿Con quién estás?","¿Todavía piensas en mí? Di la verdad, que te conozco.","¿Te acuerdas de lo último que me dijiste? Repítemelo, venga.","Bueno, te dejo, que me está llamando mi nueva pareja. Por cierto, se parece mucho a ti."]},
+ {who:'Mamá', init:'M', rate:1.05, pitch:1.2, lines:["Hola, cariño. ¿Dónde estás? Que no me contestas a los mensajes.","¿Has cenado? Dime exactamente qué has cenado.","¿Con quién estás? Pásame a alguno, que quiero saludar.","¿Estás bebiendo? No me mientas, que se te nota en la voz.","Vale. A las dos en casa. Y ponte la chaqueta, que refresca."]},
+ {who:'Tu jefe', init:'J', rate:.9, pitch:.8, lines:["Buenas noches. Perdona la hora. ¿Estás de fiesta?","Necesito que mañana vengas a las siete de la mañana. ¿Algún problema?","Por cierto, ¿qué opinas sinceramente de mí? Tranquilo, no pasa nada.","Te iba a subir el sueldo, pero depende de lo que me digas ahora. ¿Por qué te lo mereces?","Bien. Mañana hablamos. Disfruta de la noche."]},
+ {who:'Hacienda', init:'H', rate:.9, pitch:.9, lines:["Buenas noches. Le llamamos de la Agencia Tributaria.","Hemos detectado unos bizums un poco raros en su cuenta. ¿Nos lo explica?","¿A qué se dedica usted exactamente? Con detalle, por favor.","¿Cuánto dinero se ha gastado esta noche en copas?","De acuerdo. Queda usted avisado. Buenas noches."]},
+ {who:'Tu crush', init:'C', rate:1, pitch:1.25, lines:["Hola... Perdona que te llame así de repente.","Es que me han dicho que estás hablando de mí. ¿Es verdad?","¿Qué es lo que más te gusta de mí? Dímelo ya, sin pensar.","¿Y a quién de los que están contigo me presentarías?","Vale... Pues ya hablamos. Un besito."]},
+ {who:'Tu suegra', init:'S', rate:1, pitch:1.1, lines:["Hola, soy tu suegra. ¿Me oyes bien?","¿Estás cuidando bien de mi niño... o de mi niña?","¿Cuándo pensáis casaros? Que yo ya tengo una edad.","¿Qué te parece mi comida? Sé sincero.","Vale. El domingo os espero a comer. A las dos. Puntual."]},
+ {who:'La policía', init:'P', rate:.92, pitch:.85, lines:["Buenas noches. Le llamamos por una queja de ruido en su zona.","¿Cuántas personas hay con usted ahora mismo? Nombres, por favor.","¿Quién de ellos es el que más grita?","¿Puede cantar el himno para comprobar que está en condiciones?","Está bien. Bajen la música. Buenas noches."]}
+];
+const CONFP = ["Algo que nunca le has contado a nadie de esta mesa.","Lo más vergonzoso que has hecho borracho.","Una mentira que sigues manteniendo.","Algo que piensas de alguien de aquí y no le has dicho.","Tu peor cita.","Algo ilegal pero pequeñito que has hecho.","Lo más raro que has buscado en internet.","Un crush que nadie conoce."];
+
+/* Quiz de fútbol: [pregunta, correcta, falsa, falsa, falsa] */
+const QUIZ = {
+ facil:[
+["¿Qué selección ganó el Mundial de 2010?","España","Holanda","Alemania","Brasil"],
+["¿Quién ganó el Mundial de 2022?","Argentina","Francia","Croacia","Marruecos"],
+["¿En qué club debutó Messi como profesional?","FC Barcelona","Newell's Old Boys","River Plate","Espanyol"],
+["¿Cómo se llama el estadio del Real Madrid?","Santiago Bernabéu","Metropolitano","Vicente Calderón","Alfredo Di Stéfano"],
+["¿Cuántos jugadores tiene cada equipo en el campo?","11","10","12","9"],
+["¿Qué selección ganó la Eurocopa 2024?","España","Inglaterra","Francia","Alemania"],
+["¿De qué país es Cristiano Ronaldo?","Portugal","Brasil","España","Italia"],
+["¿Qué equipo es conocido como «los colchoneros»?","Atlético de Madrid","Real Betis","Getafe","Rayo Vallecano"],
+["¿Cuánto dura un partido sin prórroga?","90 minutos","80 minutos","100 minutos","120 minutos"],
+["¿Qué club ha ganado más Champions?","Real Madrid","AC Milan","Bayern de Múnich","Liverpool"],
+["¿Quién marcó el gol de España en la final del Mundial 2010?","Andrés Iniesta","David Villa","Fernando Torres","Xavi"],
+["¿En qué país se jugó el Mundial 2022?","Catar","Rusia","Arabia Saudí","Emiratos Árabes"],
+["¿Qué tarjeta significa expulsión?","Roja","Amarilla","Azul","Verde"],
+["¿De qué equipo es el estadio de San Mamés?","Athletic Club","Real Sociedad","Osasuna","Alavés"],
+["¿Qué selección tiene más Mundiales?","Brasil","Alemania","Italia","Argentina"],
+["¿A qué futbolista llaman «la Pulga»?","Messi","Neymar","Agüero","Pedri"],
+["¿En qué equipo inglés jugaba Cristiano antes de fichar por el Madrid en 2009?","Manchester United","Chelsea","Arsenal","Liverpool"],
+["¿Qué equipo juega en Mestalla?","Valencia","Levante","Villarreal","Elche"],
+["¿Cómo se llama el partido entre el Madrid y el Barça?","El Clásico","El Derbi","La Final","El Superpartido"],
+["¿Qué selección ganó el Mundial de 2018?","Francia","Croacia","Bélgica","Brasil"],
+["¿A qué portero español llamaban «San Iker»?","Iker Casillas","Iker Muniain","Iker Romero","Iker Martínez"],
+["¿Qué equipo es «el Submarino Amarillo»?","Villarreal","Cádiz","Las Palmas","Alcorcón"],
+["¿Quién ganó el Balón de Oro en 2022?","Karim Benzema","Luka Modrić","Messi","Lewandowski"],
+["¿Qué es un hat-trick?","Tres goles de un jugador en un partido","Un regate con sombrero","Tres tarjetas en un partido","Un gol de chilena"],
+["¿De qué equipo es el estadio Ramón Sánchez-Pizjuán?","Sevilla","Betis","Málaga","Granada"],
+["¿De qué ciudad es el RCD Espanyol?","Barcelona","Madrid","Valencia","Bilbao"],
+["¿Qué dorsal llevaba Messi en el Barça en sus últimos años?","10","30","19","9"],
+["¿Qué selección ganó la Eurocopa 2008?","España","Alemania","Rusia","Italia"]
+ ],
+ dificil:[
+["¿Quién ganó el Balón de Oro de 2018?","Luka Modrić","Cristiano Ronaldo","Antoine Griezmann","Kylian Mbappé"],
+["¿Quién es el máximo goleador histórico de la selección española?","David Villa","Raúl","Fernando Torres","Álvaro Morata"],
+["¿En qué temporada ganó el Deportivo de La Coruña su única Liga?","1999-2000","1993-94","2003-04","1997-98"],
+["¿Quién marcó el gol de la final de la Eurocopa 2008?","Fernando Torres","David Villa","Xavi","Cesc Fàbregas"],
+["¿Qué selección ganó la Eurocopa de 2004?","Grecia","Portugal","República Checa","Holanda"],
+["¿Qué equipo ganó la Premier League 2015-16 por sorpresa?","Leicester City","Tottenham","Everton","West Ham"],
+["¿Quién es el máximo goleador histórico de la Liga española?","Messi","Cristiano Ronaldo","Telmo Zarra","Hugo Sánchez"],
+["¿Cuántas Champions ganó Cristiano Ronaldo?","5","4","6","3"],
+["¿Quién fue el máximo goleador del Mundial 2014?","James Rodríguez","Thomas Müller","Neymar","Messi"],
+["¿Qué portero ganó el Balón de Oro en 1963?","Lev Yashin","Gordon Banks","Dino Zoff","Ricardo Zamora"],
+["¿En qué estadio se jugó la final del Mundial 2014?","Maracaná","Morumbí","Mineirão","Arena Corinthians"],
+["¿Qué selección eliminó a España en el Mundial 2022?","Marruecos","Japón","Croacia","Portugal"],
+["¿Quién ganó el Balón de Oro de 2024?","Rodri","Vinícius Júnior","Jude Bellingham","Erling Haaland"],
+["¿Qué equipo ganó la Europa League de 2023?","Sevilla","Roma","Villarreal","Eintracht de Fráncfort"],
+["¿Qué equipo ganó la Champions de 2012?","Chelsea","Bayern de Múnich","Barcelona","Real Madrid"],
+["¿Qué club es «la Vecchia Signora»?","Juventus","AC Milan","Inter","Roma"],
+["¿En qué club jugaba Zidane antes de fichar por el Madrid?","Juventus","Burdeos","Olympique de Marsella","Cannes"],
+["¿Cuántos goles marcó Messi en el año 2012?","91","73","82","69"],
+["¿En qué año bajó el Atlético de Madrid a Segunda?","2000","1995","2003","1998"],
+["¿A quién le marcó Maradona el gol de «la mano de Dios»?","Inglaterra","Alemania","Italia","Bélgica"],
+["¿Qué país organizó el Mundial de 1982?","España","Italia","México","Argentina"],
+["¿Quién entrenaba a España en el Mundial 2010?","Vicente del Bosque","Luis Aragonés","Julen Lopetegui","José Antonio Camacho"],
+["¿Qué futbolista tiene más partidos con la selección española?","Sergio Ramos","Iker Casillas","Xavi","Andoni Zubizarreta"],
+["¿Qué equipo inglés es «the Gunners»?","Arsenal","West Ham","Aston Villa","Newcastle"],
+["¿En qué año remontó el Barça al PSG con el 6-1?","2017","2015","2019","2016"],
+["¿Qué entrenador consiguió el primer triplete del Barça, en 2009?","Pep Guardiola","Frank Rijkaard","Luis Enrique","Tito Vilanova"],
+["¿Quién ganó la Copa del Rey de 2024?","Athletic Club","Mallorca","Real Sociedad","Barcelona"],
+["¿Qué equipo ganó la primera Copa de Europa, en 1956?","Real Madrid","Benfica","AC Milan","Stade de Reims"]
+ ],
+ extremo:[
+["¿Qué club ganó la primera Liga española, en 1929?","FC Barcelona","Real Madrid","Athletic Club","Arenas de Getxo"],
+["¿Quién marcó el primer gol de la historia de los Mundiales, en 1930?","Lucien Laurent","Guillermo Stábile","Héctor Castro","Bert Patenaude"],
+["¿Quién es el máximo goleador de la historia de los Mundiales?","Miroslav Klose","Ronaldo Nazário","Gerd Müller","Just Fontaine"],
+["¿Cuántos goles marcó Just Fontaine en el Mundial de 1958, el récord en un solo Mundial?","13","11","9","15"],
+["¿Qué equipo ganó al Barça la final de la Copa de Europa de 1986 en Sevilla?","Steaua de Bucarest","Estrella Roja","Dinamo de Kiev","PSV Eindhoven"],
+["¿Qué portero paró cuatro penaltis en esa final de 1986?","Helmuth Duckadam","Rinat Dasáyev","Jean-Marie Pfaff","Walter Zenga"],
+["¿Qué club inglés ganó dos Copas de Europa seguidas, en 1979 y 1980?","Nottingham Forest","Aston Villa","Leeds United","Everton"],
+["¿Con qué resultado ganó Uruguay a Brasil en el «Maracanazo» de 1950?","2-1","1-0","3-2","2-0"],
+["¿Quién marcó el gol de oro de la final de la Eurocopa 1996?","Oliver Bierhoff","Jürgen Klinsmann","Andreas Möller","Patrik Berger"],
+["¿Quién ganó el primer Balón de Oro, en 1956?","Stanley Matthews","Alfredo Di Stéfano","Raymond Kopa","Ferenc Puskás"],
+["¿Qué futbolista marcó desde el centro del campo el gol que dio la Recopa de 1995 al Zaragoza?","Nayim","Esnáider","Pardeza","Higuera"],
+["¿Cuántos goles marcó Telmo Zarra en la Liga 1950-51, récord durante 60 años?","38","35","41","33"],
+["¿Qué equipo ganó la Liga en 1981 y en 1982?","Real Sociedad","Athletic Club","Valencia","Atlético de Madrid"],
+["¿Qué selección ganó la Eurocopa de 1992 tras entrar a última hora sin haberse clasificado?","Dinamarca","Suecia","Holanda","Escocia"],
+["¿Quién marcó el gol de España en la final de la Eurocopa de 1964?","Marcelino","Amancio","Luis Suárez Miramontes","Pereda"],
+["¿Qué selección ganó el «Milagro de Berna», la final del Mundial de 1954?","Alemania Federal","Hungría","Austria","Uruguay"],
+["¿Con qué club ganó Mourinho la Champions de 2004?","Oporto","Benfica","Chelsea","Sporting de Portugal"],
+["¿Qué equipo hizo el doblete de Liga y Copa en la temporada 1995-96?","Atlético de Madrid","Barcelona","Real Madrid","Deportivo"],
+["¿Quién fue el máximo goleador del Mundial de 1982?","Paolo Rossi","Karl-Heinz Rummenigge","Zico","Zbigniew Boniek"],
+["¿Quién marcó el gol del Barça en la final de Wembley de 1992?","Ronald Koeman","Hristo Stoichkov","Michael Laudrup","José Mari Bakero"],
+["¿Qué equipo entrenaba Rafa Benítez cuando ganó las Ligas de 2002 y 2004?","Valencia","Tenerife","Extremadura","Osasuna"],
+["¿Quién marcó 5 goles en 9 minutos en un partido de la Bundesliga en 2015?","Robert Lewandowski","Thomas Müller","Pierre-Emerick Aubameyang","Arjen Robben"],
+["¿Qué club ganó la Champions de 1997?","Borussia Dortmund","Juventus","Ajax","Bayern de Múnich"],
+["¿Cuántos goles marcó Pelé en los Mundiales?","12","15","10","8"],
+["¿Qué equipo ganó la Liga en 1983 y en 1984?","Athletic Club","Real Sociedad","Real Madrid","Barcelona"],
+["¿Qué selección ganó el primer Mundial, en 1930?","Uruguay","Argentina","Italia","Brasil"],
+["¿En qué año ganó España su primera Eurocopa?","1964","1968","1972","1960"],
+["¿Cuántos Balones de Oro ha ganado Messi?","8","7","6","9"]
+ ]
+};
+
+/* Canciones: se buscan en el catálogo de avances de Apple (clips de 30 s) */
+const SONGS = {
+ reggaeton:["Daddy Yankee Gasolina","Luis Fonsi Despacito","Bad Bunny Tití Me Preguntó","Bad Bunny Me Porto Bonito","J Balvin Mi Gente","Don Omar Danza Kuduro","Karol G Tusa","Shakira Bzrp Music Sessions 53","Quevedo Bzrp Music Sessions 52","Rosalía Despechá","DJ Snake Taki Taki","Wisin Yandel Rakata","Nicky Jam El Perdón","Maluma Hawái","Rauw Alejandro Todo de Ti","Becky G Mayores","Bad Bunny Dákiti","Karol G Provenza","Myke Towers La Falda","Aventura Obsesión","Romeo Santos Propuesta Indecente","Daddy Yankee Con Calma"],
+ espanol:["Estopa Como Camarón","La Oreja de Van Gogh Rosas","Melendi Caminando por la vida","Amaral Sin ti no soy nada","El Canto del Loco Zapatillas","Pereza Princesas","Alejandro Sanz Corazón partío","David Bisbal Bulería","Estopa La raja de tu falda","Mecano Hijo de la luna","Fito y Fitipaldis Soldadito marinero","Extremoduro So payaso","Los del Río Macarena","Camela Cuando zarpa el amor","Chanel SloMo","Rosalía Malamente","Lola Índigo Ya no quiero ná","Aitana Mon Amour","Joaquín Sabina 19 días y 500 noches","Hombres G Devuélveme a mi chica","Loquillo Cadillac solitario","Manu Chao Me gustas tú"],
+ internacional:["Queen Don't Stop Me Now","Queen We Will Rock You","Bon Jovi Livin' on a Prayer","Avicii Wake Me Up","Mark Ronson Uptown Funk","Pharrell Williams Happy","Black Eyed Peas I Gotta Feeling","Dua Lipa Levitating","The Weeknd Blinding Lights","Michael Jackson Billie Jean","ABBA Dancing Queen","Gloria Gaynor I Will Survive","Village People Y.M.C.A.","Eminem Lose Yourself","Harry Styles As It Was","Ed Sheeran Shape of You","LMFAO Party Rock Anthem","Shakira Waka Waka","Survivor Eye of the Tiger","Europe The Final Countdown","a-ha Take On Me","Vengaboys We're Going to Ibiza"]
+};
+
 /* =========================================================
    UTILIDADES
    ========================================================= */
@@ -397,7 +613,7 @@ const S = {
   ranking: load('lp_rank', []),
   cleanup: []
 };
-function clearT(){ S.cleanup.forEach(f => { try{ f(); }catch(e){} }); S.cleanup = []; }
+function clearT(){ try{ window.speechSynthesis && speechSynthesis.cancel(); }catch(e){} S.cleanup.forEach(f => { try{ f(); }catch(e){} }); S.cleanup = []; }
 function later(fn, ms){ const t = setTimeout(fn, ms); S.cleanup.push(() => clearTimeout(t)); return t; }
 function frame(fn){ let id; const loop = t => { if(fn(t) !== false) id = requestAnimationFrame(loop); }; id = requestAnimationFrame(loop); S.cleanup.push(() => cancelAnimationFrame(id)); }
 const pick = arrs => S.mode === 'picante' ? [...arrs[1], ...arrs[0]] : arrs[0];
@@ -415,6 +631,36 @@ function boom(){ const a = ac(); if(!a) return; const len = a.sampleRate*1.4|0, 
 function buzz(p){ try{ navigator.vibrate && navigator.vibrate(p); }catch(e){} }
 const blip = () => tone(720, .05, 'triangle', .07);
 
+/* voz: el móvil lee las cartas */
+S.voice = load('lp_voice', false);
+const SYN = window.speechSynthesis || null;
+let VOICE = null;
+function pickVoice(){ if(!SYN) return; const v = SYN.getVoices(); VOICE = v.find(x => /es[-_]ES/i.test(x.lang)) || v.find(x => /^es/i.test(x.lang)) || null; }
+if(SYN){ pickVoice(); try{ SYN.onvoiceschanged = pickVoice; }catch(e){} }
+const plain = t => String(t).replace(/<br\s*\/?>/gi, '. ').replace(/<[^>]+>/g, '').replace(/[«»]/g, '').replace(/…/g, '...');
+function say(t, o={}){
+  if(!SYN || (!S.voice && !o.force)) return null;
+  try{
+    if(!o.queue) SYN.cancel();
+    const u = new SpeechSynthesisUtterance(plain(t));
+    u.lang = 'es-ES'; if(VOICE) u.voice = VOICE;
+    u.rate = o.rate || 1.02; u.pitch = o.pitch || 1;
+    if(o.end){ u.onend = o.end; u.onerror = o.end; }
+    SYN.speak(u); return u;
+  }catch(e){ return null; }
+}
+function hush(){ try{ SYN && SYN.cancel(); }catch(e){} }
+const SPK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>';
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-say]'); if(!b) return;
+  e.stopPropagation(); e.preventDefault();
+  const c = b.closest('.card'); if(!c) return;
+  const l = c.querySelector('.clabel'), x = c.querySelector('.ctext');
+  say((l ? l.innerHTML + '. ' : '') + (x ? x.innerHTML : ''), {force:true});
+}, true);
+let WL = null;
+async function wake(on){ try{ if(on && navigator.wakeLock && !WL){ WL = await navigator.wakeLock.request('screen'); WL.addEventListener && WL.addEventListener('release', () => { WL = null; }); } else if(!on && WL){ await WL.release(); WL = null; } }catch(e){} }
+
 /* iconos */
 const I = {
   yonunca:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></svg>',
@@ -429,6 +675,13 @@ const I = {
   dedo:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="7" cy="8" r="3"/><circle cx="17" cy="7" r="3"/><circle cx="12" cy="17" r="3"/></svg>',
   normas:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 3h11l3 3v15H5z"/><path d="M9 9h6M9 13h6M9 17h3"/></svg>',
   misiones:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V4M4 4h13l-3 4 3 4H4"/></svg>',
+  detector:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h4l2-5 4 10 3-7 2 2h5"/></svg>',
+  duelo:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9h11l2-2h3v5h-4l-1 2h-3l-1 5H6l1-5H3z"/></svg>',
+  voto:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><path d="M4 21v-6h5v6M10 21V9h5v12M16 21v-9h4v9"/></svg>',
+  llamada:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 6 6L16 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>',
+  confesionario:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M9 10h.01M12 10h.01M15 10h.01"/></svg>',
+  cancion:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg>',
+  quiz:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7l4 3-1.5 5h-5L8 10z"/><path d="M12 3v4M16 10l4.5-1.5M14.5 15l2.5 4M9.5 15 7 19M8 10 3.5 8.5"/></svg>',
   cuanto:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M3 17a9 9 0 0 1 18 0"/><path d="M12 17l4-6"/><circle cx="12" cy="17" r="1.2" fill="currentColor"/></svg>'
 };
 
@@ -436,6 +689,27 @@ const I = {
    JUEGOS
    ========================================================= */
 const G = [
+ {id:'detector', nuevo:true, name:'DETECTOR DE MENTIRAS', ds:'El móvil te ordena en secreto si mentir. La mesa adivina.', kind:'Por turnos · 3+', c:'#3ee08f',
+  rules:['Al que le toca, el móvil le dice en secreto si tiene que decir la verdad o mentir.','Pone el pulgar en el sensor y contesta la pregunta en voz alta mientras el polígrafo late.','La mesa vota: ¿mentira o verdad?','Si le pilláis, bebe 2. Si os engaña, bebéis todos menos él.'],
+  start: s => detector(s)},
+ {id:'duelo', nuevo:true, name:'DUELO DEL OESTE', ds:'Dos jugadores, un móvil en medio. El más rápido gana.', kind:'Duelo · 2+', c:'#ffb547',
+  rules:['Deja el móvil plano entre los dos duelistas. Cada uno tiene su mitad.','Tres modos: Desenfunda (cuidado con las palabras trampa), Tira y afloja y Piedra, papel o tijera.','El que pierde, bebe 2.','En modo Torneo, el que gana se queda y entra el siguiente.'],
+  start: s => duelo(s)},
+ {id:'voto', nuevo:true, name:'VOTO SECRETO', ds:'Votáis en secreto quién es el peor. Podio con redoble.', kind:'Votación · 3+', c:'#b98cff',
+  rules:['Sale una pregunta: «¿Quién de aquí…?».','El móvil pasa y cada uno vota en secreto.','Podio con redoble de tambor. El más votado bebe un trago por voto.','Con «voto amañado», uno es el manipulador y tiene que conseguir que gane alguien concreto sin que se note.'],
+  start: s => voto(s)},
+ {id:'llamada', nuevo:true, name:'LA LLAMADA', ds:'Te llama tu ex, tu madre o Hacienda. Aguanta sin reírte.', kind:'Por turnos · 2+', c:'#4fc3ff',
+  rules:['El móvil recibe una llamada falsa: tu ex, tu madre, tu jefe, Hacienda…','Contestas con el altavoz y una voz te hace preguntas.','Responde metido en el papel. Si te ríes o te trabas, bebes 2.','Si cuelgas sin contestar, bebes 3.'],
+  start: s => llamada(s)},
+ {id:'confesionario', nuevo:true, name:'EL CONFESIONARIO', ds:'Secretos anónimos leídos en voz alta. ¿De quién es cada uno?', kind:'Pasar móvil · 3+', c:'#ff8fb1',
+  rules:['El móvil pasa y cada uno escribe un secreto sin que nadie lo vea.','Después se leen uno a uno, mezclados.','La mesa adivina de quién es cada uno.','Si aciertan, el autor bebe 2. Si no, el autor reparte 3.'],
+  start: s => confesionario(s)},
+ {id:'cancion', nuevo:true, name:'¿QUÉ CANCIÓN ES?', ds:'Uno o dos segundos de canción. Y un modo que salta solo.', kind:'Todos · necesita internet', c:'#ff6a3d',
+  rules:['Suena un trozo de canción de 1, 2 o 5 segundos.','El primero que la diga, reparte 2 tragos. Si nadie la sabe, bebéis todos.','Modo automático: el móvil salta solo cada cierto tiempo mientras hacéis la previa.','Necesita internet: las canciones son avances oficiales de Apple Music.'],
+  start: s => cancion(s)},
+ {id:'quiz', nuevo:true, name:'QUIZ DE FÚTBOL', ds:'Tres niveles: fácil, difícil y extremo.', kind:'Por turnos · 1+', c:'#6fe7ff',
+  rules:['Elegid el nivel: fácil, difícil o extremo.','Por turnos, cada uno contesta su pregunta antes de que se acabe el tiempo.','Si aciertas, repartes tragos. Si fallas, bebes.','10 preguntas por partida y ranking al final.'],
+  start: s => quiz(s)},
  {id:'yonunca', name:'YO NUNCA', ds:'Quien lo haya hecho, bebe.', kind:'Cartas · 3+', c:'#ff4f7b',
   rules:['Sale una frase que empieza por «Yo nunca…».','Quien <b>sí</b> lo haya hecho, bebe un trago.','Si la mesa quiere la historia, se cuenta. Si no la cuenta, bebe otro.'],
   start: s => simpleDeck(s, {label:'YO NUNCA…', deck:pick([YN,YNP]), foot:'Quien lo haya hecho, bebe.'})},
@@ -487,7 +761,7 @@ function gate(){
   app.innerHTML = `
   <section class="gate">
     <h1 class="logo"><span class="la">LA</span><span class="pv">PREVIA</span></h1>
-    <p>13 juegos para beber en grupo. Los de siempre y algunos que no has jugado nunca. Se juega con un solo móvil.</p>
+    <p>${G.length} juegos para beber en grupo. Los de siempre y algunos que no has jugado nunca. Se juega con un solo móvil.</p>
     <p style="font-size:14px">Solo para mayores de 18. Cualquier trago puede ser de agua.</p>
     <button class="btn" id="enter">TENGO 18 AÑOS O MÁS</button>
   </section>`;
@@ -504,7 +778,7 @@ function home(){
   <main class="home">
     <header class="hero">
       <h1 class="logo sm"><span class="la">LA</span><span class="pv">PREVIA</span></h1>
-      <p class="tag"><b>13 juegos para beber.</b> Elegid uno y a jugar.</p>
+      <p class="tag"><b>${G.length} juegos para beber.</b> Elegid uno y a jugar.</p>
     </header>
     <section class="bar">
       <button class="players" id="btnPlayers"><span class="lbl">Jugadores</span>${chips}</button>
@@ -512,6 +786,7 @@ function home(){
         <button data-mode="suave" class="${S.mode==='suave'?'on':''}">Suave</button>
         <button data-mode="picante" class="${S.mode==='picante'?'on':''}">Picante</button>
       </div>
+      <button class="voicebtn ${S.voice?'on':''}" data-voice aria-pressed="${S.voice}">${SPK}<span>Voz ${S.voice?'sí':'no'}</span></button>
     </section>
     <button class="feature" data-game="cuanto">
       <span class="new">Nuevo</span>
@@ -522,7 +797,7 @@ function home(){
     <div class="grid">
       ${G.filter(g => g.id !== 'cuanto').map(g => `
         <button class="tile" data-game="${g.id}" style="--c:${g.c}">
-          <span class="ico">${I[g.id]}</span>
+          ${g.nuevo ? '<span class="badge">NUEVO</span>' : ''}<span class="ico">${I[g.id]}</span>
           <span class="nm">${g.name}</span>
           <span class="ds">${g.ds}</span>
           <span class="kind">${g.kind}</span>
@@ -533,6 +808,7 @@ function home(){
   app.onclick = e => {
     const g = e.target.closest('[data-game]'); if(g){ blip(); openGame(g.dataset.game); return; }
     const m = e.target.closest('[data-mode]'); if(m){ S.mode = m.dataset.mode; store('lp_mode', S.mode); blip(); home(); return; }
+    if(e.target.closest('[data-voice]')){ S.voice = !S.voice; store('lp_voice', S.voice); if(S.voice) say('Voz activada. Leeré las cartas en voz alta.'); else hush(); home(); return; }
     if(e.target.closest('#btnPlayers')){ blip(); playersModal(); }
   };
   window.scrollTo(0,0);
@@ -597,7 +873,10 @@ function rulesHTML(g){
     <button class="btn">EMPEZAR</button>
   </div>`;
 }
-const cardHTML = (label, text, foot, cls='') => `<div class="card pop"><div class="clabel">${label}</div><div class="ctext ${cls}">${text}</div>${foot ? `<div class="cfoot">${foot}</div>` : ''}</div>`;
+function cardHTML(label, text, foot, cls='', speak=true){
+  if(speak && S.voice) say(label + '. ' + text);
+  return `<div class="card pop">${speak ? `<button class="speak" data-say aria-label="Leer en voz alta">${SPK}</button>` : ''}<div class="clabel">${label}</div><div class="ctext ${cls}">${text}</div>${foot ? `<div class="cfoot">${foot}</div>` : ''}</div>`;
+}
 
 /* ---------- mazo simple ---------- */
 function simpleDeck(stage, o){
@@ -612,6 +891,7 @@ function prefieres(stage){
   const d = Deck(pick([WYR, WYRP]));
   const show = () => {
     const [a,b] = shuffle(d());
+    say('¿Qué prefieres? ' + a + ', o ' + b + '?');
     stage.innerHTML = `<div class="wyr pop"><button class="opt a" data-o>${esc(a)}</button><div class="or">O</div><button class="opt b" data-o>${esc(b)}</button></div>
     <p class="hint">A la de tres, cada uno dice la suya. <b>La minoría bebe.</b></p>
     <div class="actions"><button class="btn" data-a="next">SIGUIENTE</button></div>`;
@@ -631,6 +911,7 @@ function verdad(stage){
   const who = () => order.length ? order[i % order.length] : null;
   const choose = () => {
     const w = who();
+    say('Le toca a ' + (w || 'quien tenga el móvil') + '. ¿Verdad o reto?');
     stage.innerHTML = `<div class="turn pop"><small>${w ? 'Le toca a' : 'Le toca a'}</small><h2>${w ? esc(w) : 'quien tenga el móvil'}</h2></div>
     <div class="actions"><button class="btn big" data-a="v">VERDAD</button><button class="btn big alt" data-a="r">RETO</button></div>
     <p class="hint">Si no contestas o no lo haces: <b>3 tragos</b>.</p>`;
@@ -757,8 +1038,8 @@ function impostor(stage){
   const round = (names, hint) => {
     const [w, cat] = dw(), imp = Math.random()*names.length|0;
     passRound(stage, names, i => i === imp
-      ? cardHTML('TU PAPEL', 'ERES EL IMPOSTOR', hint ? `Pista: el tema es <b>${cat}</b>. Disimula.` : 'No sabes la palabra. Escucha y disimula.', 'huge')
-      : cardHTML('TU PALABRA', esc(w), 'No la digas. Da pistas sin que el impostor la adivine.', 'huge'),
+      ? cardHTML('TU PAPEL', 'ERES EL IMPOSTOR', hint ? `Pista: el tema es <b>${cat}</b>. Disimula.` : 'No sabes la palabra. Escucha y disimula.', 'huge', false)
+      : cardHTML('TU PALABRA', esc(w), 'No la digas. Da pistas sin que el impostor la adivine.', 'huge', false),
       () => {
         const first = rnd(names);
         stage.innerHTML = cardHTML('TODO REPARTIDO', `Empieza <span style="color:var(--c)">${esc(first)}</span>.`, 'Por turnos, cada uno dice <b>una palabra</b> relacionada. Después, a la de tres, todos señalan al impostor.')
@@ -781,7 +1062,7 @@ function impostor(stage){
 function misiones(stage){
   setupPass(stage, 'Jugadores', '', names => {
     const d = Deck(MISSIONS), got = names.map(n => fill(d(), [n]));
-    passRound(stage, names, i => cardHTML('MISIÓN SECRETA', got[i], 'Cúmplela esta noche sin que nadie se dé cuenta.'), () => {
+    passRound(stage, names, i => cardHTML('MISIÓN SECRETA', got[i], 'Cúmplela esta noche sin que nadie se dé cuenta.', '', false), () => {
       let armed = false;
       const end = () => {
         stage.innerHTML = cardHTML('MISIONES REPARTIDAS', 'Que empiece el juego.', 'Si sospechas de alguien, di <b>«¡TE PILLÉ!»</b>. Si aciertas, bebe él 2. Si fallas, bebes tú. Quien la cumpla sin que le pillen, reparte 3 tragos.')
@@ -816,6 +1097,7 @@ function rey(stage){
       ${c ? pcard(c, 'flip') : `<div class="pcard back"></div>`}
       ${rule ? `<div class="rule pop"><h3>${rule[0]}</h3><p>${rule[1]}</p></div>` : `<p class="hint">Saca una carta por turnos.</p>`}
       <div class="actions">${left ? `<button class="btn" data-a="draw">SACAR CARTA</button>` : `<button class="btn" data-a="reset">BARAJAR DE NUEVO</button>`}</div>`;
+    if(rule) say(rule[0] + '. ' + rule[1]);
     if(c && c.r === 'K'){ tone(kings===4?220:440, kings===4?.6:.2, 'sawtooth', .07); if(kings===4) buzz([300,100,300]); }
   };
   stage.onclick = e => {
@@ -1138,6 +1420,534 @@ function result(stage, name, R, back){
   if(lvl >= 8) later(() => buzz([200,80,200]), 1500);
   $('#again').onclick = () => { blip(); back(); };
   window.scrollTo(0,0);
+}
+
+/* =========================================================
+   JUEGOS NUEVOS
+   ========================================================= */
+function chipsHTML(items, cur, attr){ return `<div class="chips">${items.map(([v,l]) => `<button data-${attr}="${esc(v)}" class="${v===cur?'on':''}">${esc(l)}</button>`).join('')}</div>`; }
+function needPlayers(stage, min, again){
+  stage.innerHTML = `<div class="rules pop"><p class="sub">Faltan jugadores</p><h2>Mínimo ${min}</h2><p class="hint" style="text-align:left">Este juego necesita vuestros nombres para funcionar.</p><button class="btn" data-a="add">AÑADIR JUGADORES</button></div>`;
+  stage.onclick = e => { if(e.target.closest('[data-a=add]')){ blip(); playersModal(again); } };
+}
+
+/* ---------- detector de mentiras ---------- */
+function detector(stage){
+  const d = Deck(LIEQ); let order = shuffle(S.players), i = 0, mode = 'una';
+  const who = () => order.length ? order[i % order.length] : null;
+  const menu = () => {
+    stage.innerHTML = `<div class="rules pop"><p class="sub">Elige el modo</p>
+      <div class="lvls">
+        <button data-m="una"><b>UNA PREGUNTA</b><span>Contesta una pregunta. ¿Mentira o verdad?</span><em style="background:#3ee08f">RÁPIDO</em></button>
+        <button data-m="tres"><b>INTERROGATORIO</b><span>Tres preguntas seguidas. En una miente. ¿En cuál?</span><em style="background:var(--pink)">DIFÍCIL</em></button>
+      </div></div>`;
+    stage.onclick = e => { const m = e.target.closest('[data-m]'); if(m){ blip(); mode = m.dataset.m; turn(); } };
+  };
+  const turn = () => {
+    const w = who();
+    stage.innerHTML = `<div class="turn pop"><small>Al polígrafo</small><h2>${w ? esc(w) : 'quien tenga el móvil'}</h2></div>
+      <p class="hint">Coge el móvil. <b>Que nadie más mire</b> la siguiente pantalla.</p>
+      <div class="actions"><button class="btn big" data-a="see">VER MI ORDEN</button></div>`;
+    stage.onclick = e => { if(e.target.closest('[data-a=see]')){ blip(); secret(w); } };
+  };
+  const secret = w => {
+    const qs = mode === 'una' ? [fill(d(), w ? [w] : [])] : [fill(d(), w ? [w] : []), fill(d(), w ? [w] : []), fill(d(), w ? [w] : [])];
+    const lie = mode === 'una' ? (Math.random() < .5 ? 0 : -1) : (Math.random()*3|0);
+    stage.innerHTML = `<div class="card pop" style="align-items:center;justify-content:center;text-align:center">
+        <div class="clabel">SOLO PARA TI</div>
+        ${mode === 'una'
+          ? `<div class="secret" style="color:${lie === 0 ? 'var(--pink)' : '#3ee08f'}">${lie === 0 ? 'MIENTE' : 'DI LA VERDAD'}</div>`
+          : `<div class="secret" style="color:var(--pink);font-size:clamp(34px,10vw,52px)">MIENTE EN LA PREGUNTA ${lie+1}</div><div class="cfoot" style="border:0">En las otras dos, di la verdad.</div>`}
+      </div>
+      <div class="actions"><button class="btn" data-a="hide">MEMORIZADO. OCULTAR</button></div>`;
+    stage.onclick = e => { if(e.target.closest('[data-a=hide]')){ blip(); scan(w, qs, lie, 0); } };
+  };
+  const scan = (w, qs, lie, k) => {
+    const q = qs[k];
+    stage.innerHTML = cardHTML(mode === 'una' ? 'PREGUNTA' : `PREGUNTA ${k+1} DE 3`, q, (w ? esc(w) + ': ' : '') + 'pon el pulgar en el sensor y contesta en voz alta.')
+      + `<div class="poly"><canvas id="pc"></canvas><span class="bpm" id="bpm">-- lpm</span></div>
+      <div class="sensor" id="sen">Mantén el pulgar aquí</div>
+      <div class="actions"><button class="btn" data-a="done" disabled style="opacity:.4">${k < qs.length-1 ? 'SIGUIENTE PREGUNTA' : 'HE CONTESTADO'}</button></div>`;
+    const cv = $('#pc'), ctx = cv.getContext('2d'), sen = $('#sen'), bpmEl = $('#bpm'), btn = $('[data-a=done]', stage);
+    const dpr = window.devicePixelRatio || 1; cv.width = cv.clientWidth*dpr; cv.height = cv.clientHeight*dpr;
+    const pts = []; let on = false, amp = 4, bpm = 72 + Math.random()*10, t0 = 0, moved = 0, lx = 0, ly = 0, beatAt = 0;
+    sen.addEventListener('pointerdown', e => { e.preventDefault(); ac(); on = true; sen.classList.add('on'); sen.textContent = 'Leyendo…'; lx = e.clientX; ly = e.clientY; if(!t0) t0 = performance.now(); try{ sen.setPointerCapture(e.pointerId); }catch(_){} });
+    sen.addEventListener('pointermove', e => { if(on){ moved += Math.hypot(e.clientX-lx, e.clientY-ly); lx = e.clientX; ly = e.clientY; } });
+    const off = () => { on = false; sen.classList.remove('on'); sen.textContent = 'Mantén el pulgar aquí'; };
+    sen.addEventListener('pointerup', off); sen.addEventListener('pointercancel', off);
+    frame(now => {
+      if(on){
+        const el = (now - t0)/1000;
+        bpm = Math.min(150, bpm + 0.02 + Math.random()*0.05 + moved*0.02);
+        amp = 6 + Math.min(40, moved*1.5) + (Math.random() < .03 ? 30 : 0);
+        moved *= .85;
+        if(now - beatAt > 60000/bpm){ beatAt = now; tone(62, .09, 'sine', .35); later(() => tone(50, .07, 'sine', .25), 120); buzz(30); }
+        bpmEl.textContent = Math.round(bpm) + ' lpm';
+        if(el > 2.5 && btn.disabled){ btn.disabled = false; btn.style.opacity = 1; }
+      } else amp = 2;
+      const H = cv.height, W = cv.width;
+      pts.push(H/2 + Math.sin(now/90)*amp*dpr*.4 + (Math.random()-.5)*amp*dpr);
+      while(pts.length > 160) pts.shift();
+      ctx.clearRect(0,0,W,H);
+      ctx.strokeStyle = 'rgba(62,224,143,.18)'; ctx.lineWidth = 1;
+      for(let x=0;x<W;x+=20*dpr){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+      ctx.strokeStyle = '#3ee08f'; ctx.lineWidth = 2.5*dpr; ctx.beginPath();
+      pts.forEach((y, j) => { const x = W - (pts.length - j) * (W/160); j ? ctx.lineTo(x, y) : ctx.moveTo(x, y); });
+      ctx.stroke();
+    });
+    stage.onclick = e => {
+      if(!e.target.closest('[data-a=done]') || btn.disabled) return; blip(); clearT();
+      if(k < qs.length-1) scan(w, qs, lie, k+1); else vote(w, lie);
+    };
+  };
+  const vote = (w, lie) => {
+    const opts = mode === 'una' ? [['m','MENTIRA'],['v','VERDAD']] : [['0','LA 1'],['1','LA 2'],['2','LA 3']];
+    say(mode === 'una' ? '¿Mentía o decía la verdad?' : '¿En qué pregunta ha mentido?');
+    stage.innerHTML = `<div class="turn pop"><small>La mesa decide</small><h2 style="font-size:clamp(34px,10vw,52px)">${mode === 'una' ? '¿MENTÍA?' : '¿EN CUÁL MINTIÓ?'}</h2></div>
+      <p class="hint">Debatid y votad a mano alzada. Luego pulsad lo que diga la mayoría.</p>
+      <div class="actions">${opts.map(([v,l]) => `<button class="btn ${v==='m'?'alt':''}" data-v="${v}">${l}</button>`).join('')}</div>`;
+    stage.onclick = e => {
+      const b = e.target.closest('[data-v]'); if(!b) return; blip();
+      const guess = b.dataset.v;
+      const right = mode === 'una' ? ((guess === 'm') === (lie === 0)) : (+guess === lie);
+      stage.innerHTML = `<div class="bigword" style="font-size:clamp(40px,12vw,64px)">ANALIZANDO…</div><div class="poly" style="height:80px"></div>`;
+      for(let k=0;k<8;k++) later(() => tone(600 + k*80, .06, 'square', .05), k*180);
+      later(() => {
+        const truth = mode === 'una' ? (lie === 0 ? 'ERA MENTIRA' : 'ERA VERDAD') : `MINTIÓ EN LA ${lie+1}`;
+        const res = right ? `¡Pillado! <b>${w ? esc(w) : 'Quien tenía el móvil'} bebe 2</b>.` : `Os ha engañado. <b>Bebéis todos menos ${w ? esc(w) : 'él'}</b>.`;
+        say(truth + '. ' + plain(res));
+        right ? tone(200,.4,'sawtooth',.08) : tone(880,.3,'triangle',.1);
+        stage.innerHTML = `<div class="bigword pop" style="font-size:clamp(44px,14vw,76px);color:${right ? 'var(--pink)' : '#3ee08f'}">${truth}</div>
+          <p class="hint" style="font-size:19px">${res}</p>
+          <div class="actions"><button class="btn" data-a="next">SIGUIENTE</button><button class="btn ghost" data-a="menu">MODO</button></div>`;
+        stage.onclick = e2 => { const a = e2.target.closest('[data-a]'); if(!a) return; blip(); if(a.dataset.a === 'next'){ i++; turn(); } else menu(); };
+      }, 1600);
+    };
+  };
+  menu();
+}
+
+/* ---------- duelo del oeste ---------- */
+function duelo(stage){
+  const P = S.players.length >= 2 ? S.players.slice() : ['Jugador 1','Jugador 2'];
+  let a = P[0], b = P[1], mode = 'desenfunda', torneo = P.length > 2, queue = [], wins = {};
+  const TRICK = ['DESAYUNA','DESENCHUFA','DESENFADA','DESCANSA','DESPEÍNATE','DESENREDA','DESENFOCA','DESPIERTA'];
+  const setup = () => {
+    stage.innerHTML = `<div class="rules pop" style="gap:14px">
+      <p class="sub">Duelistas</p>
+      ${S.players.length >= 2 ? `<div class="pick">${P.map(p => `<button data-p="${esc(p)}" class="${p===a||p===b?'on':''}">${esc(p)}</button>`).join('')}</div><p class="muted">Toca dos nombres.</p>` : `<button class="btn ghost" data-a="add" style="flex:0 0 auto">AÑADIR NOMBRES</button>`}
+      <p class="sub">Modo</p>
+      ${chipsHTML([['desenfunda','Desenfunda'],['tira','Tira y afloja'],['rps','Piedra, papel, tijera'],['azar','Al azar']], mode, 'm')}
+      ${P.length > 2 ? `<button class="toggle ${torneo?'on':''}" data-a="tor"><i></i><span>Torneo: el que gana se queda y entra el siguiente</span></button>` : ''}
+      <button class="btn" data-a="go">¡A DUELO!</button></div>`;
+    let pickN = 0;
+    stage.onclick = e => {
+      const p = e.target.closest('[data-p]'); if(p){ blip(); const n = p.dataset.p; if(n !== a && n !== b){ if(pickN++ % 2) b = n; else a = n; } setup(); return; }
+      const m = e.target.closest('[data-m]'); if(m){ blip(); mode = m.dataset.m; setup(); return; }
+      const x = e.target.closest('[data-a]'); if(!x) return; blip();
+      if(x.dataset.a === 'add') playersModal(() => duelo(stage));
+      else if(x.dataset.a === 'tor'){ torneo = !torneo; setup(); }
+      else if(x.dataset.a === 'go'){ queue = shuffle(P.filter(n => n !== a && n !== b)); fight(); }
+    };
+  };
+  const board = () => { const e = Object.entries(wins).sort((x,y) => y[1]-x[1]); return e.length ? `<div class="score">${e.map(([n,v]) => `<span class="chip">${esc(n)} · ${v}</span>`).join('')}</div>` : ''; };
+  const fight = () => {
+    const m = mode === 'azar' ? rnd(['desenfunda','tira','rps']) : mode;
+    stage.onclick = null;
+    stage.innerHTML = `<div class="duel" id="duel">
+      <div class="half top p2" data-h="b"><b>${esc(b)}</b><span id="sb"></span></div>
+      <div class="mid" id="mid"></div>
+      <div class="half p1" data-h="a"><b>${esc(a)}</b><span id="sa"></span></div></div>`;
+    const duel = $('#duel'), mid = $('#mid'), H = {a: $('[data-h=a]'), b: $('[data-h=b]')};
+    let over = false;
+    const end = (win, why) => {
+      if(over) return; over = true; clearT();
+      const lose = win === 'a' ? 'b' : 'a', wn = win === 'a' ? a : b, ln = lose === 'a' ? a : b;
+      duel.style.gridTemplateRows = ''; duel.style.minHeight = '56vh';
+      H[win].classList.add('win'); H[lose].classList.add('lose');
+      wins[wn] = (wins[wn]||0) + 1;
+      boom(); buzz([200,60,200]);
+      mid.innerHTML = `<b style="font-size:clamp(26px,8vw,40px)">GANA ${esc(wn)}</b>`;
+      say(`Gana ${wn}. ${ln} bebe dos tragos.`);
+      $('#s'+lose).textContent = (why ? why + ' ' : '') + 'Bebes 2.'; $('#s'+win).textContent = '¡Ganas!';
+      later(() => {
+        const nx = document.createElement('div'); nx.style.cssText = 'width:100%;display:flex;flex-direction:column;gap:12px';
+        nx.innerHTML = board() + `<div class="actions"><button class="btn" data-a="again">${torneo && queue.length ? 'SIGUIENTE RETADOR' : 'REVANCHA'}</button><button class="btn ghost" data-a="set">CAMBIAR</button></div>`;
+        stage.appendChild(nx);
+        stage.onclick = e => { const x = e.target.closest('[data-a]'); if(!x) return; blip();
+          if(x.dataset.a === 'set') return setup();
+          if(torneo && P.length > 2){ const loser = ln; queue.push(loser); const next = queue.shift(); if(win === 'a'){ b = next; } else { a = next; } }
+          fight(); };
+      }, 900);
+    };
+    if(m === 'desenfunda'){
+      $('#sa').textContent = $('#sb').textContent = 'Toca tu mitad solo con «¡DESENFUNDA!»';
+      let state = 'wait';
+      const words = shuffle(TRICK).slice(0, 1 + (Math.random()*3|0));
+      mid.innerHTML = '<b>Preparados…</b>';
+      tone(880,.5,'sine',.05); later(() => tone(660,.7,'sine',.05), 500);
+      let t = 1600;
+      words.forEach(w => { t += 700 + Math.random()*1300; later(() => { if(over) return; mid.innerHTML = `<b style="color:var(--ink)">${w}</b>`; tone(300,.08,'square',.05); }, t); later(() => { if(!over) mid.innerHTML = '<b>…</b>'; }, t + 550); });
+      t += 900 + Math.random()*1800;
+      later(() => { if(over) return; state = 'go'; mid.innerHTML = '<b>¡DESENFUNDA!</b>'; tone(1200,.08,'square',.1); buzz(80); }, t);
+      ['a','b'].forEach(k => H[k].addEventListener('pointerdown', e => { e.preventDefault(); ac(); if(over) return; if(state === 'go') end(k); else end(k === 'a' ? 'b' : 'a', 'Te has adelantado.'); }));
+    } else if(m === 'tira'){
+      let pos = 0, go = false; const LIM = 14;
+      $('#sa').textContent = $('#sb').textContent = 'Aporrea tu mitad para ganar terreno';
+      const upd = () => { duel.style.gridTemplateRows = `${50 - pos*3.2}fr auto ${50 + pos*3.2}fr`; };
+      ['3','2','1'].forEach((n, k) => later(() => { mid.innerHTML = `<b>${n}</b>`; tone(520,.1,'square',.07); }, k*700));
+      later(() => { go = true; mid.innerHTML = '<b>¡TIRA!</b>'; tone(1040,.2,'square',.08); }, 2100);
+      ['a','b'].forEach(k => H[k].addEventListener('pointerdown', e => { e.preventDefault(); ac(); if(!go || over) return; pos += k === 'a' ? 1 : -1; upd(); tone(k === 'a' ? 500 : 400, .03, 'triangle', .05); if(pos >= LIM) end('a'); if(pos <= -LIM) end('b'); }));
+    } else {
+      const ch = {}; const N = ['PIEDRA','PAPEL','TIJERA'];
+      mid.innerHTML = '<b style="font-size:clamp(22px,7vw,32px)">Elegid a la vez</b>';
+      ['a','b'].forEach(k => {
+        const box = document.createElement('div'); box.className = 'rps';
+        box.innerHTML = N.map((n,j) => `<button data-r="${j}">${n}</button>`).join('');
+        H[k].appendChild(box); $('#s'+k).textContent = 'Tapa tu mano con la otra';
+        box.addEventListener('click', e => {
+          const btn = e.target.closest('[data-r]'); if(!btn || ch[k] !== undefined || over) return;
+          ch[k] = +btn.dataset.r; box.innerHTML = '<span style="color:var(--ink);font-weight:800">Elegido</span>'; blip();
+          if(ch.a !== undefined && ch.b !== undefined){
+            ['3','2','1'].forEach((n,q) => later(() => { mid.innerHTML = `<b>${n}</b>`; tone(520,.1,'square',.07); }, q*500));
+            later(() => {
+              H.a.querySelector('.rps').innerHTML = `<b>${N[ch.a]}</b>`; H.b.querySelector('.rps').innerHTML = `<b>${N[ch.b]}</b>`;
+              if(ch.a === ch.b){ mid.innerHTML = '<b>EMPATE</b>'; tone(400,.2,'triangle',.08); later(fight, 1400); }
+              else end(((ch.a - ch.b + 3) % 3) === 1 ? 'a' : 'b');
+            }, 1500);
+          }
+        });
+      });
+    }
+  };
+  setup();
+}
+
+/* ---------- voto secreto ---------- */
+function voto(stage){
+  if(S.players.length < 3) return needPlayers(stage, 3, () => voto(stage));
+  const P = S.players.slice(), d = Deck(pick([VOTEQ, VOTEQP])); let amanado = false;
+  const setup = () => {
+    stage.innerHTML = `<div class="rules pop"><p class="sub">Jugadores</p><div class="plist">${P.map(p => `<span class="chip">${esc(p)}</span>`).join('')}</div>
+      <button class="toggle ${amanado?'on':''}" data-a="am"><i></i><span>Voto amañado: uno es el manipulador</span></button>
+      <button class="btn" data-a="go">EMPEZAR</button></div>`;
+    stage.onclick = e => { const x = e.target.closest('[data-a]'); if(!x) return; blip(); if(x.dataset.a === 'am'){ amanado = !amanado; setup(); } else round(); };
+  };
+  const round = () => {
+    const q = d(); let manip = -1, target = null;
+    if(amanado){
+      manip = Math.random()*P.length|0; target = rnd(P.filter((_, k) => k !== manip));
+      passRound(stage, P, i => i === manip
+        ? cardHTML('TU PAPEL', 'ERES EL MANIPULADOR', `Consigue que <b>${esc(target)}</b> sea el más votado sin que se note.`, 'huge', false)
+        : cardHTML('TU PAPEL', 'VOTANTE NORMAL', 'Vota con el corazón y busca al manipulador.', 'huge', false), () => debate(q, manip, target));
+    } else debate(q, manip, target);
+  };
+  const debate = (q, manip, target) => {
+    stage.innerHTML = cardHTML('VOTO SECRETO', esc(q), 'Debatid un minuto. Después, cada uno vota en secreto.')
+      + `<div class="counters"><span>Quedan <b id="dt">60</b> s</span></div><div class="actions"><button class="btn" data-a="vote">A VOTAR</button></div>`;
+    let t = 60; const tick = () => { t--; const el = $('#dt'); if(el) el.textContent = Math.max(0,t); if(t > 0) later(tick, 1000); else tone(880,.3,'triangle',.1); }; later(tick, 1000);
+    stage.onclick = e => { if(e.target.closest('[data-a=vote]')){ blip(); clearT(); votes(q, manip, target); } };
+  };
+  const votes = (q, manip, target) => {
+    const cnt = {}; P.forEach(p => cnt[p] = 0); let i = 0;
+    const pass = () => {
+      stage.innerHTML = `<div class="turn pop"><small>Pásale el móvil a</small><h2>${esc(P[i])}</h2></div><p class="hint">Vota sin que nadie mire.</p><div class="actions"><button class="btn big" data-a="v">VOTAR</button></div>`;
+    };
+    stage.onclick = e => {
+      const x = e.target.closest('[data-a]'), c = e.target.closest('[data-c]');
+      if(x && x.dataset.a === 'v'){ blip(); stage.innerHTML = `<p class="sub">${esc(P[i])}, vota:</p><div class="card" style="min-height:0"><div class="ctext" style="font-size:22px">${esc(q)}</div></div><div class="vgrid">${P.filter(p => p !== P[i]).map(p => `<button data-c="${esc(p)}">${esc(p)}</button>`).join('')}</div>`; }
+      else if(c){ blip(); cnt[c.dataset.c]++; i++; if(i < P.length) pass(); else reveal(q, cnt, manip, target); }
+    };
+    pass();
+  };
+  const reveal = (q, cnt, manip, target) => {
+    stage.onclick = null;
+    const r = Object.entries(cnt).sort((x,y) => y[1]-x[1]);
+    const top = [r[1], r[0], r[2]];
+    const colors = ['#c0c7d0','#ffd166','#d99a5b'], hts = [110, 160, 80], pos = [2,1,3];
+    stage.innerHTML = `<p class="sub">${esc(q)}</p><div class="podium">${top.map((x, k) => x ? `<div class="step" data-s="${pos[k]}"><span class="nm">${esc(x[0])}</span><span class="vv">${x[1]} voto${x[1]===1?'':'s'}</span><div class="blk" style="height:${hts[k]}px;background:${colors[k]}">${pos[k]}</div></div>` : '<div></div>').join('')}</div><div id="after" style="width:100%;display:flex;flex-direction:column;gap:12px;align-items:center"></div>`;
+    for(let k=0;k<26;k++) later(() => tone(90 + Math.random()*30, .05, 'triangle', .12), k*70);
+    [3,2,1].forEach((s, k) => later(() => { const el = stage.querySelector(`[data-s="${s}"]`); if(el) el.classList.add('show'); tone(s === 1 ? 880 : 500, s === 1 ? .5 : .15, 'triangle', .1); if(s === 1){ buzz(200); say(`El más votado es ${r[0][0]}, con ${r[0][1]} votos. Bebe un trago por voto.`); } }, 1900 + k*900));
+    later(() => {
+      const af = $('#after');
+      af.innerHTML = `<p class="hint" style="font-size:18px"><b>${esc(r[0][0])}</b> bebe ${r[0][1]} trago${r[0][1]===1?'':'s'}.</p>`
+        + (manip >= 0 ? `<button class="btn ghost" data-a="who" style="width:100%">¿QUIÉN ERA EL MANIPULADOR?</button>` : '')
+        + `<div class="actions"><button class="btn" data-a="next">OTRA PREGUNTA</button></div>`;
+      stage.onclick = e => { const x = e.target.closest('[data-a]'); if(!x) return; blip();
+        if(x.dataset.a === 'next') round();
+        else if(x.dataset.a === 'who'){
+          const ok = r[0][0] === target;
+          x.outerHTML = `<div class="card pop" style="min-height:0"><div class="clabel">EL MANIPULADOR ERA</div><div class="ctext huge">${esc(P[manip])}</div><div class="cfoot">Tenía que hacer ganar a <b>${esc(target)}</b>. ${ok ? 'Lo ha conseguido: si le habíais pillado bebe 3; si no, reparte 3.' : 'Ha fracasado: bebe 2.'}</div></div>`;
+          say(`El manipulador era ${P[manip]}.`);
+        } };
+    }, 4800);
+  };
+  setup();
+}
+
+/* ---------- la llamada ---------- */
+function llamada(stage){
+  let who = '', caller = 'azar', when = 'ya';
+  const setup = () => {
+    stage.innerHTML = `<div class="rules pop" style="gap:14px">
+      <p class="sub">¿Para quién es la llamada?</p>
+      ${S.players.length ? chipsHTML([['','Al azar'], ...S.players.map(p => [p,p])], who, 'p') : '<p class="muted">Para quien tenga el móvil.</p>'}
+      <p class="sub">¿Quién llama?</p>
+      ${chipsHTML([['azar','Sorpresa'], ...CALLERS.map((c,k) => [String(k), c.who])], caller, 'c')}
+      <p class="sub">¿Cuándo?</p>
+      ${chipsHTML([['ya','Ahora'],['sorpresa','Cuando menos lo espere (1-4 min)']], when, 'w')}
+      <button class="btn" data-a="go">PROGRAMAR LLAMADA</button></div>`;
+    stage.onclick = e => {
+      const p = e.target.closest('[data-p]'), c = e.target.closest('[data-c]'), w = e.target.closest('[data-w]');
+      if(p){ who = p.dataset.p; blip(); return setup(); } if(c){ caller = c.dataset.c; blip(); return setup(); } if(w){ when = w.dataset.w; blip(); return setup(); }
+      if(e.target.closest('[data-a=go]')){ ac(); say(' ', {force:true}); wait(); }
+    };
+  };
+  const wait = () => {
+    const target = who || (S.players.length ? rnd(S.players) : '');
+    const C = caller === 'azar' ? rnd(CALLERS) : CALLERS[+caller];
+    if(when === 'ya'){ later(() => ring(target, C), 1500); stage.innerHTML = '<div class="bigword" style="font-size:clamp(40px,12vw,60px)">Atentos…</div>'; stage.onclick = null; return; }
+    wake(true); S.cleanup.push(() => wake(false));
+    later(() => ring(target, C), 60000 + Math.random()*180000);
+    stage.innerHTML = `<div class="card pop"><div class="clabel">LLAMADA PROGRAMADA</div><div class="ctext">Llegará cuando menos lo espere.</div><div class="cfoot">Deja esta pantalla abierta y el móvil en la mesa. Seguid a lo vuestro.</div></div><div class="actions"><button class="btn ghost" data-a="x">CANCELAR</button></div>`;
+    stage.onclick = e => { if(e.target.closest('[data-a=x]')){ blip(); clearT(); setup(); } };
+  };
+  const PH = '<svg viewBox="0 0 24 24" fill="#fff"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg>';
+  const ring = (target, C) => {
+    const ov = document.createElement('div'); ov.className = 'call ringing';
+    ov.innerHTML = `<div class="who"><p>${target ? '¡' + esc(target) + ', es para ti!' : 'Llamada entrante'}</p><div class="av">${C.init}</div><h2>${esc(C.who)}</h2><p>móvil</p></div>
+      <div class="btns"><button class="cb no" data-k="no"><i style="transform:rotate(135deg)">${PH}</i>Rechazar</button><button class="cb ok" data-k="ok"><i>${PH}</i>Aceptar</button></div>`;
+    document.body.appendChild(ov);
+    S.cleanup.push(() => ov.remove());
+    let ringing = true;
+    const rt = () => { if(!ringing) return; [0,160,320,480].forEach((t,k) => later(() => ringing && tone(k%2 ? 1320 : 1560, .14, 'sine', .12), t)); buzz([600,300,600]); later(rt, 2600); };
+    rt();
+    ov.addEventListener('click', e => {
+      const k = e.target.closest('[data-k]'); if(!k) return; ringing = false;
+      if(k.dataset.k === 'no'){ ov.remove(); tone(300,.3,'sine',.1); result(target, C, 0, true); }
+      else talk(ov, target, C);
+    });
+  };
+  const talk = (ov, target, C) => {
+    ov.className = 'call';
+    const t0 = Date.now(); let k = 0, done = false;
+    ov.innerHTML = `<div class="who"><h2>${esc(C.who)}</h2><p id="ctime">00:00</p></div><div class="line" id="cline">…</div>
+      <div class="btns"><button class="cb no" data-k="hang"><i style="transform:rotate(135deg)">${PH}</i>Colgar</button></div>`;
+    const clock = () => { if(done) return; const s = Math.floor((Date.now()-t0)/1000); const el = $('#ctime', ov); if(el) el.textContent = String(s/60|0).padStart(2,'0') + ':' + String(s%60).padStart(2,'0'); later(clock, 1000); }; clock();
+    const finish = () => { if(done) return; done = true; hush(); const secs = Math.floor((Date.now()-t0)/1000); ov.remove(); tone(420,.2,'sine',.1); later(() => tone(420,.2,'sine',.1), 300); result(target, C, secs, false); };
+    const next = () => {
+      if(done) return;
+      if(k >= C.lines.length) return later(finish, 1500);
+      const line = C.lines[k++]; const el = $('#cline', ov); if(el) el.textContent = '«' + line + '»';
+      const u = say(line, {force:true, rate:C.rate, pitch:C.pitch, end: () => { if(!done){ const el2 = $('#cline', ov); later(() => { if(!done && el2) el2.innerHTML += '<br><small style="color:#c9d3dd">Contesta…</small>'; }, 50); later(next, 6500); } }});
+      if(!u) later(next, 8000);
+    };
+    later(next, 800);
+    ov.addEventListener('click', e => { if(e.target.closest('[data-k=hang]')) finish(); });
+  };
+  const result = (target, C, secs, rejected) => {
+    stage.innerHTML = rejected
+      ? cardHTML('LLAMADA RECHAZADA', `${target ? esc(target) + ' ha' : 'Has'} colgado a ${esc(C.who.toLowerCase())}.`, '<b>3 tragos</b> por cobarde.')
+      : cardHTML('LLAMADA TERMINADA', `${esc(C.who)} · ${String(secs/60|0)}:${String(secs%60).padStart(2,'0')}`, '¿Se ha reído, se ha trabado o no ha colado? La mesa decide: <b>2 tragos</b>.');
+    stage.innerHTML += `<div class="actions"><button class="btn" data-a="again">OTRA LLAMADA</button></div>`;
+    stage.onclick = e => { if(e.target.closest('[data-a=again]')){ blip(); setup(); } };
+  };
+  setup();
+}
+
+/* ---------- el confesionario ---------- */
+function confesionario(stage){
+  setupPass(stage, 'Jugadores', '', names => {
+    const secrets = []; let i = 0;
+    const pass = () => {
+      stage.innerHTML = `<div class="turn pop"><small>Pásale el móvil a</small><h2>${esc(names[i])}</h2></div><p class="hint">Escribe un secreto. Nadie sabrá que es tuyo… hasta que lo adivinen.</p><div class="actions"><button class="btn big" data-a="w">ESCRIBIR</button></div>`;
+    };
+    const write = () => {
+      stage.innerHTML = `<p class="sub">Secreto de ${esc(names[i])}</p><textarea class="conf" id="cf" maxlength="220" placeholder="Idea: ${esc(rnd(CONFP))}"></textarea>
+        <p class="hint">Escríbelo como si lo contara otro: «Una vez me…».</p>
+        <div class="actions"><button class="btn ghost" data-a="skip">PASAR</button><button class="btn" data-a="save">GUARDAR Y PASAR</button></div>`;
+      setTimeout(() => { const t = $('#cf'); t && t.focus(); }, 60);
+    };
+    const advance = () => { i++; if(i < names.length) pass(); else read(shuffle(secrets), 0); };
+    stage.onclick = e => {
+      const x = e.target.closest('[data-a]'); if(!x) return; blip();
+      if(x.dataset.a === 'w') write();
+      else if(x.dataset.a === 'save'){ const v = $('#cf').value.trim(); if(v) secrets.push({t:v, who:names[i]}); advance(); }
+      else if(x.dataset.a === 'skip') advance();
+    };
+    pass();
+  });
+  const read = (list, k) => {
+    if(!list.length){ stage.innerHTML = cardHTML('SIN CONFESIONES', 'Nadie ha escrito nada.', 'Cobardes. Bebéis todos.') + `<div class="actions"><button class="btn" data-a="re">OTRA RONDA</button></div>`; stage.onclick = e => { if(e.target.closest('[data-a=re]')) confesionario(stage); }; return; }
+    if(k >= list.length){ stage.innerHTML = cardHTML('FIN', 'Se acabaron las confesiones.', 'Lo que se dice en el confesionario, se queda en el confesionario.') + `<div class="actions"><button class="btn" data-a="re">OTRA RONDA</button></div>`; stage.onclick = e => { if(e.target.closest('[data-a=re]')){ blip(); confesionario(stage); } }; return; }
+    const c = list[k];
+    say('Confesión número ' + (k+1) + '. ' + c.t, {force:true});
+    stage.innerHTML = cardHTML(`CONFESIÓN ${k+1} DE ${list.length}`, '«' + esc(c.t) + '»', '¿De quién es? Debatid y, a la de tres, todos señalan.', '', false).replace('<div class="card pop">', `<div class="card pop"><button class="speak" data-say aria-label="Leer en voz alta">${SPK}</button>`)
+      + `<div class="actions"><button class="btn" data-a="rev">DESTAPAR AUTOR</button></div>`;
+    stage.onclick = e => {
+      const x = e.target.closest('[data-a]'); if(!x) return; blip();
+      if(x.dataset.a === 'rev'){
+        tone(300,.15,'sawtooth',.06); later(() => tone(220,.3,'sawtooth',.06), 160);
+        say('Lo escribió ' + c.who, {force:true});
+        x.parentElement.outerHTML = `<div class="turn pop"><small>Lo escribió</small><h2>${esc(c.who)}</h2></div><p class="hint">¿Acertasteis? <b>Bebe 2</b>. ¿No? <b>Reparte 3</b>.</p><div class="actions"><button class="btn" data-a="nx">SIGUIENTE</button></div>`;
+      } else if(x.dataset.a === 'nx') read(list, k+1);
+    };
+  };
+}
+
+/* ---------- quiz de fútbol ---------- */
+function quiz(stage){
+  const LV = {facil:['FÁCIL','Para todo el mundo','#3ee08f',1,2,20], dificil:['DIFÍCIL','Para los que ven fútbol cada semana','#ffb547',2,1,20], extremo:['EXTREMO','Historia pura. Solo para enfermos del fútbol','#ff3d6e',3,1,25]};
+  const menu = () => {
+    stage.innerHTML = `<div class="rules pop"><p class="sub">Elige el nivel</p><div class="lvls">${Object.entries(LV).map(([k,v]) => `<button data-l="${k}"><b>${v[0]}</b><span>${v[1]} · aciertas: repartes ${v[3]} · fallas: bebes ${v[4]}</span><em style="background:${v[2]}">${v[0]}</em></button>`).join('')}</div></div>`;
+    stage.onclick = e => { const l = e.target.closest('[data-l]'); if(l){ blip(); play(l.dataset.l); } };
+  };
+  const play = lv => {
+    const [nm, , col, give, drink, secs] = LV[lv];
+    const qs = shuffle(QUIZ[lv]).slice(0, 10), order = S.players.length ? shuffle(S.players) : [null], score = {};
+    let n = 0;
+    const ask = () => {
+      if(n >= qs.length) return end();
+      const [q, ok, ...bad] = qs[n], w = order[n % order.length], opts = shuffle([ok, ...bad]);
+      let answered = false;
+      stage.innerHTML = `<div class="counters"><span>${nm}</span><span>Pregunta <b>${n+1}/${qs.length}</b></span>${w ? `<span>Le toca a <b>${esc(w)}</b></span>` : ''}</div>`
+        + cardHTML('QUIZ DE FÚTBOL', esc(q), '') .replace('min-height:290px','')
+        + `<div style="width:100%;height:6px;background:var(--line);border-radius:6px;overflow:hidden"><div id="qt" style="height:100%;width:100%;background:${col}"></div></div>
+        <div class="opts">${opts.map(o => `<button data-o="${esc(o)}">${esc(o)}</button>`).join('')}</div><div class="msg" id="qm"></div>`;
+      const T0 = performance.now();
+      frame(() => { if(answered) return false; const r = (performance.now()-T0)/(secs*1000); const bar = $('#qt'); if(bar) bar.style.width = Math.max(0,100-r*100)+'%'; if(r >= 1){ judge(null); return false; } });
+      const judge = pickd => {
+        if(answered) return; answered = true;
+        stage.querySelectorAll('[data-o]').forEach(b => { if(b.dataset.o === ok) b.classList.add('ok'); else if(b.dataset.o === pickd) b.classList.add('ko'); b.disabled = true; });
+        const right = pickd === ok, who = w ? esc(w) : 'Tú';
+        if(right){ score[w || 'Tú'] = (score[w || 'Tú']||0) + 1; tone(880,.15,'triangle',.1); later(() => tone(1320,.2,'triangle',.1), 120); }
+        else { tone(160,.4,'sawtooth',.08); buzz(200); }
+        const msg = right ? `¡Correcto! ${who} reparte ${give}.` : (pickd === null ? `Tiempo. ${who} bebe ${drink}.` : `Fallo. Era «${esc(ok)}». ${who} bebe ${drink}.`);
+        $('#qm').className = 'msg ' + (right ? 'good' : 'bad'); $('#qm').innerHTML = msg; say(plain(msg));
+        const nx = document.createElement('div'); nx.className = 'actions'; nx.innerHTML = `<button class="btn" data-a="nx">${n+1 < qs.length ? 'SIGUIENTE' : 'VER RESULTADO'}</button>`; stage.appendChild(nx);
+      };
+      stage.onclick = e => { const o = e.target.closest('[data-o]'); if(o && !answered){ judge(o.dataset.o); return; } if(e.target.closest('[data-a=nx]')){ blip(); n++; ask(); } };
+    };
+    const end = () => {
+      const r = Object.entries(score).sort((a,b) => b[1]-a[1]);
+      stage.innerHTML = `<div class="turn pop"><small>Nivel ${nm}</small><h2>RESULTADO</h2></div>
+        <div class="rank">${r.length ? r.map(([k,v],i) => `<div><i>${i+1}</i><span>${esc(k)}</span><em>${v}</em></div>`).join('') : '<p class="muted">Nadie ha acertado ni una. Bebéis todos.</p>'}</div>
+        <div class="actions"><button class="btn" data-a="re">OTRA PARTIDA</button><button class="btn ghost" data-a="lv">NIVEL</button></div>`;
+      stage.onclick = e => { const x = e.target.closest('[data-a]'); if(!x) return; blip(); x.dataset.a === 're' ? play(lv) : menu(); };
+    };
+    ask();
+  };
+  menu();
+}
+
+/* ---------- ¿qué canción es? ---------- */
+const AUD = new Audio(); AUD.preload = 'auto';
+function jsonp(url, ms=9000){
+  return new Promise((res, rej) => {
+    const cb = 'lp_cb_' + Math.random().toString(36).slice(2);
+    const sc = document.createElement('script');
+    const t = setTimeout(() => { cleanup(); rej(new Error('timeout')); }, ms);
+    function cleanup(){ clearTimeout(t); try{ delete window[cb]; }catch(e){ window[cb] = undefined; } sc.remove(); }
+    window[cb] = d => { cleanup(); res(d); };
+    sc.onerror = () => { cleanup(); rej(new Error('red')); };
+    sc.src = url + (url.includes('?') ? '&' : '?') + 'callback=' + cb;
+    document.head.appendChild(sc);
+  });
+}
+async function findSong(term){
+  const d = await jsonp('https://itunes.apple.com/search?country=ES&entity=song&limit=3&term=' + encodeURIComponent(term));
+  const r = (d.results || []).find(x => x.previewUrl);
+  if(!r) throw new Error('sin resultado');
+  return {url:r.previewUrl, title:r.trackName, artist:r.artistName, art:(r.artworkUrl100||'').replace('100x100','300x300')};
+}
+function cancion(stage){
+  let cat = load('lp_scat', 'todas'), len = load('lp_slen', 2), auto = false, every = load('lp_sev', 120), cur = null, nextP = null, revealed = false, playing = false, extra = 0, autoAt = 0;
+  const pool = () => cat === 'todas' ? [...SONGS.reggaeton, ...SONGS.espanol, ...SONGS.internacional] : SONGS[cat];
+  let deck = Deck(pool());
+  const fetchNext = () => { const term = deck(); return findSong(term).catch(() => findSong(deck())); };
+  const ensure = async () => { if(cur) return cur; if(!nextP) nextP = fetchNext(); cur = await nextP; nextP = fetchNext(); return cur; };
+  const draw = () => {
+    stage.innerHTML = `
+      ${chipsHTML([['todas','Todas'],['reggaeton','Reguetón y latino'],['espanol','Español'],['internacional','Internacional']], cat, 'cat')}
+      <button class="disc" id="disc" aria-label="Reproducir">${revealed && cur && cur.art ? `<img src="${esc(cur.art)}" alt="">` : ''}</button>
+      <div class="msg" id="smsg">${revealed ? '' : 'Toca el disco'}</div>
+      <div id="rev" style="width:100%"></div>
+      <div class="actions"><button class="btn ghost" data-a="rep">OTRA VEZ</button><button class="btn ghost" data-a="more">+1 SEG</button><button class="btn" data-a="rev">${revealed ? 'SIGUIENTE' : 'REVELAR'}</button></div>
+      <p class="sub" style="align-self:center">Duración del trozo</p>
+      ${chipsHTML([['1','1 segundo'],['2','2 segundos'],['5','5 segundos']], String(len), 'len')}
+      <div class="auto">
+        <button class="toggle ${auto?'on':''}" data-a="auto"><i></i><span><b>Modo automático:</b> suena sola mientras hacéis la previa</span></button>
+        ${chipsHTML([['30','Cada 30 s'],['60','Cada minuto'],['120','Cada 2 min'],['300','Cada 5 min']], String(every), 'ev')}
+        <div class="cd" id="cd">${auto ? '' : 'Apagado'}</div>
+      </div>`;
+    if(revealed && cur) showRev();
+  };
+  const showRev = () => { const r = $('#rev'); if(r && cur) r.innerHTML = `<div class="song pop">${cur.art ? `<img src="${esc(cur.art)}" alt="">` : ''}<div><b>${esc(cur.title)}</b><span>${esc(cur.artist)}</span></div></div><p class="hint" style="margin-top:10px">Quien la haya dicho primero <b>reparte 2</b>. Si nadie: <b>bebéis todos</b>.</p>`; };
+  let stopT = null;
+  const stopAudio = () => { if(stopT){ clearTimeout(stopT); stopT = null; } try{ AUD.pause(); }catch(e){} playing = false; const d = $('#disc'); d && d.classList.remove('spin'); };
+  S.cleanup.push(stopAudio);
+  const play = async secs => {
+    const m = $('#smsg');
+    try{
+      if(!cur){ m && (m.textContent = 'Cargando…'); }
+      const s = await ensure();
+      if(AUD.src !== s.url){ AUD.src = s.url; }
+      stopAudio();
+      AUD.currentTime = 0;
+      const d = $('#disc'); d && d.classList.add('spin'); playing = true;
+      m && (m.textContent = '¿Qué canción es?');
+      const onPlay = () => { AUD.removeEventListener('playing', onPlay); stopT = setTimeout(stopAudio, secs*1000); };
+      AUD.addEventListener('playing', onPlay);
+      await AUD.play();
+    }catch(e){
+      stopAudio();
+      m && (m.innerHTML = '<span style="color:var(--pink)">No se ha podido cargar la canción.</span><br><span style="font-size:15px;color:var(--mute);font-family:var(--body)">Hace falta internet. En la página de Claude no funciona: ábrela desde el icono del móvil.</span>');
+      cur = null; nextP = null;
+    }
+  };
+  const scheduleAuto = () => {
+    if(!auto) return;
+    autoAt = Date.now() + every*1000;
+    const tick = () => {
+      if(!auto) return;
+      const left = Math.max(0, Math.round((autoAt - Date.now())/1000));
+      const cd = $('#cd'); if(cd) cd.textContent = `Próxima en ${left/60|0}:${String(left%60).padStart(2,'0')}`;
+      if(left <= 0){ fire(); return; }
+      later(tick, 1000);
+    };
+    tick();
+  };
+  const fire = () => {
+    if(revealed){ revealed = false; cur = null; extra = 0; draw(); }
+    const al = document.createElement('div'); al.className = 'alarm'; document.body.appendChild(al); setTimeout(() => al.remove(), 1400);
+    buzz([300,100,300,100,300]);
+    for(let k=0;k<6;k++) later(() => tone(k%2 ? 700 : 1000, .12, 'square', .1), k*150);
+    const cd = $('#cd'); if(cd) cd.textContent = '¡CANCIÓN!';
+    say('¡Atención! ¿Qué canción es?', {force:true});
+    later(() => play(len), 1400);
+  };
+  stage.onclick = e => {
+    const c = e.target.closest('[data-cat]'), l = e.target.closest('[data-len]'), v = e.target.closest('[data-ev]'), a = e.target.closest('[data-a]');
+    if(c){ blip(); cat = c.dataset.cat; store('lp_scat', cat); deck = Deck(pool()); cur = null; nextP = null; revealed = false; stopAudio(); draw(); return; }
+    if(l){ blip(); len = +l.dataset.len; store('lp_slen', len); stage.querySelectorAll('[data-len]').forEach(b => b.classList.toggle('on', b === l)); return; }
+    if(v){ blip(); every = +v.dataset.ev; store('lp_sev', every); stage.querySelectorAll('[data-ev]').forEach(b => b.classList.toggle('on', b === v)); if(auto){ scheduleAuto(); } return; }
+    if(e.target.closest('#disc')){ ac(); extra = 0; play(len); return; }
+    if(!a) return;
+    if(a.dataset.a === 'rep'){ extra = 0; play(len); }
+    else if(a.dataset.a === 'more'){ extra++; play(len + extra); }
+    else if(a.dataset.a === 'rev'){
+      if(!revealed){ if(!cur) return; revealed = true; stopAudio(); tone(880,.2,'triangle',.1); showRev(); a.textContent = 'SIGUIENTE'; const d = $('#disc'); if(d && cur.art) d.innerHTML = `<img src="${esc(cur.art)}" alt="">`; const m = $('#smsg'); if(m) m.textContent = ''; say(`Era ${cur.title}, de ${cur.artist}.`); if(auto) scheduleAuto(); }
+      else { revealed = false; cur = null; extra = 0; stopAudio(); draw(); ensure().catch(() => {}); if(auto) scheduleAuto(); }
+    }
+    else if(a.dataset.a === 'auto'){
+      auto = !auto; a.classList.toggle('on', auto);
+      if(auto){ ac(); try{ AUD.muted = true; AUD.play().catch(() => {}).finally(() => { AUD.pause(); AUD.muted = false; }); }catch(_){} wake(true); ensure().catch(() => {}); scheduleAuto(); }
+      else { wake(false); const cd = $('#cd'); if(cd) cd.textContent = 'Apagado'; }
+    }
+  };
+  S.cleanup.push(() => { auto = false; wake(false); });
+  draw();
+  ensure().catch(() => {});
 }
 
 /* ---------- arranque ---------- */
