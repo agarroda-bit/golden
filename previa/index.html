@@ -697,7 +697,7 @@ const G = [
   rules:['Deja el móvil plano entre los dos duelistas. Cada uno tiene su mitad.','Tres modos: Desenfunda (cuidado con las palabras trampa), Tira y afloja y Piedra, papel o tijera.','El que pierde, bebe 2.','En modo Torneo, el que gana se queda y entra el siguiente.'],
   start: s => duelo(s)},
  {id:'voto', nuevo:true, name:'VOTO SECRETO', ds:'Votáis en secreto quién es el peor. Podio con redoble.', kind:'Votación · 3+', c:'#b98cff',
-  rules:['Sale una pregunta: «¿Quién de aquí…?».','El móvil pasa y cada uno vota en secreto.','Podio con redoble de tambor. El más votado bebe un trago por voto.','Con «voto amañado», uno es el manipulador y tiene que conseguir que gane alguien concreto sin que se note.'],
+  rules:['Sale una pregunta al azar, o escribís la vuestra: «¿Quién de aquí…?».','El móvil pasa y cada uno vota en secreto. Puedes votarte a ti mismo.','Podio con redoble de tambor. El más votado bebe un trago por voto.','Con «voto amañado», uno es el manipulador y tiene que conseguir que gane alguien concreto sin que se note.'],
   start: s => voto(s)},
  {id:'llamada', nuevo:true, name:'LA LLAMADA', ds:'Te llama tu ex, tu madre o Hacienda. Aguanta sin reírte.', kind:'Por turnos · 2+', c:'#4fc3ff',
   rules:['El móvil recibe una llamada falsa: tu ex, tu madre, tu jefe, Hacienda…','Contestas con el altavoz y una voz te hace preguntas.','Responde metido en el papel. Si te ríes o te trabas, bebes 2.','Si cuelgas sin contestar, bebes 3.'],
@@ -1635,7 +1635,19 @@ function voto(stage){
     stage.onclick = e => { const x = e.target.closest('[data-a]'); if(!x) return; blip(); if(x.dataset.a === 'am'){ amanado = !amanado; setup(); } else round(); };
   };
   const round = () => {
-    const q = d(); let manip = -1, target = null;
+    let q = d();
+    const draw = () => {
+      stage.innerHTML = cardHTML('PREGUNTA AL AZAR', esc(q), 'Usadla, pedid otra o escribid la vuestra abajo.')
+        + `<div class="actions"><button class="btn ghost" data-a="rnd">OTRA AL AZAR</button><button class="btn" data-a="use">USAR ESTA</button></div>
+        <p class="sub" style="margin-top:6px">O escribid vuestra pregunta</p>
+        <form class="addrow" id="qf" style="width:100%"><input id="qi" maxlength="120" placeholder="¿Quién de aquí…?" autocomplete="off"><button class="btn" type="submit">USAR</button></form>`;
+      $('#qf').onsubmit = e => { e.preventDefault(); let v = $('#qi').value.trim(); if(!v){ $('#qi').focus(); return; } if(!/\?$/.test(v)) v += '?'; if(!/^¿/.test(v)) v = '¿' + v; v = '¿' + v.charAt(1).toUpperCase() + v.slice(2); blip(); start(v); };
+    };
+    stage.onclick = e => { const x = e.target.closest('[data-a]'); if(!x) return; blip(); if(x.dataset.a === 'rnd'){ q = d(); draw(); } else if(x.dataset.a === 'use') start(q); };
+    draw();
+  };
+  const start = q => {
+    let manip = -1, target = null;
     if(amanado){
       manip = Math.random()*P.length|0; target = rnd(P.filter((_, k) => k !== manip));
       passRound(stage, P, i => i === manip
@@ -1656,7 +1668,7 @@ function voto(stage){
     };
     stage.onclick = e => {
       const x = e.target.closest('[data-a]'), c = e.target.closest('[data-c]');
-      if(x && x.dataset.a === 'v'){ blip(); stage.innerHTML = `<p class="sub">${esc(P[i])}, vota:</p><div class="card" style="min-height:0"><div class="ctext" style="font-size:22px">${esc(q)}</div></div><div class="vgrid">${P.filter(p => p !== P[i]).map(p => `<button data-c="${esc(p)}">${esc(p)}</button>`).join('')}</div>`; }
+      if(x && x.dataset.a === 'v'){ blip(); stage.innerHTML = `<p class="sub">${esc(P[i])}, vota:</p><div class="card" style="min-height:0"><div class="ctext" style="font-size:22px">${esc(q)}</div></div><div class="vgrid">${P.map(p => `<button data-c="${esc(p)}">${esc(p)}${p === P[i] ? ' <span style="color:var(--mute);font-weight:600">(tú)</span>' : ''}</button>`).join('')}</div>`; }
       else if(c){ blip(); cnt[c.dataset.c]++; i++; if(i < P.length) pass(); else reveal(q, cnt, manip, target); }
     };
     pass();
@@ -1671,7 +1683,8 @@ function voto(stage){
     [3,2,1].forEach((s, k) => later(() => { const el = stage.querySelector(`[data-s="${s}"]`); if(el) el.classList.add('show'); tone(s === 1 ? 880 : 500, s === 1 ? .5 : .15, 'triangle', .1); if(s === 1){ buzz(200); say(`El más votado es ${r[0][0]}, con ${r[0][1]} votos. Bebe un trago por voto.`); } }, 1900 + k*900));
     later(() => {
       const af = $('#after');
-      af.innerHTML = `<p class="hint" style="font-size:18px"><b>${esc(r[0][0])}</b> bebe ${r[0][1]} trago${r[0][1]===1?'':'s'}.</p>`
+      const tied = r.filter(x => x[1] === r[0][1]);
+      af.innerHTML = (tied.length > 1 ? `<p class="hint" style="font-size:18px">Empate a ${r[0][1]}: <b>${tied.map(x => esc(x[0])).join(', ')}</b> beben ${r[0][1]} trago${r[0][1]===1?'':'s'} cada uno.</p>` : `<p class="hint" style="font-size:18px"><b>${esc(r[0][0])}</b> bebe ${r[0][1]} trago${r[0][1]===1?'':'s'}.</p>`)
         + (manip >= 0 ? `<button class="btn ghost" data-a="who" style="width:100%">¿QUIÉN ERA EL MANIPULADOR?</button>` : '')
         + `<div class="actions"><button class="btn" data-a="next">OTRA PREGUNTA</button></div>`;
       stage.onclick = e => { const x = e.target.closest('[data-a]'); if(!x) return; blip();
