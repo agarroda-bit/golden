@@ -1,0 +1,13 @@
+{
+  "name": "La Previa",
+  "short_name": "La Previa",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#170a12",
+  "theme_color": "#170a12",
+  "icons": [
+    {"src": "icono_192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "icono_512.png", "sizes": "512x512", "type": "image/png"}
+  ]
+}
