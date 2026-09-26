@@ -1,0 +1,1148 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="La Previa">
+<meta name="application-name" content="La Previa">
+<meta name="theme-color" content="#170a12">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icono_180.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
+<style>
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<title>La Previa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap">
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#170a12; --bg2:#210e1a; --card:#2b1422; --line:#4a2a3c;
+  --ink:#fbeee4; --mute:#c2a3b3; --dim:#8a6c7c;
+  --amber:#ffb547; --pink:#ff4f7b; --dark:#1a0a12;
+  --c:#ffb547;
+  --disp:'Bowlby One', 'Arial Black', Impact, sans-serif;
+  --body:'Bricolage Grotesque', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+html,body{height:100%}
+body{
+  background:var(--bg); color:var(--ink); font-family:var(--body); font-size:16px;
+  background-image:
+    radial-gradient(60rem 40rem at 110% -10%, rgba(255,79,123,.16), transparent 60%),
+    radial-gradient(50rem 36rem at -20% 110%, rgba(255,181,71,.12), transparent 60%);
+  background-attachment:fixed;
+  -webkit-tap-highlight-color:transparent;
+}
+*{box-sizing:border-box}
+button{font:inherit; color:inherit; cursor:pointer; -webkit-user-select:none; user-select:none}
+button:focus-visible,input:focus-visible{outline:3px solid var(--amber); outline-offset:3px}
+#app{max-width:980px; margin:0 auto; padding-inline:16px; min-height:100%}
+
+/* ---------- GATE ---------- */
+.gate{min-height:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)); display:flex; flex-direction:column; justify-content:center; gap:28px; padding-block:40px; max-width:520px; margin:0 auto}
+.gate p{color:var(--mute); font-size:17px; line-height:1.5; margin:0; max-width:40ch}
+.gate .btn{max-width:360px}
+
+/* ---------- LOGO ---------- */
+.logo{display:flex; flex-direction:column; line-height:.82; margin:0}
+.logo .la{font-family:var(--disp); font-size:22px; letter-spacing:.3em; color:var(--pink); margin-left:4px}
+.logo .pv{
+  font-family:var(--disp); font-size:clamp(64px,19vw,132px); letter-spacing:-.01em;
+  color:transparent; -webkit-text-stroke:2px var(--amber);
+  background:linear-gradient(to top, var(--amber) 0 46%, #ffd98f 46% 52%, transparent 52%);
+  background-size:100% 200%; background-position:0 0%;
+  -webkit-background-clip:text; background-clip:text;
+  animation:fill 2.2s cubic-bezier(.3,.7,.2,1) .2s both;
+}
+@keyframes fill{from{background-position:0 0%} to{background-position:0 100%}}
+.logo.sm .pv{font-size:clamp(54px,14vw,96px)}
+
+/* ---------- HOME ---------- */
+.home{display:flex; flex-direction:column; gap:22px; padding-block:28px 40px}
+.hero{display:flex; flex-direction:column; gap:12px}
+.tag{margin:0; color:var(--mute); font-size:17px}
+.tag b{color:var(--ink)}
+.bar{display:flex; flex-wrap:wrap; gap:12px; align-items:stretch}
+.players{flex:1 1 260px; display:flex; flex-wrap:wrap; gap:6px; align-items:center; text-align:left; background:var(--bg2); border:1px solid var(--line); border-radius:16px; padding:10px 12px; min-height:52px}
+.players .lbl{font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--dim); margin-right:4px}
+.chip{background:var(--card); border:1px solid var(--line); color:var(--ink); border-radius:999px; padding:4px 11px; font-size:14px; font-weight:600}
+.chip.add{background:transparent; border-style:dashed; color:var(--amber); border-color:var(--amber)}
+.seg{display:flex; background:var(--bg2); border:1px solid var(--line); border-radius:16px; padding:4px; flex:0 0 auto}
+.seg button{border:0; background:transparent; color:var(--mute); padding:10px 18px; border-radius:12px; font-weight:800; font-size:15px}
+.seg button.on[data-mode=suave]{background:var(--amber); color:var(--dark)}
+.seg button.on[data-mode=picante]{background:var(--pink); color:var(--dark)}
+
+.feature{--c:#ff3d6e; display:grid; grid-template-columns:1fr auto; gap:6px 16px; align-items:center; text-align:left; border:1px solid color-mix(in srgb,var(--c) 50%,transparent); border-radius:22px; padding:20px; color:var(--ink);
+  background:linear-gradient(120deg, color-mix(in srgb,var(--c) 34%,var(--card)), var(--card) 70%); position:relative; overflow:hidden}
+.feature .new{grid-column:1/-1; font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--dark); background:var(--amber); padding:3px 8px; border-radius:6px; justify-self:start; font-weight:800}
+.feature .nm{font-family:var(--disp); font-size:clamp(28px,7vw,40px); line-height:1}
+.feature .ds{grid-column:1; color:var(--mute); font-size:15px; max-width:44ch}
+.feature svg{grid-row:2/4; grid-column:2; width:92px; height:60px}
+
+.grid{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px}
+@media (min-width:640px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (min-width:900px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.tile{display:flex; flex-direction:column; gap:7px; text-align:left; min-height:168px; padding:15px; border-radius:18px; color:var(--ink);
+  background:linear-gradient(165deg, color-mix(in srgb,var(--c) 20%,var(--card)), var(--card) 75%);
+  border:1px solid color-mix(in srgb,var(--c) 32%,transparent); transition:transform .15s}
+.tile:active{transform:scale(.97)}
+.ico{width:42px; height:42px; border-radius:13px; background:var(--c); color:var(--dark); display:grid; place-items:center; flex:0 0 auto}
+.ico svg{width:24px; height:24px}
+.tile .nm{font-family:var(--disp); font-size:19px; line-height:1.02; margin-top:4px}
+.tile .ds{color:var(--mute); font-size:13.5px; line-height:1.35}
+.tile .kind{margin-top:auto; font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--c); font-weight:800}
+.safe{color:var(--dim); font-size:13px; line-height:1.5; text-align:center; padding-top:8px}
+.safe b{color:var(--mute)}
+
+/* ---------- GAME SHELL ---------- */
+.game{display:flex; flex-direction:column; min-height:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px)); padding-block:10px 22px; position:relative}
+.gbar{display:flex; align-items:center; gap:12px; padding-block:6px}
+.gbar .gt{flex:1; font-family:var(--disp); font-size:20px; color:var(--c); text-align:center; line-height:1}
+.round{width:44px; height:44px; border-radius:14px; border:1px solid var(--line); background:var(--bg2); color:var(--ink); display:grid; place-items:center; font-size:20px; font-weight:800; flex:0 0 auto}
+.stage{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px; padding-block:14px; width:100%; max-width:480px; margin:0 auto; position:relative}
+
+.card{width:100%; min-height:290px; border-radius:26px; padding:26px 24px; display:flex; flex-direction:column; gap:14px; color:var(--ink);
+  background:linear-gradient(165deg, color-mix(in srgb,var(--c) 30%,#2c1524), #241120 72%);
+  border:1px solid color-mix(in srgb,var(--c) 45%,transparent);
+  box-shadow:0 30px 60px -24px rgba(0,0,0,.7)}
+.clabel{font-family:var(--disp); font-size:15px; letter-spacing:.08em; color:var(--c)}
+.ctext{flex:1; display:flex; align-items:center; font-size:clamp(24px,6.6vw,32px); font-weight:800; line-height:1.15; text-wrap:balance}
+.ctext.huge{font-family:var(--disp); font-weight:400; font-size:clamp(36px,11vw,58px); line-height:1; justify-content:center; text-align:center}
+.cfoot{font-size:14px; color:var(--mute); border-top:1px dashed color-mix(in srgb,var(--c) 40%,transparent); padding-top:12px; line-height:1.4}
+.pop{animation:pop .45s cubic-bezier(.2,1.35,.4,1)}
+@keyframes pop{from{transform:translateY(26px) rotate(-3deg) scale(.93); opacity:.2} to{transform:none; opacity:1}}
+
+.actions{display:flex; gap:12px; width:100%}
+.btn{flex:1; font-family:var(--disp); font-size:17px; letter-spacing:.03em; padding:17px 14px; border-radius:16px; border:0; background:var(--c); color:var(--dark);
+  box-shadow:0 6px 0 color-mix(in srgb,var(--c) 50%,#000); transition:transform .08s, box-shadow .08s; line-height:1.1}
+.btn:active{transform:translateY(4px); box-shadow:0 2px 0 color-mix(in srgb,var(--c) 50%,#000)}
+.btn.ghost{background:var(--bg2); color:var(--ink); border:1.5px solid var(--line); box-shadow:0 6px 0 #0c050a}
+.btn.big{font-size:22px; padding:26px 14px}
+.btn.alt{--c:var(--pink)}
+.hint{margin:0; color:var(--mute); font-size:14.5px; text-align:center; line-height:1.45; max-width:40ch}
+.hint b{color:var(--ink)}
+
+/* rules intro + sheet */
+.rules{width:100%; display:flex; flex-direction:column; gap:18px}
+.rules .ico{width:64px; height:64px; border-radius:20px}
+.rules .ico svg{width:36px; height:36px}
+.rules h2{font-family:var(--disp); font-weight:400; font-size:clamp(34px,10vw,48px); line-height:1; margin:0; color:var(--ink)}
+.rules ol{margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:10px; counter-reset:r}
+.rules li{counter-increment:r; display:grid; grid-template-columns:30px 1fr; gap:10px; font-size:16.5px; line-height:1.4; color:var(--ink)}
+.rules li::before{content:counter(r); font-family:var(--disp); color:var(--dark); background:var(--c); width:26px; height:26px; border-radius:8px; display:grid; place-items:center; font-size:14px; margin-top:1px}
+.sheet{position:absolute; inset:0; background:rgba(15,6,11,.94); backdrop-filter:blur(6px); z-index:20; display:flex; flex-direction:column; justify-content:center; padding:20px 4px}
+.sheet .rules{max-width:480px; margin:0 auto}
+
+/* players modal */
+.modal{position:fixed; inset:0; z-index:50; background:rgba(15,6,11,.9); backdrop-filter:blur(6px); display:flex; align-items:flex-end; justify-content:center; padding:16px}
+.panel{width:100%; max-width:480px; background:var(--bg2); border:1px solid var(--line); border-radius:24px; padding:22px; display:flex; flex-direction:column; gap:14px; max-height:90dvh; overflow:auto; margin-bottom:env(safe-area-inset-bottom,0px)}
+.panel h3{font-family:var(--disp); font-weight:400; font-size:26px; margin:0; color:var(--ink)}
+.addrow{display:flex; gap:8px}
+.addrow input{flex:1; min-width:0; background:var(--card); border:1px solid var(--line); color:var(--ink); border-radius:14px; padding:14px; font:inherit; font-size:17px}
+.addrow .btn{flex:0 0 auto; padding:14px 18px}
+.plist{display:flex; flex-wrap:wrap; gap:8px}
+.plist .chip{display:flex; align-items:center; gap:8px; font-size:16px; padding:8px 8px 8px 14px}
+.plist .chip button{border:0; background:var(--line); color:var(--ink); width:24px; height:24px; border-radius:50%; font-size:14px; line-height:1}
+.muted{color:var(--dim); font-size:14px; margin:0}
+
+/* turn */
+.turn{text-align:center; display:flex; flex-direction:column; gap:6px}
+.turn small{font-size:13px; letter-spacing:.16em; text-transform:uppercase; color:var(--mute)}
+.turn h2{font-family:var(--disp); font-weight:400; font-size:clamp(42px,13vw,72px); line-height:1; margin:0; color:var(--c); word-break:break-word}
+
+/* prefieres */
+.wyr{width:100%; display:flex; flex-direction:column; gap:10px; position:relative}
+.opt{width:100%; min-height:130px; border-radius:22px; border:1px solid var(--line); padding:20px; font-size:clamp(20px,5.6vw,26px); font-weight:800; line-height:1.2; text-wrap:balance; color:var(--ink); transition:transform .2s, opacity .2s, background .2s}
+.opt.a{background:linear-gradient(160deg, color-mix(in srgb,var(--c) 34%,var(--card)), var(--card))}
+.opt.b{background:linear-gradient(160deg, color-mix(in srgb,var(--pink) 30%,var(--card)), var(--card))}
+.opt.picked{transform:scale(1.03); border-color:var(--ink)}
+.opt.dim{opacity:.35}
+.or{position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:52px; height:52px; border-radius:50%; background:var(--ink); color:var(--dark); font-family:var(--disp); display:grid; place-items:center; font-size:20px; z-index:2; box-shadow:0 0 0 6px var(--bg)}
+
+/* countdown overlay */
+.count{position:absolute; inset:0; display:grid; place-items:center; z-index:10; background:rgba(15,6,11,.8); border-radius:26px}
+.count span{font-family:var(--disp); font-size:clamp(110px,40vw,200px); color:var(--c); animation:beat .8s ease-out}
+@keyframes beat{from{transform:scale(1.6); opacity:.3} to{transform:scale(1); opacity:1}}
+
+/* bomba */
+.bomb{width:200px; height:210px; position:relative; margin:0 auto}
+.bomb .body{position:absolute; bottom:0; left:10px; width:180px; height:180px; border-radius:50%;
+  background:radial-gradient(circle at 34% 30%, #6b4a5c 0 8%, #2a1320 30%, #0d0409 75%); box-shadow:inset -12px -16px 30px rgba(0,0,0,.6), 0 20px 40px -10px rgba(0,0,0,.8)}
+.bomb .cap{position:absolute; top:22px; left:118px; width:44px; height:30px; background:#3a2030; border-radius:6px; transform:rotate(38deg)}
+.bomb .fuse{position:absolute; top:0; left:146px; width:36px; height:40px; border-top:5px solid #c9a27a; border-right:5px solid #c9a27a; border-radius:0 30px 0 0}
+.bomb .spark{position:absolute; top:-12px; left:172px; width:26px; height:26px; border-radius:50%; background:radial-gradient(circle,#fff 0 20%,#ffd166 35%,#ff6a3d 60%,transparent 70%); opacity:0}
+.bomb.lit .spark{opacity:1; animation:spark .12s infinite alternate}
+@keyframes spark{from{transform:scale(.7) rotate(0)} to{transform:scale(1.25) rotate(40deg)}}
+.bomb.tick .body{animation:tick .18s}
+@keyframes tick{50%{transform:scale(1.05)}}
+.boomfx{position:fixed; inset:0; z-index:60; pointer-events:none; background:radial-gradient(circle, #fff 0 10%, #ffd166 30%, #ff6a3d 55%, rgba(255,79,123,0) 80%); animation:flash .9s ease-out forwards}
+@keyframes flash{from{opacity:1} to{opacity:0}}
+.shake{animation:shake .5s}
+@keyframes shake{20%{transform:translate(-10px,6px) rotate(-2deg)} 40%{transform:translate(10px,-6px) rotate(2deg)} 60%{transform:translate(-8px,-4px)} 80%{transform:translate(6px,4px)}}
+.bigword{font-family:var(--disp); font-size:clamp(70px,24vw,130px); line-height:.9; color:var(--c); text-align:center}
+
+/* stepper */
+.stepper{display:flex; align-items:center; gap:18px; justify-content:center}
+.stepper b{font-family:var(--disp); font-size:56px; min-width:80px; text-align:center; font-weight:400; font-variant-numeric:tabular-nums}
+.toggle{display:flex; align-items:center; gap:12px; background:var(--bg2); border:1px solid var(--line); border-radius:14px; padding:12px 14px; width:100%; text-align:left; color:var(--ink); font-size:15px}
+.toggle i{width:44px; height:26px; border-radius:99px; background:var(--line); position:relative; flex:0 0 auto; transition:background .2s}
+.toggle i::after{content:''; position:absolute; top:3px; left:3px; width:20px; height:20px; border-radius:50%; background:var(--ink); transition:left .2s}
+.toggle.on i{background:var(--c)} .toggle.on i::after{left:21px}
+
+/* playing cards */
+.pcard{width:170px; height:240px; border-radius:16px; background:#fdf7ef; color:#1d1318; position:relative; box-shadow:0 24px 40px -14px rgba(0,0,0,.8); font-family:var(--disp); flex:0 0 auto; font-variant-emoji:text}
+.pcard.red{color:#d8203f}
+.pcard .tl,.pcard .br{position:absolute; font-size:24px; line-height:.95; text-align:center}
+.pcard .tl{top:12px; left:12px} .pcard .br{bottom:12px; right:12px; transform:rotate(180deg)}
+.pcard .mid{position:absolute; inset:0; display:grid; place-items:center; font-size:84px}
+.pcard.back{background:repeating-linear-gradient(45deg, var(--c) 0 10px, color-mix(in srgb,var(--c) 70%,#000) 10px 20px); border:8px solid #fdf7ef}
+.flip{animation:flip .5s cubic-bezier(.2,1.2,.4,1)}
+@keyframes flip{from{transform:rotateY(90deg) translateY(10px)} to{transform:none}}
+.counters{display:flex; gap:10px; justify-content:center; flex-wrap:wrap}
+.counters span{background:var(--bg2); border:1px solid var(--line); border-radius:999px; padding:6px 12px; font-size:14px; color:var(--mute); font-variant-numeric:tabular-nums}
+.counters b{color:var(--ink)}
+.rule{text-align:center; display:flex; flex-direction:column; gap:6px}
+.rule h3{font-family:var(--disp); font-weight:400; font-size:34px; margin:0; color:var(--c); line-height:1}
+.rule p{margin:0; font-size:17px; line-height:1.45; color:var(--ink); max-width:36ch}
+.msg{font-family:var(--disp); font-size:24px; text-align:center; min-height:30px; color:var(--ink); line-height:1.15}
+.msg.bad{color:var(--pink)} .msg.good{color:#6fe3a5}
+
+/* botella */
+.table{width:min(86vw,360px); aspect-ratio:1; max-width:100%; border-radius:50%; display:grid; place-items:center; position:relative;
+  background:radial-gradient(circle, color-mix(in srgb,var(--c) 18%,var(--bg2)) 0 55%, var(--bg2) 56% 100%); border:1px solid var(--line)}
+.table::before{content:''; position:absolute; inset:14px; border-radius:50%; border:2px dashed color-mix(in srgb,var(--c) 40%,transparent)}
+.bottle{width:92px; height:280px; transition:transform 4.2s cubic-bezier(.12,.72,.14,1)}
+
+/* dedo */
+.zone{width:100%; flex:1; min-height:62vh; border-radius:26px; position:relative; overflow:hidden; touch-action:none; -webkit-user-select:none; user-select:none; -webkit-touch-callout:none;
+  background:radial-gradient(circle at 50% 50%, color-mix(in srgb,var(--c) 14%,var(--bg2)), var(--bg2) 70%); border:1px solid var(--line)}
+.zone .zmsg{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:8px; padding:24px; pointer-events:none}
+.zone .zmsg b{font-family:var(--disp); font-weight:400; font-size:clamp(26px,8vw,38px); color:var(--ink); line-height:1.05}
+.zone .zmsg span{color:var(--mute); font-size:15px}
+.finger{position:absolute; width:110px; height:110px; margin:-55px 0 0 -55px; border-radius:50%; border:6px solid var(--fc); box-shadow:0 0 30px var(--fc), inset 0 0 20px var(--fc); pointer-events:none; animation:grow .3s ease-out; transition:opacity .3s, transform .3s}
+@keyframes grow{from{transform:scale(.3)}}
+.finger.out{opacity:.12; transform:scale(.6)}
+.finger.win{transform:scale(1.5); background:color-mix(in srgb,var(--fc) 40%,transparent)}
+.zbar{position:absolute; left:0; bottom:0; height:6px; background:var(--c); width:0}
+.zbar.run{animation:zb 2.4s linear forwards}
+@keyframes zb{to{width:100%}}
+.verdict{position:absolute; left:14px; right:14px; bottom:14px; background:var(--ink); color:var(--dark); border-radius:18px; padding:16px; text-align:center; font-weight:800; font-size:18px; line-height:1.3; animation:pop .45s cubic-bezier(.2,1.35,.4,1)}
+.verdict b{display:block; font-family:var(--disp); font-weight:400; font-size:28px; color:var(--pink)}
+
+/* normas */
+.active{width:100%; display:flex; flex-direction:column; gap:8px}
+.active h4{margin:0; font-size:12px; letter-spacing:.16em; text-transform:uppercase; color:var(--dim)}
+.active .n{display:flex; gap:10px; align-items:center; background:var(--bg2); border:1px solid var(--line); border-left:4px solid var(--c); border-radius:12px; padding:10px 10px 10px 14px; font-size:15px; color:var(--ink)}
+.active .n span{flex:1}
+.active .n button{border:0; background:var(--line); color:var(--ink); width:28px; height:28px; border-radius:8px}
+.list{width:100%; display:flex; flex-direction:column; gap:8px}
+.list div{background:var(--bg2); border:1px solid var(--line); border-radius:12px; padding:12px 14px; font-size:15px; line-height:1.4; color:var(--ink)}
+.list b{color:var(--c)}
+
+/* medidor */
+.steps{display:flex; gap:6px; justify-content:center}
+.steps i{width:28px; height:6px; border-radius:6px; background:var(--line)}
+.steps i.on{background:var(--c)} .steps i.done{background:color-mix(in srgb,var(--c) 45%,var(--line))}
+.pad{width:100%; min-height:52vh; border-radius:26px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; text-align:center; touch-action:none; -webkit-user-select:none; user-select:none; position:relative; overflow:hidden;
+  background:var(--bg2); border:1px solid var(--line); transition:background .08s}
+.pad b{font-family:var(--disp); font-weight:400; font-size:clamp(40px,12vw,64px); line-height:1; color:var(--ink)}
+.pad span{color:var(--mute); font-size:15px}
+.pad.go{background:#3ee08f} .pad.go b,.pad.go span{color:#07210f}
+.pad.early{background:var(--pink)} .pad.early b,.pad.early span{color:var(--dark)}
+.target{position:absolute; width:76px; height:76px; margin:-38px 0 0 -38px; border-radius:50%; border:4px solid var(--c); background:color-mix(in srgb,var(--c) 22%,transparent); pointer-events:none}
+.target.in{background:color-mix(in srgb,#3ee08f 60%,transparent); border-color:#3ee08f}
+.target.miss{border-color:var(--pink)}
+.timebar{position:absolute; top:0; left:0; height:6px; background:var(--c); width:100%}
+.simon{display:grid; grid-template-columns:1fr 1fr; gap:12px; width:100%; max-width:340px; aspect-ratio:1}
+.simon button{border:0; border-radius:24px; opacity:.4; transition:opacity .1s, transform .1s; box-shadow:inset 0 -6px 0 rgba(0,0,0,.25)}
+.simon button.lit{opacity:1; transform:scale(1.04)}
+.simon button:disabled{cursor:default}
+.stroopw{font-family:var(--disp); font-size:clamp(52px,16vw,84px); line-height:1; text-align:center; min-height:90px}
+.cgrid{display:grid; grid-template-columns:1fr 1fr; gap:10px; width:100%}
+.cgrid .btn{--c:var(--ink)}
+.twister{font-size:clamp(24px,6.8vw,32px); font-weight:800; line-height:1.25; text-align:center; text-wrap:balance; color:var(--ink)}
+
+.result{width:100%; display:flex; flex-direction:column; gap:16px; align-items:center}
+.result .who{font-size:13px; letter-spacing:.16em; text-transform:uppercase; color:var(--mute)}
+.gauge{width:100%; max-width:320px}
+.gauge .needle{transform-origin:100px 104px; transition:transform 1.6s cubic-bezier(.3,1.4,.4,1)}
+.lvl{text-align:center; display:flex; flex-direction:column; gap:4px; margin-top:-8px}
+.lvl b{font-family:var(--disp); font-weight:400; font-size:clamp(34px,10vw,48px); line-height:1; color:var(--lc)}
+.lvl span{font-size:16px; color:var(--mute)}
+.verd{width:100%; display:flex; flex-direction:column; gap:8px}
+.verd div{display:grid; grid-template-columns:1fr auto; gap:4px 12px; align-items:center; background:var(--bg2); border:1px solid var(--line); border-radius:14px; padding:12px 14px}
+.verd small{font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--dim); grid-column:1/-1}
+.verd strong{font-size:17px; color:var(--ink); line-height:1.3}
+.verd em{font-style:normal; font-family:var(--disp); font-size:14px; padding:4px 10px; border-radius:8px; color:var(--dark); white-space:nowrap}
+.verd .drive{border-color:#6fb7ff; background:color-mix(in srgb,#6fb7ff 12%,var(--bg2))}
+.bars{width:100%; display:flex; flex-direction:column; gap:10px}
+.bars div{display:grid; grid-template-columns:110px 1fr 70px; gap:10px; align-items:center; font-size:14px; color:var(--mute)}
+.bars i{height:10px; border-radius:10px; background:var(--line); overflow:hidden; display:block}
+.bars i s{display:block; height:100%; background:var(--c); text-decoration:none}
+.bars b{color:var(--ink); text-align:right; font-variant-numeric:tabular-nums; font-weight:600}
+.rank{width:100%; display:flex; flex-direction:column; gap:6px}
+.rank div{display:grid; grid-template-columns:28px 1fr auto; gap:10px; align-items:center; background:var(--bg2); border:1px solid var(--line); border-radius:12px; padding:10px 14px; font-size:15px; color:var(--ink)}
+.rank div:first-child{border-color:var(--pink)}
+.rank i{font-style:normal; font-family:var(--disp); color:var(--c)}
+.rank em{font-style:normal; font-family:var(--disp); color:var(--ink); font-variant-numeric:tabular-nums}
+.pick{display:flex; flex-wrap:wrap; gap:8px; justify-content:center}
+.pick button{border:1px solid var(--line); background:var(--bg2); color:var(--ink); border-radius:999px; padding:10px 16px; font-weight:800; font-size:16px}
+.pick button.on{background:var(--c); color:var(--dark); border-color:var(--c)}
+.sub{font-size:12px; letter-spacing:.16em; text-transform:uppercase; color:var(--dim); margin:0; align-self:flex-start}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important; animation-iteration-count:1!important; transition-duration:.01ms!important}
+}
+</style>
+
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+/* =========================================================
+   CONTENIDO
+   ========================================================= */
+const YN = [
+"he mandado un audio de más de cinco minutos.","he stalkeado a un ex a las tantas de la noche.","me he dormido en el metro y me he pasado de parada.","he fingido estar enfermo para no ir a trabajar o a clase.","he mentido sobre mi edad.","he llorado con una peli de dibujos.","he vuelto a casa andando porque no me quedaba dinero.","me he comido algo que se había caído al suelo.","he mandado un mensaje a la persona equivocada.","le he hecho ghosting a alguien.","he cantado en un karaoke.","he perdido el móvil de fiesta.","he dicho «estoy de camino» sin haber salido de casa.","he regalado algo que me habían regalado a mí.","he buscado mi propio nombre en Google.","he tenido una cuenta falsa en redes.","he dejado a alguien en visto a propósito.","me he colado en una discoteca.","he vomitado en plena calle.","he olvidado el cumpleaños de mi madre.","he fingido que me sabía una canción.","me ha gustado un profesor o una profesora.","he llamado «mamá» a un profesor.","he roto algo en casa de otro y no he dicho nada.","he suspendido el carnet de conducir.","he salido de fiesta un lunes.","he llegado a casa cuando ya era de día.","he mirado el móvil de mi pareja.","he borrado una foto porque tenía pocos likes.","he pedido comida a domicilio dos veces el mismo día.","he mentido en este juego.","he discutido con un desconocido en internet.","he hecho un bizum de menos de un euro.","he ido a trabajar con resaca.","me he bebido la copa de otro sin que se diera cuenta.","he bailado encima de una mesa.","he dicho que tenía planes para no quedar.","le he escrito a un ex borracho.","he fingido una llamada para escapar de una conversación.","he llegado tarde a mi propio cumpleaños.","he vuelto con un ex.","me he hecho una foto con un famoso.","he dormido en la bañera.","he enseñado el culo desde una ventana del coche.","he llorado en una discoteca.","he usado la tarjeta de mis padres sin permiso.","he dicho «última y nos vamos» y no ha sido la última."
+];
+const YNP = [
+"he besado a alguien de esta mesa.","he ligado en una boda.","he usado una app de citas.","he tenido una cita a ciegas.","he besado a dos personas la misma noche.","he mandado una foto de la que me arrepiento.","he tenido un rollo de una noche.","he estado con alguien mucho mayor que yo.","he fingido que me gustaba alguien para dar celos a otro.","he besado a un desconocido en la discoteca.","he ligado con el amigo o la amiga de mi ex.","he tenido algo con alguien del trabajo.","he quedado con dos personas la misma semana sin que lo supieran.","he soñado algo subido de tono con alguien de aquí.","he dado un número falso.","he ido a casa de alguien en la primera cita.","he mentido sobre con cuántas personas he estado.","he tenido celos de alguien de esta mesa.","he puesto los cuernos.","me han puesto los cuernos.","he hecho un striptease.","he stalkeado al nuevo ligue de mi ex.","he mandado un mensaje subido de tono al grupo equivocado.","he tenido algo con el ex de un amigo o una amiga.","he dormido en casa de alguien sin saber su apellido.","me he enamorado de alguien que tenía pareja.","he besado a alguien del mismo sexo.","he hecho match con alguien que conocía de la vida real."
+];
+const WYR = [
+["Hablar con los animales","Hablar todos los idiomas"],["No volver a beber cerveza","No volver a beber vino"],["Que lean tus WhatsApp","Que vean tu historial del navegador"],["Ser famoso en TikTok","Ser rico sin que nadie te conozca"],["Un mes sin móvil","Un año sin salir de fiesta"],["Viajar gratis toda la vida","Comer gratis toda la vida"],["Saber lo que todos piensan de ti","Que nadie sepa nunca lo que piensas"],["Ser el más listo de la mesa","Ser el más guapo de la mesa"],["Cantar todo lo que dices","Bailar cada vez que andas"],["Pagar siempre las rondas","No beber nunca en las rondas"],["Que tu madre oiga tu último audio","Que tu jefe vea tu última foto"],["Perder el móvil","Perder la cartera"],["Vivir en la playa","Vivir en la montaña"],["Poder volar","Ser invisible"],["Dormir 4 horas cada día","Dormir 12 horas cada día"],["Comer pizza para siempre","Comer sushi para siempre"],["Llegar siempre 20 minutos tarde","Llegar siempre una hora antes"],["Sin wifi un mes","Sin agua caliente un mes"],["Quedarte sin batería de fiesta","Quedarte sin dinero de fiesta"],["Decir siempre la verdad","Mentir siempre"],["Ser alcalde de tu ciudad","Ser el portero de la mejor discoteca"],["Volver a tener 15 años","Saltar a los 40"],["Que tu ex sea tu jefe","Que tu jefe sea tu suegro"],["Hacer el Camino de Santiago","Hacer un Interrail"],["Un año sin redes sociales","Un año sin alcohol"],["Tener un botón de pausa","Tener un botón de rebobinar"],["Resaca eterna los domingos","No poder salir nunca un sábado"],["Ganar la lotería y no poder contarlo","Ser famoso y no tener dinero"],["Ir a un festival con tus padres","Ir de vacaciones con tu ex"],["Oler siempre a ajo","Oír siempre la misma canción"]
+];
+const WYRP = [
+["Besar a tu ex","Besar a tu peor enemigo"],["Que tu pareja lea tus chats","Que tus padres vean tu Tinder"],["Cita perfecta con alguien feo","Cita horrible con alguien guapísimo"],["Enseñar tu último mensaje picante","Enseñar tu última búsqueda en Google"],["Salir con alguien de esta mesa","No salir con nadie en un año"],["Un ligue celoso","Un ligue pasota"],["Primer beso delante de tus padres","Primer beso delante de tu ex"],["Pareja que ronca","Pareja que no se ducha"],["Una noche loca que no recuerdes","Una noche normal que recuerdes siempre"],["Que te pille tu madre","Que te pille tu suegra"],["Ligar en Tinder","Ligar en la discoteca"],["Casarte con tu crush del instituto","Casarte con un desconocido millonario"],["Besar al de tu izquierda","Besar al de tu derecha"],["Contar tu peor cita","Contar tu mejor noche"],["Ligar solo en el gimnasio","Ligar solo en el supermercado"]
+];
+const TRUTH = [
+"¿Cuál es la mentira más gorda que les has dicho a tus padres?","¿Qué es lo más vergonzoso que has buscado en Google?","¿A quién de esta mesa llamarías a las 4 de la mañana si te pasara algo?","¿Cuál ha sido tu peor borrachera?","¿Qué canción cantas cuando nadie te ve?","¿Cuál es tu manía más rara?","¿Qué es lo más caro que has roto?","¿Cuál es el último mensaje que has borrado y por qué?","¿Quién de aquí crees que va a ser millonario?","¿Qué piensas de verdad del último ligue de {A}?","¿Cuál es tu mayor miedo?","¿Qué harías mañana con un millón de euros?","¿Cuál ha sido tu peor trabajo?","¿A quién de aquí le robarías el armario?","¿Cuántas horas de pantalla llevas hoy? Enseña el móvil.","¿Qué es lo peor que has hecho en una fiesta?","¿De qué te arrepientes de este año?","¿Quién de la mesa es el más pesado cuando bebe?","¿Cuál es tu placer culpable?","¿Quién fue tu primer amor?","¿Qué es lo más raro que has comido?","¿Cuál es el apodo más vergonzoso que te han puesto?","¿A quién de aquí le contarías un secreto y a quién no?","Lee en voz alta tu última búsqueda de Google.","¿Qué es lo primero que pensaste al conocer a {A}?"
+];
+const TRUTHP = [
+"¿Quién de esta mesa te parece más atractivo?","¿Cuál ha sido tu peor beso?","¿Qué es lo más atrevido que has hecho en una primera cita?","¿Has tenido algo con alguien de aquí?","¿Cuál es tu tipo, sin mentir?","¿Cuál es tu peor experiencia en una app de citas?","¿Le has escrito a un ex este año?","¿Qué es lo que más te atrae de alguien?","¿Te has enamorado de quien no debías?","¿Cuál es el sitio más raro donde has besado a alguien?","¿A quién de esta mesa besarías si fuera obligatorio?","¿Cuál es el mensaje más atrevido que has mandado?","¿Qué te pareció {A} la primera vez que le viste?","¿Con cuántas personas has estado? Si no contestas, bebes 3.","¿Cuál ha sido tu mejor noche?"
+];
+const DARE = [
+"Imita a {A} hasta que alguien adivine quién es.","Habla con acento argentino hasta tu próximo turno.","Enseña la última foto de tu galería.","Deja que {A} escriba un estado en tu WhatsApp.","Haz 15 sentadillas mientras dices el abecedario.","Llama a alguien y cántale cumpleaños feliz.","Baila sin música durante 20 segundos.","Bebe sin usar las manos.","Deja que el grupo te haga un peinado.","Da las noticias como un presentador del telediario.","Mándale un audio a tu madre diciéndole que la quieres.","Dile un piropo a cada persona de la mesa.","Habla cantando hasta tu próximo turno.","Deja que {A} te mire el móvil durante 30 segundos.","Declárale tu amor a la botella más cercana.","Cuenta un chiste. Si nadie se ríe, bebes.","Baila la canción que elija el grupo.","Imita a tu jefe o a tu profesor.","Da una vuelta a la mesa andando como un pato.","Di cinco marcas de cerveza en 10 segundos.","Haz un brindis épico de 30 segundos.","Escribe «¿qué tal todo?» al contacto número 7 de tu WhatsApp.","Cambia de sitio con {A}.","Aguanta un posavasos en la frente hasta tu próximo turno.","Haz tu mejor imitación de un reguetonero."
+];
+const DAREP = [
+"Dale un masaje de hombros de 30 segundos a {A}.","Susúrrale algo al oído a {A}.","Pon tu mejor cara de ligar a la persona de tu izquierda.","Haz un baile sensual a una silla.","Dile a {A} lo que más te gusta de su físico.","Deja que {A} lea tu último mensaje enviado.","Da un beso en la mejilla a quien elija el grupo.","Siéntate encima de {A} hasta tu próximo turno.","Imita cómo ligas en la discoteca, con {A} de víctima.","Cuenta tu peor cita con todo detalle.","Mira a {A} a los ojos 20 segundos sin reírte.","Elige a alguien y bailad pegados una canción.","Escríbele «hola, desconocido» a tu último match.","Deja que el grupo escriba un mensaje a tu crush. Si no lo envías, bebes 3."
+];
+const WHO = [
+"acabar en la tele por algo absurdo","casarse primero","hacerse millonario","perder el móvil esta noche","llegar tarde a su propia boda","dormirse el primero hoy","ligar esta noche","acabar llorando esta noche","escribirle al ex esta noche","tener cinco gatos a los 50","hacerse famoso en TikTok","irse a vivir a otro país","vomitar esta noche","olvidar el cumpleaños de su pareja","comerse un kebab a las cinco de la mañana","que le echen de una discoteca","ser alcalde de su pueblo","ganar un reality","mentir en este juego","desaparecer de la fiesta sin avisar","hacer el ridículo en una boda","discutir con un portero","volver con su ex","tener una cuenta secreta","montar un negocio que funcione","ser el último en irse de la fiesta","llamar a su madre borracho","perderse en su propia ciudad","enamorarse en un viaje","salir en un meme","hacerse amigo de un desconocido en el baño de la discoteca","cantar en el karaoke sin que nadie se lo pida","llorar con un anuncio","hacer un bizum de 50 céntimos","pedir la última ronda"
+];
+const WHOP = [
+"besar a alguien esta noche","tener un rollo con alguien de esta mesa","mandar una foto atrevida","ligar con el camarero","tener un lío en el trabajo","casarse con alguien de una app de citas","liarse con un ex","tener dos citas la misma noche","desaparecer esta noche con alguien","enamorarse de un amigo","ligar con el primo de alguien de aquí","mandar un mensaje picante al grupo equivocado"
+];
+const CATS = [
+"Marcas de cerveza","Jugadores del Barça","Jugadores del Madrid","Cantantes de reguetón","Series de Netflix","Marcas de coches","Cosas que hay en una nevera","Países de Europa","Capitales del mundo","Pokémon","Marcas de ropa","Personajes de Disney","Palabras que rimen con «copa»","Cócteles","Frutas","Cosas que llevas a la playa","Superhéroes","Apps del móvil","Animales de la selva","Comidas típicas españolas","Ciudades de España","Instrumentos musicales","Deportes","Excusas para no ir a trabajar","Cosas que se dicen borracho","Marcas de móviles","Películas de miedo","Profesiones","Partes del cuerpo","Canciones del verano","Personajes de Los Simpson","Cosas que hay en un baño","Marcas de relojes","Tipos de pasta","Programas de la tele","Cosas que hay en una discoteca","Jugadores de la NBA","Youtubers o streamers","Palabras en inglés que usamos en español","Cosas de color rojo","Nombres de chica que empiecen por M","Nombres de chico que empiecen por J","Cosas que llevas en la cartera","Cadenas de comida rápida","Equipos de fútbol españoles","Bebidas sin alcohol"
+];
+const WORDS = [
+["Playa","Lugares"],["Discoteca","Lugares"],["Hospital","Lugares"],["Aeropuerto","Lugares"],["Gimnasio","Lugares"],["Supermercado","Lugares"],["Boda","Eventos"],["Colegio","Lugares"],["Cine","Lugares"],["Estadio de fútbol","Lugares"],["Piscina","Lugares"],["Zoo","Lugares"],["Parque de atracciones","Lugares"],["Crucero","Viajes"],["Peluquería","Lugares"],["Restaurante chino","Lugares"],["Metro","Transporte"],["Camping","Viajes"],["Festival de música","Eventos"],["Funeral","Eventos"],
+["Móvil","Objetos"],["Paraguas","Objetos"],["Cepillo de dientes","Objetos"],["Espejo","Objetos"],["Nevera","Objetos"],["Chupito","Bebida"],["Vela","Objetos"],["Mando de la tele","Objetos"],["Gafas de sol","Objetos"],["Reloj","Objetos"],
+["Pizza","Comida"],["Paella","Comida"],["Kebab","Comida"],["Sushi","Comida"],["Tortilla de patatas","Comida"],["Helado","Comida"],["Churros","Comida"],["Palomitas","Comida"],
+["Perro","Animales"],["Tiburón","Animales"],["Jirafa","Animales"],["Pingüino","Animales"],["Mosquito","Animales"],["Caballo","Animales"],
+["Bombero","Profesiones"],["Médico","Profesiones"],["Policía","Profesiones"],["Profesor","Profesiones"],["DJ","Profesiones"],["Camarero","Profesiones"],["Astronauta","Profesiones"],["Youtuber","Profesiones"]
+];
+const RULES_NEW = [
+"Prohibido decir «tío» o «tía».","Prohibido señalar con el dedo.","Prohibido decir nombres: todo el mundo se llama «jefe».","Solo se bebe con la mano izquierda.","Antes de beber hay que decir «salud» mirando a los ojos.","Prohibido decir «sí» y «no».","Prohibido mirar el móvil.","Hay que hablar de usted a todo el mundo.","Cada vez que alguien diga «beber», bebe todo el mundo.","Quien se ría a carcajadas, bebe.","Antes de hablar hay que levantar la mano.","Prohibido decir «vale».","Quien vuelva del baño cuenta un secreto.","Prohibido cruzar las piernas.","Todas las frases acaban con «amigo».","Cuando {A} se toque la nariz, todos lo imitan. El último, bebe.","Cuando {A} beba, bebe todo el mundo.","Los números se dicen en inglés.","{A} es el rey: cuando levanta la copa, todos brindan.","Prohibido tocarse la cara.","Quien se levante de la silla, bebe.","Prohibido decir palabrotas.","Hay que brindar con alguien antes de cada trago."
+];
+const MISSIONS = [
+"Consigue que alguien diga «plátano».","Haz que {A} te dé la mano sin pedírselo directamente.","Consigue que tres personas beban a la vez sin que sea parte del juego.","Mete la palabra «hipopótamo» en una frase normal sin que nadie sospeche.","Consigue que alguien te enseñe su última foto.","Haz que alguien se levante de la silla.","Consigue que alguien te llame por un apodo nuevo.","Consigue que {A} cante una canción.","Haz que alguien cambie de sitio contigo.","Consigue que alguien te pida perdón.","Haz que alguien te choque los cinco dos veces.","Consigue que alguien diga «qué fuerte».","Haz que alguien te cuente un secreto.","Consigue que alguien imite a otra persona.","Convence a alguien de que ayer te pasó algo increíble que es mentira.","Haz que alguien te sirva la bebida.","Consigue que {A} diga tu nombre tres veces.","Habla de pingüinos durante un minuto sin que te pregunten por qué.","Consigue que alguien te dé un abrazo.","Consigue que alguien te enseñe su fondo de pantalla.","Di «increíble» cinco veces sin que se note.","Consigue que alguien diga «te lo juro».","Consigue que alguien baile, aunque sean 5 segundos.","Haz que dos personas choquen el vaso.","Consigue que alguien cuente algo de cuando era pequeño.","Haz que alguien apunte algo en su móvil."
+];
+const PUNISH = [
+"Bebes 2 tragos.","Bebes, y eliges a alguien que beba contigo.","Empiezas una cascada.","Verdad obligatoria: la mesa te pregunta lo que quiera.","Reto: la mesa decide cuál.","3 tragos o cuentas un secreto.","Te salvas: repartes 3 tragos.","Hablas con acento andaluz hasta la próxima ronda.","Chupito. O agua, si vas servido.","Eliges una norma nueva para la mesa."
+];
+const TWISTERS = [
+"Tres tristes tigres tragaban trigo en un trigal.","El perro de San Roque no tiene rabo porque Ramón Ramírez se lo ha cortado.","Pablito clavó un clavito. ¿Qué clavito clavó Pablito?","Erre con erre cigarro, erre con erre barril, rápido ruedan los carros cargados de azúcar del ferrocarril.","Cómo quieres que te quiera si el que quiero que me quiera no me quiere como quiero que me quiera.","Pepe Pecas pica papas con un pico. Con un pico pica papas Pepe Pecas.","El cielo está enladrillado. ¿Quién lo desenladrillará? El desenladrillador que lo desenladrille buen desenladrillador será."
+];
+const KING = {
+A:["CASCADA","Todos empiezan a beber a la vez. Nadie para hasta que pare el de su derecha. Empieza quien ha sacado la carta."],
+"2":["TÚ","Elige a alguien: bebe 2 tragos."],
+"3":["YO","Te toca: bebes 2 tragos."],
+"4":["SUELO","Todos tocan el suelo. El último, bebe."],
+"5":["CHICOS","Beben todos los chicos."],
+"6":["CHICAS","Beben todas las chicas."],
+"7":["CIELO","Todos levantan la mano. El último, bebe."],
+"8":["COMPAÑERO","Elige compañero: cada vez que bebas tú, bebe él. Hasta el próximo 8."],
+"9":["RIMA","Di una palabra. Por turnos, cada uno dice otra que rime. El que falle, bebe."],
+"10":["CATEGORÍAS","Elige una categoría. Por turnos, decid cosas de ella. El que se quede en blanco, bebe."],
+J:["NORMA","Inventa una norma para toda la partida. Quien la rompa, bebe."],
+Q:["PREGUNTAS","Hazle una pregunta a alguien. Tiene que contestar con otra pregunta a otra persona. El que conteste normal, bebe."],
+K:["REY","Echa un poco de tu bebida en la copa del centro. Quien saque el cuarto rey, se la bebe."]
+};
+
+/* =========================================================
+   UTILIDADES
+   ========================================================= */
+const $ = (s, r=document) => r.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function load(k, d){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; }catch(e){ return d; } }
+function store(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+function shuffle(a){ a = a.slice(); for(let i=a.length-1;i>0;i--){ const j = Math.random()*(i+1)|0; [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function Deck(items){ let pool = []; return () => { if(!pool.length) pool = shuffle(items); return pool.pop(); }; }
+const rnd = a => a[Math.random()*a.length|0];
+
+const S = {
+  players: load('lp_players', []),
+  mode: load('lp_mode', 'suave'),
+  ranking: load('lp_rank', []),
+  cleanup: []
+};
+function clearT(){ S.cleanup.forEach(f => { try{ f(); }catch(e){} }); S.cleanup = []; }
+function later(fn, ms){ const t = setTimeout(fn, ms); S.cleanup.push(() => clearTimeout(t)); return t; }
+function frame(fn){ let id; const loop = t => { if(fn(t) !== false) id = requestAnimationFrame(loop); }; id = requestAnimationFrame(loop); S.cleanup.push(() => cancelAnimationFrame(id)); }
+const pick = arrs => S.mode === 'picante' ? [...arrs[1], ...arrs[0]] : arrs[0];
+function someone(ex){ const p = S.players.filter(x => !(ex||[]).includes(x)); return p.length ? rnd(p) : null; }
+function fill(t, ex){
+  const a = someone(ex) || 'la persona de tu derecha';
+  return esc(t).replaceAll('{A}', '<span style="color:var(--c)">'+esc(a)+'</span>');
+}
+
+/* sonido */
+let AC;
+function ac(){ if(!AC){ try{ AC = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } if(AC && AC.state === 'suspended') AC.resume(); return AC; }
+function tone(f, d=.08, type='square', v=.06){ const a = ac(); if(!a) return; const o = a.createOscillator(), g = a.createGain(); o.type = type; o.frequency.value = f; g.gain.setValueAtTime(v, a.currentTime); g.gain.exponentialRampToValueAtTime(.0001, a.currentTime + d); o.connect(g).connect(a.destination); o.start(); o.stop(a.currentTime + d + .03); }
+function boom(){ const a = ac(); if(!a) return; const len = a.sampleRate*1.4|0, b = a.createBuffer(1, len, a.sampleRate), d = b.getChannelData(0); for(let i=0;i<len;i++) d[i] = (Math.random()*2-1)*Math.pow(1-i/len, 2.2); const s = a.createBufferSource(); s.buffer = b; const f = a.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 1000; const g = a.createGain(); g.gain.value = 1; s.connect(f).connect(g).connect(a.destination); s.start(); tone(55, .8, 'sine', .6); }
+function buzz(p){ try{ navigator.vibrate && navigator.vibrate(p); }catch(e){} }
+const blip = () => tone(720, .05, 'triangle', .07);
+
+/* iconos */
+const I = {
+  yonunca:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></svg>',
+  prefieres:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21v-8M12 13L5 5M12 13l7-8M5 5v4M5 5h4M19 5v4M19 5h-4"/></svg>',
+  verdad:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M9 9a3 3 0 1 1 4 2.8c-.7.3-1 1-1 1.7V15"/><circle cx="12" cy="19" r=".6" fill="currentColor"/></svg>',
+  quien:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.5"/><path d="M12 1v4M12 19v4M1 12h4M19 12h4"/></svg>',
+  bomba:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="10" cy="14" r="7"/><path d="M14.5 8.5l2-2M16.5 6.5c1-1 2.5-1 3.5 0M20 3v1.5M22 5h-1.5"/></svg>',
+  impostor:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><path d="M3 9c3-3 15-3 18 0-1 7-4 10-9 10S4 16 3 9z"/><path d="M7 11.5c1-1 3-1 3.5 0M13.5 11.5c.5-1 2.5-1 3.5 0" stroke-linecap="round"/></svg>',
+  rey:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5z"/></svg>',
+  mayor:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3v18M8 3L4 7M8 3l4 4M16 21V3M16 21l-4-4M16 21l4-4"/></svg>',
+  botella:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><path d="M10 2h4v5l2 3v11a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V10l2-3z"/><path d="M8 14h8"/></svg>',
+  dedo:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="7" cy="8" r="3"/><circle cx="17" cy="7" r="3"/><circle cx="12" cy="17" r="3"/></svg>',
+  normas:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 3h11l3 3v15H5z"/><path d="M9 9h6M9 13h6M9 17h3"/></svg>',
+  misiones:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V4M4 4h13l-3 4 3 4H4"/></svg>',
+  cuanto:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M3 17a9 9 0 0 1 18 0"/><path d="M12 17l4-6"/><circle cx="12" cy="17" r="1.2" fill="currentColor"/></svg>'
+};
+
+/* =========================================================
+   JUEGOS
+   ========================================================= */
+const G = [
+ {id:'yonunca', name:'YO NUNCA', ds:'Quien lo haya hecho, bebe.', kind:'Cartas · 3+', c:'#ff4f7b',
+  rules:['Sale una frase que empieza por «Yo nunca…».','Quien <b>sí</b> lo haya hecho, bebe un trago.','Si la mesa quiere la historia, se cuenta. Si no la cuenta, bebe otro.'],
+  start: s => simpleDeck(s, {label:'YO NUNCA…', deck:pick([YN,YNP]), foot:'Quien lo haya hecho, bebe.'})},
+ {id:'prefieres', name:'¿QUÉ PREFIERES?', ds:'Elegid a la de tres. La minoría bebe.', kind:'Votación · 3+', c:'#4fc3ff',
+  rules:['Salen dos opciones.','A la de tres, cada uno dice la suya.','Los que queden en minoría, beben. Si hay empate, bebéis todos.'],
+  start: s => prefieres(s)},
+ {id:'verdad', name:'VERDAD O RETO', ds:'Contesta, cumple o bebe 3.', kind:'Por turnos · 2+', c:'#ffb547',
+  rules:['La app dice a quién le toca.','Elige verdad o reto.','Si no contestas o no lo haces, bebes 3 tragos.'],
+  start: s => verdad(s)},
+ {id:'quien', name:'¿QUIÉN ES MÁS PROBABLE?', ds:'A la de tres, todos señalan.', kind:'Señalar · 4+', c:'#b98cff',
+  rules:['Sale una pregunta.','Pulsad SEÑALAR: cuenta atrás y todos señalan a la vez.','El más señalado bebe tantos tragos como dedos le apunten.'],
+  start: s => quien(s)},
+ {id:'bomba', name:'LA BOMBA', ds:'Categoría, palabra y pasa. Explota cuando quiere.', kind:'Pasar móvil · 3+', c:'#ff6a3d',
+  rules:['Sale una categoría y se enciende la mecha.','Di algo de la categoría y pasa el móvil al de tu derecha.','Nadie sabe cuándo explota. Quien la tenga en la mano, bebe 2.'],
+  start: s => bomba(s)},
+ {id:'impostor', name:'EL IMPOSTOR', ds:'Todos tienen la palabra menos uno.', kind:'Pasar móvil · 3+', c:'#5fe0a8',
+  rules:['Os pasáis el móvil y cada uno ve su palabra en secreto.','Uno es el impostor y no la sabe.','Por turnos, cada uno dice una palabra relacionada. Después votáis.','Si pilláis al impostor, bebe 3. Si no, bebéis todos 2.'],
+  start: s => impostor(s)},
+ {id:'rey', name:'EL REY', ds:'La baraja manda. Cuidado con el cuarto rey.', kind:'Cartas · 3+', c:'#ffd166',
+  rules:['Por turnos, cada uno saca una carta.','Cada carta tiene su norma y la app te la dice.','Con cada rey se echa bebida en la copa del centro. El cuarto rey se la bebe.'],
+  start: s => rey(s)},
+ {id:'mayor', name:'MAYOR O MENOR', ds:'Adivina la siguiente carta.', kind:'Cartas · 2+', c:'#ff8fb1',
+  rules:['Sale una carta. Di si la siguiente será mayor o menor.','Si aciertas, sigues sumando racha.','Si fallas, bebes tantos tragos como tu racha y pasas el móvil.','El as es la más alta.'],
+  start: s => mayor(s)},
+ {id:'botella', name:'LA BOTELLA', ds:'Gírala. A quien apunte, le toca.', kind:'En la mesa · 3+', c:'#6fe7ff',
+  rules:['Deja el móvil en el centro de la mesa.','Toca la botella para girarla.','A quien apunte el cuello: verdad, reto o 2 tragos.'],
+  start: s => botella(s)},
+ {id:'dedo', name:'EL DEDO', ds:'Todos un dedo en la pantalla. Uno pierde.', kind:'Todos · 2+', c:'#ff9f45',
+  rules:['Todos ponéis un dedo en la pantalla a la vez.','Quietos. La app elige a uno al azar.','Al elegido le toca un castigo.'],
+  start: s => dedo(s)},
+ {id:'normas', name:'NORMAS DE LA MESA', ds:'Normas que duran toda la noche.', kind:'Toda la noche', c:'#c3f36b',
+  rules:['Sacad normas y activad las que os gusten.','Duran hasta que las quitéis.','Quien rompa una norma, bebe.'],
+  start: s => normas(s)},
+ {id:'misiones', name:'MISIONES SECRETAS', ds:'Cada uno una misión. Que no te pillen.', kind:'Toda la noche · 3+', c:'#9aa7ff',
+  rules:['Os pasáis el móvil: cada uno recibe una misión secreta.','Tenéis que cumplirla durante la noche sin que nadie se dé cuenta.','Si sospechas de alguien, di «¡TE PILLÉ!». Si aciertas, bebe él 2. Si fallas, bebes tú.','Quien la cumpla sin que le pillen, reparte 3 tragos.'],
+  start: s => misiones(s)},
+ {id:'cuanto', name:'¿CUÁNTO VAS?', ds:'Cinco pruebas para saber lo borracho que vas, con ranking de la mesa.', kind:'Pruebas · 1+', c:'#ff3d6e',
+  rules:['Cinco pruebas rápidas: reflejos, pulso, memoria, colores y trabalenguas.','Te da un nivel del 0 al 10 y el veredicto: ¿entras en la disco?, ¿le escribes al ex?','Al final, ranking de la mesa: quién va más perjudicado.','Es un juego. No mide el alcohol. Si has bebido, no conduzcas.'],
+  start: s => cuanto(s)}
+];
+
+/* =========================================================
+   PANTALLAS
+   ========================================================= */
+const app = $('#app');
+
+function gate(){
+  clearT();
+  app.innerHTML = `
+  <section class="gate">
+    <h1 class="logo"><span class="la">LA</span><span class="pv">PREVIA</span></h1>
+    <p>13 juegos para beber en grupo. Los de siempre y algunos que no has jugado nunca. Se juega con un solo móvil.</p>
+    <p style="font-size:14px">Solo para mayores de 18. Cualquier trago puede ser de agua.</p>
+    <button class="btn" id="enter">TENGO 18 AÑOS O MÁS</button>
+  </section>`;
+  $('#enter').onclick = () => { ac(); blip(); store('lp_18', true); home(); };
+}
+
+function home(){
+  clearT();
+  const chips = S.players.length
+    ? S.players.map(p => `<span class="chip">${esc(p)}</span>`).join('') + `<span class="chip add">Editar</span>`
+    : `<span class="chip add">+ Añadir jugadores</span><span class="muted" style="font-size:13px">para que salgan vuestros nombres</span>`;
+  const f = G.find(g => g.id === 'cuanto');
+  app.innerHTML = `
+  <main class="home">
+    <header class="hero">
+      <h1 class="logo sm"><span class="la">LA</span><span class="pv">PREVIA</span></h1>
+      <p class="tag"><b>13 juegos para beber.</b> Elegid uno y a jugar.</p>
+    </header>
+    <section class="bar">
+      <button class="players" id="btnPlayers"><span class="lbl">Jugadores</span>${chips}</button>
+      <div class="seg" role="group" aria-label="Intensidad">
+        <button data-mode="suave" class="${S.mode==='suave'?'on':''}">Suave</button>
+        <button data-mode="picante" class="${S.mode==='picante'?'on':''}">Picante</button>
+      </div>
+    </section>
+    <button class="feature" data-game="cuanto">
+      <span class="new">Nuevo</span>
+      <span class="nm">${f.name}</span>
+      <span class="ds">${f.ds}</span>
+      ${gaugeMini()}
+    </button>
+    <div class="grid">
+      ${G.filter(g => g.id !== 'cuanto').map(g => `
+        <button class="tile" data-game="${g.id}" style="--c:${g.c}">
+          <span class="ico">${I[g.id]}</span>
+          <span class="nm">${g.name}</span>
+          <span class="ds">${g.ds}</span>
+          <span class="kind">${g.kind}</span>
+        </button>`).join('')}
+    </div>
+    <p class="safe"><b>Bebe con cabeza.</b> Cualquier trago puede ser de agua y nadie está obligado a beber.<br>Si has bebido, no conduzcas: ningún juego del móvil puede medir el alcohol.</p>
+  </main>`;
+  app.onclick = e => {
+    const g = e.target.closest('[data-game]'); if(g){ blip(); openGame(g.dataset.game); return; }
+    const m = e.target.closest('[data-mode]'); if(m){ S.mode = m.dataset.mode; store('lp_mode', S.mode); blip(); home(); return; }
+    if(e.target.closest('#btnPlayers')){ blip(); playersModal(); }
+  };
+  window.scrollTo(0,0);
+}
+
+function gaugeMini(){
+  return `<svg viewBox="0 0 92 60" aria-hidden="true"><defs><linearGradient id="gm" x1="0" x2="1"><stop offset="0" stop-color="#3ee08f"/><stop offset=".5" stop-color="#ffb547"/><stop offset="1" stop-color="#ff3d6e"/></linearGradient></defs>
+  <path d="M8 52a38 38 0 0 1 76 0" fill="none" stroke="url(#gm)" stroke-width="9" stroke-linecap="round"/>
+  <line x1="46" y1="52" x2="68" y2="26" stroke="#fbeee4" stroke-width="4" stroke-linecap="round"/><circle cx="46" cy="52" r="5" fill="#fbeee4"/></svg>`;
+}
+
+function playersModal(onDone){
+  const m = document.createElement('div'); m.className = 'modal';
+  const draw = () => {
+    m.innerHTML = `<div class="panel" role="dialog" aria-label="Jugadores">
+      <h3>¿Quién juega?</h3>
+      <p class="muted">Los nombres salen en los retos, las misiones y los turnos. Se guardan en este móvil.</p>
+      <form class="addrow" id="addf"><input id="pname" maxlength="18" placeholder="Nombre" autocomplete="off"><button class="btn" type="submit">AÑADIR</button></form>
+      <div class="plist">${S.players.map((p,i) => `<span class="chip">${esc(p)}<button type="button" data-del="${i}" aria-label="Quitar ${esc(p)}">✕</button></span>`).join('') || '<span class="muted">Todavía no hay nadie.</span>'}</div>
+      <div class="actions"><button class="btn ghost" type="button" id="pclear">BORRAR TODOS</button><button class="btn" type="button" id="pdone">LISTO</button></div>
+    </div>`;
+    $('#addf', m).onsubmit = e => { e.preventDefault(); const v = $('#pname', m).value.trim(); if(v && !S.players.includes(v)){ S.players.push(v); store('lp_players', S.players); blip(); } draw(); $('#pname', m).focus(); };
+    $('#pclear', m).onclick = () => { S.players = []; store('lp_players', S.players); draw(); };
+    $('#pdone', m).onclick = () => { m.remove(); onDone ? onDone() : home(); };
+    m.querySelectorAll('[data-del]').forEach(b => b.onclick = () => { S.players.splice(+b.dataset.del, 1); store('lp_players', S.players); draw(); });
+  };
+  draw(); document.body.appendChild(m);
+  setTimeout(() => { const i = $('#pname', m); i && i.focus(); }, 50);
+}
+
+function openGame(id){
+  clearT();
+  const g = G.find(x => x.id === id);
+  app.onclick = null;
+  app.innerHTML = `
+  <section class="game" style="--c:${g.c}">
+    <header class="gbar">
+      <button class="round" id="back" aria-label="Volver al menú">←</button>
+      <div class="gt">${g.name}</div>
+      <button class="round" id="help" aria-label="Cómo se juega">?</button>
+    </header>
+    <div class="stage" id="stage"></div>
+  </section>`;
+  const stage = $('#stage');
+  $('#back').onclick = () => { blip(); home(); };
+  $('#help').onclick = () => {
+    if($('.sheet')) return;
+    const sh = document.createElement('div'); sh.className = 'sheet';
+    sh.innerHTML = rulesHTML(g) + '';
+    $('.game').appendChild(sh);
+    const b = $('.rules .btn', sh); b.textContent = 'SEGUIR JUGANDO'; b.onclick = e => { e.stopPropagation(); sh.remove(); };
+  };
+  stage.innerHTML = rulesHTML(g);
+  $('.rules .btn', stage).onclick = () => { blip(); stage.onclick = null; g.start(stage); };
+  window.scrollTo(0,0);
+}
+function rulesHTML(g){
+  return `<div class="rules pop">
+    <span class="ico">${I[g.id]}</span>
+    <h2>${g.name}</h2>
+    <ol>${g.rules.map(r => `<li><span>${r}</span></li>`).join('')}</ol>
+    <button class="btn">EMPEZAR</button>
+  </div>`;
+}
+const cardHTML = (label, text, foot, cls='') => `<div class="card pop"><div class="clabel">${label}</div><div class="ctext ${cls}">${text}</div>${foot ? `<div class="cfoot">${foot}</div>` : ''}</div>`;
+
+/* ---------- mazo simple ---------- */
+function simpleDeck(stage, o){
+  const d = Deck(o.deck);
+  const show = () => { stage.innerHTML = cardHTML(o.label, fill(d()), o.foot) + `<div class="actions"><button class="btn" data-a="next">SIGUIENTE</button></div><p class="hint">También puedes tocar la carta.</p>`; };
+  stage.onclick = e => { if(e.target.closest('[data-a=next]') || e.target.closest('.card')){ blip(); show(); } };
+  show();
+}
+
+/* ---------- prefieres ---------- */
+function prefieres(stage){
+  const d = Deck(pick([WYR, WYRP]));
+  const show = () => {
+    const [a,b] = shuffle(d());
+    stage.innerHTML = `<div class="wyr pop"><button class="opt a" data-o>${esc(a)}</button><div class="or">O</div><button class="opt b" data-o>${esc(b)}</button></div>
+    <p class="hint">A la de tres, cada uno dice la suya. <b>La minoría bebe.</b></p>
+    <div class="actions"><button class="btn" data-a="next">SIGUIENTE</button></div>`;
+  };
+  stage.onclick = e => {
+    const o = e.target.closest('[data-o]');
+    if(o){ blip(); stage.querySelectorAll('.opt').forEach(x => { x.classList.toggle('picked', x === o); x.classList.toggle('dim', x !== o); }); return; }
+    if(e.target.closest('[data-a=next]')){ blip(); show(); }
+  };
+  show();
+}
+
+/* ---------- verdad o reto ---------- */
+function verdad(stage){
+  const dt = Deck(pick([TRUTH, TRUTHP])), dr = Deck(pick([DARE, DAREP]));
+  let order = shuffle(S.players), i = 0;
+  const who = () => order.length ? order[i % order.length] : null;
+  const choose = () => {
+    const w = who();
+    stage.innerHTML = `<div class="turn pop"><small>${w ? 'Le toca a' : 'Le toca a'}</small><h2>${w ? esc(w) : 'quien tenga el móvil'}</h2></div>
+    <div class="actions"><button class="btn big" data-a="v">VERDAD</button><button class="btn big alt" data-a="r">RETO</button></div>
+    <p class="hint">Si no contestas o no lo haces: <b>3 tragos</b>.</p>`;
+  };
+  stage.onclick = e => {
+    const a = e.target.closest('[data-a]'); if(!a) return; blip();
+    if(a.dataset.a === 'v' || a.dataset.a === 'r'){
+      const isV = a.dataset.a === 'v', w = who();
+      stage.innerHTML = cardHTML(isV ? 'VERDAD' : 'RETO', fill((isV ? dt : dr)(), w ? [w] : []), (w ? esc(w) + ': ' : '') + 'si no ' + (isV ? 'contestas' : 'lo haces') + ', bebes 3.')
+        + `<div class="actions"><button class="btn" data-a="n">SIGUIENTE JUGADOR</button></div>`;
+    } else if(a.dataset.a === 'n'){ i++; choose(); }
+  };
+  choose();
+}
+
+/* ---------- quién es más probable ---------- */
+function quien(stage){
+  const d = Deck(pick([WHO, WHOP]));
+  const show = () => {
+    stage.innerHTML = cardHTML('¿QUIÉN ES MÁS PROBABLE QUE…', esc(d()) + '?', 'El más señalado bebe un trago por cada dedo que le apunte.')
+      + `<div class="actions"><button class="btn" data-a="go">3, 2, 1… SEÑALAD</button><button class="btn ghost" data-a="next">OTRA</button></div>`;
+  };
+  stage.onclick = e => {
+    const a = e.target.closest('[data-a]'); if(!a) return;
+    if(a.dataset.a === 'next'){ blip(); show(); return; }
+    if(a.dataset.a === 'go'){
+      const card = $('.card', stage); card.style.position = 'relative';
+      const ov = document.createElement('div'); ov.className = 'count'; card.appendChild(ov);
+      const seq = ['3','2','1','¡YA!'];
+      seq.forEach((n, k) => later(() => { ov.innerHTML = `<span style="${n.length>1?'font-size:clamp(70px,24vw,130px)':''}">${n}</span>`; tone(k<3?520:1040, k<3?.12:.35, 'square', .09); if(k===3) buzz(200); }, k*800));
+      later(() => ov.remove(), 4200);
+    }
+  };
+  show();
+}
+
+/* ---------- la bomba ---------- */
+function bomba(stage){
+  const d = Deck(CATS);
+  const bombHTML = lit => `<div class="bomb ${lit?'lit':''}" id="bomb"><div class="fuse"></div><div class="cap"></div><div class="body"></div><div class="spark"></div></div>`;
+  const ready = () => {
+    stage.innerHTML = cardHTML('CATEGORÍA', esc(d()), 'Di algo de la categoría y pasa el móvil. No se puede repetir.')
+      + bombHTML(false) + `<div class="actions"><button class="btn" data-a="lit">ENCENDER MECHA</button><button class="btn ghost" data-a="other">OTRA</button></div>`;
+  };
+  const light = () => {
+    const cat = $('.ctext', stage).textContent;
+    stage.innerHTML = `<div class="clabel" style="font-family:var(--disp);color:var(--c);letter-spacing:.08em">CATEGORÍA</div><div class="ctext" style="font-size:clamp(28px,8vw,40px);font-weight:800;text-align:center;justify-content:center;text-wrap:balance">${esc(cat)}</div>`
+      + bombHTML(true) + `<p class="hint">Di una y <b>pasa el móvil</b>.</p>`;
+    const total = 14000 + Math.random()*30000, t0 = performance.now();
+    const tick = () => {
+      const el = performance.now() - t0;
+      if(el >= total){ explode(); return; }
+      const r = el / total, gap = 650 - r*520;
+      const b = $('#bomb'); if(b){ b.classList.remove('tick'); void b.offsetWidth; b.classList.add('tick'); }
+      tone(r > .75 ? 1200 : 900, .04, 'square', .05);
+      later(tick, gap);
+    };
+    tick();
+  };
+  const explode = () => {
+    boom(); buzz([500,80,300]);
+    const fx = document.createElement('div'); fx.className = 'boomfx'; document.body.appendChild(fx); setTimeout(() => fx.remove(), 1000);
+    const gm = $('.game'); gm.classList.add('shake'); setTimeout(() => gm.classList.remove('shake'), 600);
+    stage.innerHTML = `<div class="bigword pop">¡BOOM!</div><p class="hint" style="font-size:19px">Quien tenga el móvil en la mano <b>bebe 2 tragos</b>.</p>
+      <div class="actions"><button class="btn" data-a="again">OTRA RONDA</button></div>`;
+  };
+  stage.onclick = e => {
+    const a = e.target.closest('[data-a]'); if(!a) return; blip();
+    if(a.dataset.a === 'lit') light();
+    else ready();
+  };
+  ready();
+}
+
+/* ---------- pasar el móvil (impostor y misiones) ---------- */
+function setupPass(stage, title, extraHTML, go){
+  let n = Math.max(3, S.players.length || 4);
+  const draw = () => {
+    stage.innerHTML = `<div class="rules pop" style="gap:16px">
+      <p class="sub">${title}</p>
+      ${S.players.length >= 3
+        ? `<div class="plist">${S.players.map(p => `<span class="chip">${esc(p)}</span>`).join('')}</div><button class="btn ghost" data-a="edit" style="flex:0 0 auto">CAMBIAR JUGADORES</button>`
+        : `<p class="hint" style="text-align:left">¿Cuántos jugáis? Si añadís vuestros nombres, saldrán en pantalla.</p>
+           <div class="stepper"><button class="round" data-a="minus" aria-label="Menos">−</button><b>${n}</b><button class="round" data-a="plus" aria-label="Más">+</button></div>
+           <button class="btn ghost" data-a="edit" style="flex:0 0 auto">AÑADIR NOMBRES</button>`}
+      ${extraHTML || ''}
+      <button class="btn" data-a="deal">REPARTIR</button>
+    </div>`;
+  };
+  stage.onclick = e => {
+    const a = e.target.closest('[data-a]'); if(!a) return; blip();
+    if(a.dataset.a === 'minus'){ n = Math.max(3, n-1); draw(); }
+    else if(a.dataset.a === 'plus'){ n = Math.min(16, n+1); draw(); }
+    else if(a.dataset.a === 'edit'){ playersModal(() => { n = Math.max(3, S.players.length || n); draw(); }); }
+    else if(a.dataset.a === 'toggle'){ a.classList.toggle('on'); }
+    else if(a.dataset.a === 'deal'){
+      const names = S.players.length >= 3 ? S.players.slice() : Array.from({length:n}, (_, k) => 'Jugador ' + (k+1));
+      go(names, stage.querySelector('.toggle') ? stage.querySelector('.toggle').classList.contains('on') : false);
+    }
+  };
+  draw();
+}
+function passRound(stage, names, reveal, onEnd){
+  let i = 0;
+  const pass = () => {
+    stage.innerHTML = `<div class="turn pop"><small>Pásale el móvil a</small><h2>${esc(names[i])}</h2></div>
+      <p class="hint">Que nadie más mire la pantalla.</p>
+      <div class="actions"><button class="btn big" data-a="see">VER LO MÍO</button></div>`;
+  };
+  stage.onclick = e => {
+    const a = e.target.closest('[data-a]'); if(!a) return; blip();
+    if(a.dataset.a === 'see'){
+      stage.innerHTML = reveal(i) + `<div class="actions"><button class="btn" data-a="hide">${i < names.length-1 ? 'OCULTAR Y PASAR' : 'OCULTAR'}</button></div>`;
+    } else if(a.dataset.a === 'hide'){
+      i++; if(i < names.length) pass(); else onEnd();
+    }
+  };
+  pass();
+}
+
+/* ---------- impostor ---------- */
+function impostor(stage){
+  const dw = Deck(WORDS);
+  const round = (names, hint) => {
+    const [w, cat] = dw(), imp = Math.random()*names.length|0;
+    passRound(stage, names, i => i === imp
+      ? cardHTML('TU PAPEL', 'ERES EL IMPOSTOR', hint ? `Pista: el tema es <b>${cat}</b>. Disimula.` : 'No sabes la palabra. Escucha y disimula.', 'huge')
+      : cardHTML('TU PALABRA', esc(w), 'No la digas. Da pistas sin que el impostor la adivine.', 'huge'),
+      () => {
+        const first = rnd(names);
+        stage.innerHTML = cardHTML('TODO REPARTIDO', `Empieza <span style="color:var(--c)">${esc(first)}</span>.`, 'Por turnos, cada uno dice <b>una palabra</b> relacionada. Después, a la de tres, todos señalan al impostor.')
+          + `<div class="actions"><button class="btn" data-a="rev">DESTAPAR AL IMPOSTOR</button></div>`;
+        stage.onclick = e => {
+          const a = e.target.closest('[data-a]'); if(!a) return; blip();
+          if(a.dataset.a === 'rev'){
+            tone(300,.15,'sawtooth',.06); later(() => tone(200,.3,'sawtooth',.06), 160);
+            stage.innerHTML = `<div class="turn pop"><small>El impostor era</small><h2>${esc(names[imp])}</h2></div>
+              ${cardHTML('LA PALABRA ERA', esc(w), '¿Le habéis pillado? <b>Bebe 3</b>. ¿No? <b>Bebéis todos 2</b>.', 'huge')}
+              <div class="actions"><button class="btn" data-a="again">OTRA RONDA</button></div>`;
+          } else if(a.dataset.a === 'again') round(names, hint);
+        };
+      });
+  };
+  setupPass(stage, 'Jugadores', `<button class="toggle on" data-a="toggle"><i></i><span>El impostor recibe una pista del tema</span></button>`, round);
+}
+
+/* ---------- misiones ---------- */
+function misiones(stage){
+  setupPass(stage, 'Jugadores', '', names => {
+    const d = Deck(MISSIONS), got = names.map(n => fill(d(), [n]));
+    passRound(stage, names, i => cardHTML('MISIÓN SECRETA', got[i], 'Cúmplela esta noche sin que nadie se dé cuenta.'), () => {
+      let armed = false;
+      const end = () => {
+        stage.innerHTML = cardHTML('MISIONES REPARTIDAS', 'Que empiece el juego.', 'Si sospechas de alguien, di <b>«¡TE PILLÉ!»</b>. Si aciertas, bebe él 2. Si fallas, bebes tú. Quien la cumpla sin que le pillen, reparte 3 tragos.')
+          + `<div class="actions"><button class="btn ghost" data-a="all">DESTAPAR TODAS</button></div><p class="hint">Solo al final de la noche.</p>`;
+      };
+      stage.onclick = e => {
+        const a = e.target.closest('[data-a]'); if(!a) return; blip();
+        if(a.dataset.a === 'all'){
+          if(!armed){ armed = true; a.textContent = '¿SEGURO? TOCA OTRA VEZ'; a.classList.remove('ghost'); return; }
+          stage.innerHTML = `<p class="sub">Las misiones de la noche</p><div class="list">${names.map((n,i) => `<div><b>${esc(n)}</b><br>${got[i]}</div>`).join('')}</div>
+            <div class="actions"><button class="btn" data-a="new">REPARTIR OTRAS</button></div>`;
+        } else if(a.dataset.a === 'new') misiones(stage);
+      };
+      end();
+    });
+  });
+}
+
+/* ---------- cartas ---------- */
+const RANKS = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'], SUITS = ['♠','♥','♦','♣'];
+const VAL = r => r === 'A' ? 14 : r === 'J' ? 11 : r === 'Q' ? 12 : r === 'K' ? 13 : +r;
+const newDeck = () => shuffle(RANKS.flatMap(r => SUITS.map(s => ({r, s}))));
+const pcard = (c, cls='') => { const red = c.s === '♥' || c.s === '♦'; const s = c.s + '︎'; return `<div class="pcard ${red?'red':''} ${cls}"><span class="tl">${c.r}<br>${s}</span><span class="mid">${s}</span><span class="br">${c.r}<br>${s}</span></div>`; };
+
+function rey(stage){
+  let deck = newDeck(), kings = 0;
+  const draw = c => {
+    const left = deck.length;
+    let rule = c ? KING[c.r] : null;
+    if(c && c.r === 'K'){ kings++; if(kings === 4) rule = ['¡CUARTO REY!','Te bebes la copa del centro entera. O agua, si vas servido.']; }
+    stage.innerHTML = `<div class="counters"><span>Quedan <b>${left}</b></span><span>Reyes <b>${kings}/4</b></span></div>
+      ${c ? pcard(c, 'flip') : `<div class="pcard back"></div>`}
+      ${rule ? `<div class="rule pop"><h3>${rule[0]}</h3><p>${rule[1]}</p></div>` : `<p class="hint">Saca una carta por turnos.</p>`}
+      <div class="actions">${left ? `<button class="btn" data-a="draw">SACAR CARTA</button>` : `<button class="btn" data-a="reset">BARAJAR DE NUEVO</button>`}</div>`;
+    if(c && c.r === 'K'){ tone(kings===4?220:440, kings===4?.6:.2, 'sawtooth', .07); if(kings===4) buzz([300,100,300]); }
+  };
+  stage.onclick = e => {
+    const a = e.target.closest('[data-a]'); if(!a) return; blip();
+    if(a.dataset.a === 'draw') draw(deck.pop());
+    else { deck = newDeck(); kings = 0; draw(null); }
+  };
+  draw(null);
+}
+
+function mayor(stage){
+  let deck = newDeck(), cur = deck.pop(), streak = 0;
+  const show = (msg='', cls='') => {
+    if(deck.length < 2){ deck = newDeck(); }
+    stage.innerHTML = `<div class="counters"><span>Racha <b>${streak}</b></span></div>
+      <div class="msg ${cls}">${msg}</div>
+      ${pcard(cur, 'flip')}
+      <div class="actions"><button class="btn" data-a="up">MAYOR ▲</button><button class="btn alt" data-a="down">MENOR ▼</button></div>
+      <p class="hint">¿La siguiente será mayor o menor? El as es la más alta.</p>`;
+  };
+  stage.onclick = e => {
+    const a = e.target.closest('[data-a]'); if(!a) return;
+    const nx = deck.pop(), dv = VAL(nx.r) - VAL(cur.r); cur = nx;
+    if(dv === 0){ tone(600,.2,'triangle',.08); show('¡Igual! Bebe todo el mundo menos tú.', 'good'); }
+    else if((dv > 0) === (a.dataset.a === 'up')){ streak++; tone(500+streak*80,.1,'triangle',.08); show(streak >= 3 ? `¡Racha de ${streak}! Puedes pasar el móvil.` : '¡Bien!', 'good'); }
+    else { const n = Math.max(1, streak); streak = 0; tone(160,.35,'sawtooth',.08); buzz(250); show(`Fallaste. Bebes ${n} trago${n>1?'s':''} y pasas el móvil.`, 'bad'); }
+  };
+  show();
+}
+
+/* ---------- botella ---------- */
+function botella(stage){
+  let rot = 0, spinning = false;
+  stage.innerHTML = `<div class="table" id="tbl">
+    <svg class="bottle" id="btl" viewBox="0 0 92 280" aria-label="Botella">
+      <defs><linearGradient id="bg1" x1="0" x2="1"><stop offset="0" stop-color="#0e6b52"/><stop offset=".45" stop-color="#27b58a"/><stop offset="1" stop-color="#0a4a39"/></linearGradient></defs>
+      <rect x="36" y="4" width="20" height="14" rx="3" fill="#ffd166"/>
+      <path d="M38 18h16v52c0 12 26 26 26 50v142a14 14 0 0 1-14 14H26a14 14 0 0 1-14-14V120c0-24 26-38 26-50z" fill="url(#bg1)"/>
+      <rect x="18" y="150" width="56" height="64" rx="6" fill="#fdf7ef"/>
+      <text x="46" y="178" text-anchor="middle" font-family="Bowlby One, Arial Black, sans-serif" font-size="13" fill="#1a0a12">LA</text>
+      <text x="46" y="196" text-anchor="middle" font-family="Bowlby One, Arial Black, sans-serif" font-size="12" fill="#ff4f7b">PREVIA</text>
+      <path d="M22 120c2-16 14-26 18-32" stroke="rgba(255,255,255,.35)" stroke-width="5" fill="none" stroke-linecap="round"/>
+    </svg></div>
+    <div class="msg" id="bmsg">Toca la botella</div>
+    <div class="actions"><button class="btn" data-a="spin">GIRAR</button></div>`;
+  const btl = $('#btl');
+  stage.onclick = e => {
+    if(spinning || !(e.target.closest('[data-a=spin]') || e.target.closest('#tbl'))) return;
+    spinning = true; ac();
+    $('#bmsg').textContent = 'Girando…';
+    rot += 1440 + Math.random()*1800; btl.style.transform = `rotate(${rot}deg)`;
+    for(let k=0;k<22;k++) later(() => tone(900 - k*25, .03, 'triangle', .05), Math.pow(k/22, 2.2)*3800);
+    later(() => { spinning = false; tone(880,.25,'sine',.1); buzz(120); $('#bmsg').innerHTML = `Le toca a quien apunta el cuello:<br><span style="color:var(--c)">${rnd(['verdad, reto o 2 tragos','verdad o 3 tragos','reto o 3 tragos','bebe con quien elija','cuenta un secreto o bebe 2'])}</span>`; }, 4250);
+  };
+}
+
+/* ---------- el dedo ---------- */
+function dedo(stage){
+  const COLS = ['#ff4f7b','#ffb547','#4fc3ff','#5fe0a8','#b98cff','#ff9f45','#6fe7ff','#c3f36b','#ff8fb1','#9aa7ff'];
+  stage.innerHTML = `<div class="zone" id="zone"><div class="zmsg" id="zmsg"><b>Todos un dedo en la pantalla</b><span>Mínimo dos. Quietos hasta que elija.</span></div><div class="zbar" id="zbar"></div></div>`;
+  const zone = $('#zone'), zmsg = $('#zmsg'), zbar = $('#zbar');
+  const P = new Map(); let ci = 0, timer = null, done = false;
+  const reset = () => { if(timer){ clearTimeout(timer); timer = null; } zbar.classList.remove('run'); void zbar.offsetWidth; };
+  const arm = () => {
+    reset(); if(done) return;
+    if(P.size >= 2){ zbar.classList.add('run'); zmsg.innerHTML = `<b>¡Quietos!</b><span>${P.size} dedos</span>`; timer = setTimeout(choose, 2400); }
+    else zmsg.innerHTML = P.size ? `<b>Falta alguien más</b><span>Mínimo dos dedos</span>` : `<b>Todos un dedo en la pantalla</b><span>Mínimo dos. Quietos hasta que elija.</span>`;
+  };
+  S.cleanup.push(reset);
+  const choose = () => {
+    done = true; zbar.classList.remove('run');
+    const ids = [...P.keys()], win = rnd(ids);
+    P.forEach((v, k) => v.el.classList.add(k === win ? 'win' : 'out'));
+    boom(); buzz([200,60,200]);
+    zmsg.innerHTML = '';
+    const vd = document.createElement('div'); vd.className = 'verdict';
+    vd.innerHTML = `<b>¡TE TOCA!</b>${rnd(PUNISH)}<div style="font-size:13px;font-weight:600;margin-top:6px;color:#6b4a5c">Levantad los dedos para otra ronda</div>`;
+    zone.appendChild(vd);
+  };
+  const pos = e => { const r = zone.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
+  zone.addEventListener('pointerdown', e => {
+    e.preventDefault(); ac();
+    if(done) return;
+    const [x,y] = pos(e), el = document.createElement('div');
+    el.className = 'finger'; el.style.setProperty('--fc', COLS[ci++ % COLS.length]); el.style.left = x+'px'; el.style.top = y+'px';
+    zone.appendChild(el); P.set(e.pointerId, {el}); tone(400 + P.size*90, .07, 'triangle', .07); arm();
+  });
+  zone.addEventListener('pointermove', e => { const p = P.get(e.pointerId); if(p){ const [x,y] = pos(e); p.el.style.left = x+'px'; p.el.style.top = y+'px'; } });
+  const up = e => {
+    const p = P.get(e.pointerId); if(!p) return;
+    P.delete(e.pointerId);
+    if(done){ if(!P.size){ zone.querySelectorAll('.finger,.verdict').forEach(n => n.remove()); done = false; arm(); } return; }
+    p.el.remove(); arm();
+  };
+  zone.addEventListener('pointerup', up); zone.addEventListener('pointercancel', up); zone.addEventListener('pointerleave', up);
+  zone.addEventListener('contextmenu', e => e.preventDefault());
+}
+
+/* ---------- normas ---------- */
+function normas(stage){
+  const d = Deck(RULES_NEW); let cur = fill(d()); const act = load('lp_normas', []);
+  const show = () => {
+    stage.innerHTML = cardHTML('NORMA NUEVA', cur, 'Quien la rompa, bebe.')
+      + `<div class="actions"><button class="btn ghost" data-a="next">OTRA</button><button class="btn" data-a="on">ACTIVAR</button></div>
+      <div class="active"><h4>Normas activas (${act.length})</h4>${act.length ? act.map((n,i) => `<div class="n"><span>${n}</span><button data-del="${i}" aria-label="Quitar norma">✕</button></div>`).join('') : '<p class="muted">Ninguna todavía.</p>'}</div>`;
+  };
+  stage.onclick = e => {
+    const x = e.target.closest('[data-del]'); if(x){ act.splice(+x.dataset.del, 1); store('lp_normas', act); blip(); show(); return; }
+    const a = e.target.closest('[data-a]'); if(!a) return; blip();
+    if(a.dataset.a === 'on' && !act.includes(cur)){ act.unshift(cur); store('lp_normas', act); tone(880,.12,'triangle',.08); }
+    cur = fill(d()); show();
+  };
+  show();
+}
+
+/* =========================================================
+   ¿CUÁNTO VAS?
+   ========================================================= */
+const LEVELS = [
+ ['Agua mineral','¿Seguro que has bebido algo?'],['Fresco como una lechuga','Aún estás de calentamiento.'],['Chispita','Empiezas a caer bien a todo el mundo.'],['Contentillo','Ya te ríes de todo.'],['Alegre de más','Hablas un poco más alto de lo normal.'],['Modo abrazos','Quieres mucho a todo el mundo.'],['Hablando inglés sin saber','«I love you, bro».'],['Bailando sin música','No hace falta canción.'],['Mandando audios','Suelta el móvil, por tu bien.'],['Filósofo del bordillo','Tienes la teoría del universo.'],['Llama a tu madre','La noche ha terminado para ti.']
+];
+function cuanto(stage){
+  let sel = S.players[0] || '';
+  const draw = () => {
+    const rk = S.ranking.slice().sort((a,b) => b.lvl - a.lvl);
+    stage.innerHTML = `<div class="rules pop" style="gap:16px">
+      <p class="sub">¿Quién se examina?</p>
+      ${S.players.length ? `<div class="pick">${S.players.map(p => `<button data-p="${esc(p)}" class="${p===sel?'on':''}">${esc(p)}</button>`).join('')}</div>` : ''}
+      <form class="addrow" id="nf"><input id="nm" maxlength="18" placeholder="${S.players.length ? 'U otro nombre' : 'Tu nombre'}" value="" autocomplete="off"></form>
+      <div class="list">
+        <div><b>1. Reflejos.</b> Toca en cuanto se ponga verde.</div>
+        <div><b>2. Pulso.</b> Sigue la diana con el dedo sin salirte.</div>
+        <div><b>3. Memoria.</b> Repite la secuencia de colores.</div>
+        <div><b>4. Colores.</b> Di el color de la tinta, no la palabra.</div>
+        <div><b>5. Trabalenguas.</b> En voz alta. La mesa juzga.</div>
+      </div>
+      <button class="btn" data-a="go">EMPEZAR LAS PRUEBAS</button>
+      ${rk.length ? rankHTML(rk) + `<button class="btn ghost" data-a="clr" style="flex:0 0 auto">BORRAR RANKING</button>` : ''}
+    </div>`;
+    $('#nf').onsubmit = e => { e.preventDefault(); start(); };
+  };
+  const start = () => {
+    const typed = $('#nm') ? $('#nm').value.trim() : '';
+    const name = typed || sel || 'Anónimo';
+    runTests(stage, name, () => cuanto(stage));
+  };
+  stage.onclick = e => {
+    const p = e.target.closest('[data-p]'); if(p){ sel = p.dataset.p; blip(); draw(); return; }
+    const a = e.target.closest('[data-a]'); if(!a) return; blip();
+    if(a.dataset.a === 'go') start();
+    else if(a.dataset.a === 'clr'){ S.ranking = []; store('lp_rank', []); draw(); }
+  };
+  draw();
+}
+function rankHTML(rk){
+  return `<p class="sub" style="margin-top:6px">Ranking de la noche · el más perjudicado arriba</p>
+  <div class="rank">${rk.slice(0,10).map((r,i) => `<div><i>${i+1}</i><span>${esc(r.name)} <span style="color:var(--mute);font-size:13px">· ${LEVELS[r.lvl][0]}</span></span><em>${r.lvl}/10</em></div>`).join('')}</div>`;
+}
+
+function runTests(stage, name, back){
+  const R = {};
+  const tests = [
+    {k:'ref', t:'REFLEJOS', d:'Pon el dedo encima y toca <b>en cuanto se ponga verde</b>. Tres intentos. Si te adelantas, penaliza.', run:tReflex},
+    {k:'pul', t:'PULSO', d:'Pon el dedo en la diana y <b>síguela sin levantarlo</b> durante 7 segundos.', run:tPulse},
+    {k:'mem', t:'MEMORIA', d:'Mira la secuencia de colores y <b>repítela</b>. Cada vez es más larga.', run:tSimon},
+    {k:'str', t:'COLORES', d:'Sale una palabra pintada de un color. Toca <b>el color de la tinta</b>, no lo que pone. 15 segundos.', run:tStroop},
+    {k:'tw', t:'TRABALENGUAS', d:'Léelo <b>en voz alta y rápido</b>. La mesa decide cómo te ha salido.', run:tTwister}
+  ];
+  let i = 0;
+  const steps = () => `<div class="steps">${tests.map((_,k) => `<i class="${k<i?'done':k===i?'on':''}"></i>`).join('')}</div>`;
+  const intro = () => {
+    const T = tests[i];
+    stage.onclick = null;
+    stage.innerHTML = steps() + `<div class="rules pop"><p class="sub">${esc(name)} · prueba ${i+1} de ${tests.length}</p><h2>${T.t}</h2><p class="hint" style="text-align:left;font-size:17px">${T.d}</p><button class="btn" id="goT">LISTO</button></div>`;
+    $('#goT').onclick = () => { blip(); stage.innerHTML = steps() + '<div id="tz" style="width:100%;display:flex;flex-direction:column;gap:16px;align-items:center"></div>'; T.run($('#tz'), v => { R[T.k] = v; i++; i < tests.length ? later(intro, 700) : later(() => result(stage, name, R, back), 700); }); };
+  };
+  intro();
+}
+
+function tReflex(box, done){
+  const times = []; let state = 'idle', t0 = 0, tries = 0;
+  box.innerHTML = `<div class="pad" id="pad"><b>Espera…</b><span>Intento 1 de 3</span></div>`;
+  const pad = $('#pad', box);
+  const arm = () => {
+    state = 'wait'; pad.className = 'pad'; pad.innerHTML = `<b>Espera…</b><span>Intento ${tries+1} de 3</span>`;
+    later(() => { if(state !== 'wait') return; state = 'go'; t0 = performance.now(); pad.className = 'pad go'; pad.innerHTML = '<b>¡YA!</b><span>Toca</span>'; tone(1000,.06,'square',.06); }, 1100 + Math.random()*2600);
+  };
+  pad.addEventListener('pointerdown', e => {
+    e.preventDefault();
+    if(state === 'wait'){ state = 'x'; times.push(800); tries++; pad.className = 'pad early'; pad.innerHTML = '<b>¡Pronto!</b><span>Cuenta como 800 ms</span>'; buzz(150); tone(180,.2,'sawtooth',.07); }
+    else if(state === 'go'){ state = 'x'; const ms = Math.round(performance.now() - t0); times.push(ms); tries++; pad.className = 'pad'; pad.innerHTML = `<b>${ms} ms</b><span>${ms<280?'Rapidísimo':ms<380?'Bien':ms<500?'Regular':'Lento'}</span>`; blip(); }
+    else return;
+    later(() => tries < 3 ? arm() : done(Math.round(times.reduce((a,b) => a+b, 0) / times.length)), 1000);
+  });
+  later(arm, 400);
+}
+
+function tPulse(box, done){
+  box.innerHTML = `<div class="pad" id="pad" style="justify-content:flex-start;padding-top:18px"><div class="timebar" id="tb" style="width:0"></div><span id="pm">Pon el dedo en la diana</span><div class="target" id="tg"></div></div>`;
+  const pad = $('#pad', box), tg = $('#tg', box), tb = $('#tb', box), pm = $('#pm', box);
+  let W, H, cx, cy, px = -999, py = -999, down = false, started = false, tin = 0, tall = 0, T0 = 0, finished = false;
+  const measure = () => { const r = pad.getBoundingClientRect(); W = r.width; H = r.height; };
+  measure(); cx = W/2; cy = H/2 + 10; tg.style.left = cx+'px'; tg.style.top = cy+'px';
+  const loc = e => { const r = pad.getBoundingClientRect(); px = e.clientX - r.left; py = e.clientY - r.top; };
+  pad.addEventListener('pointerdown', e => {
+    e.preventDefault(); loc(e); down = true; try{ pad.setPointerCapture(e.pointerId); }catch(_){}
+    if(!started && Math.hypot(px-cx, py-cy) < 60){ started = true; T0 = performance.now(); pm.textContent = 'Síguela sin salirte'; blip(); loop(); }
+  });
+  pad.addEventListener('pointermove', e => { if(down) loc(e); });
+  const up = () => { down = false; }; pad.addEventListener('pointerup', up); pad.addEventListener('pointercancel', up);
+  const loop = () => frame(t => {
+    if(finished) return false;
+    const el = (performance.now() - T0) / 1000, sp = 1 + el*0.12;
+    cx = W/2 + Math.sin(el*1.1*sp) * W*0.32; cy = H/2 + 10 + Math.sin(el*1.55*sp + 1) * H*0.3;
+    tg.style.left = cx+'px'; tg.style.top = cy+'px';
+    const ok = down && Math.hypot(px-cx, py-cy) < 46;
+    tall++; if(ok) tin++;
+    tg.classList.toggle('in', ok); tg.classList.toggle('miss', !ok);
+    tb.style.width = Math.min(100, el/7*100) + '%';
+    if(el >= 7){ finished = true; const pct = Math.round(tin/Math.max(1,tall)*100); pm.textContent = `${pct}% dentro`; blip(); later(() => done(pct), 600); return false; }
+  });
+}
+
+function tSimon(box, done){
+  const C = ['#ff4f7b','#4fc3ff','#5fe0a8','#ffd166'], F = [330, 440, 554, 659];
+  box.innerHTML = `<div class="msg" id="sm">Mira bien…</div><div class="simon" id="sg">${C.map((c,k) => `<button data-k="${k}" style="background:${c}" aria-label="Color ${k+1}" disabled></button>`).join('')}</div>`;
+  const sm = $('#sm', box), btns = [...box.querySelectorAll('[data-k]')];
+  let seq = [rnd([0,1,2,3]), rnd([0,1,2,3])], best = 2, pos = 0;
+  const flash = k => { btns[k].classList.add('lit'); tone(F[k], .25, 'sine', .12); later(() => btns[k].classList.remove('lit'), 320); };
+  const play = () => {
+    seq.push(rnd([0,1,2,3])); pos = 0; btns.forEach(b => b.disabled = true); sm.textContent = `Mira bien… (${seq.length})`;
+    seq.forEach((k, j) => later(() => flash(k), 600 + j*520));
+    later(() => { btns.forEach(b => b.disabled = false); sm.textContent = 'Tu turno'; }, 600 + seq.length*520);
+  };
+  box.onclick = e => {
+    const b = e.target.closest('[data-k]'); if(!b || b.disabled) return;
+    const k = +b.dataset.k; flash(k);
+    if(k !== seq[pos]){ btns.forEach(x => x.disabled = true); sm.className = 'msg bad'; sm.textContent = `Fallo. Llegaste a ${best}`; buzz(200); later(() => done(best), 900); return; }
+    pos++;
+    if(pos === seq.length){ best = seq.length; btns.forEach(x => x.disabled = true); if(best >= 9){ sm.className = 'msg good'; sm.textContent = '¡Memoria perfecta!'; later(() => done(best), 900); } else { sm.className = 'msg good'; sm.textContent = '¡Bien!'; later(() => { sm.className = 'msg'; play(); }, 700); } }
+  };
+  play();
+}
+
+function tStroop(box, done){
+  const N = [['ROJO','#ff4f4f'],['AZUL','#4f9dff'],['VERDE','#3ee08f'],['AMARILLO','#ffd23f']];
+  let ok = 0, bad = 0, ink = 0, end = false;
+  box.innerHTML = `<div class="counters"><span>Aciertos <b id="sok">0</b></span><span>Fallos <b id="sbad">0</b></span></div>
+    <div class="pad" style="min-height:160px"><div class="timebar" id="tb"></div><div class="stroopw" id="sw"></div></div>
+    <div class="cgrid">${N.map((n,k) => `<button class="btn ghost" data-k="${k}">${n[0]}</button>`).join('')}</div>`;
+  const sw = $('#sw', box), tb = $('#tb', box);
+  const next = () => { const w = rnd([0,1,2,3]); ink = Math.random() < .8 ? rnd([0,1,2,3].filter(x => x !== w)) : w; sw.textContent = N[w][0]; sw.style.color = N[ink][1]; };
+  box.onclick = e => {
+    const b = e.target.closest('[data-k]'); if(!b || end) return;
+    if(+b.dataset.k === ink){ ok++; tone(700,.05,'triangle',.07); } else { bad++; tone(160,.12,'sawtooth',.06); buzz(60); }
+    $('#sok', box).textContent = ok; $('#sbad', box).textContent = bad; next();
+  };
+  next();
+  const T0 = performance.now();
+  frame(() => { const r = (performance.now() - T0) / 15000; tb.style.width = Math.max(0, 100 - r*100) + '%'; if(r >= 1){ end = true; sw.textContent = 'TIEMPO'; sw.style.color = 'var(--ink)'; later(() => done(ok - bad), 800); return false; } });
+}
+
+function tTwister(box, done){
+  box.innerHTML = `<div class="card pop" style="min-height:220px"><div class="clabel">EN VOZ ALTA</div><div class="twister" style="flex:1;display:flex;align-items:center;justify-content:center">${esc(rnd(TWISTERS))}</div></div>
+    <p class="hint">¿Cómo le ha salido? <b>Decide la mesa.</b></p>
+    <div class="actions" style="flex-direction:column"><button class="btn" data-v="100" style="--c:#3ee08f">LO HA CLAVADO</button><button class="btn" data-v="50">A MEDIAS</button><button class="btn alt" data-v="0">UN DESASTRE</button></div>`;
+  box.onclick = e => { const b = e.target.closest('[data-v]'); if(!b) return; blip(); box.onclick = null; done(+b.dataset.v); };
+}
+
+function result(stage, name, R, back){
+  const cl = v => Math.max(0, Math.min(100, v));
+  const sc = {
+    ref: cl((650 - R.ref) / (650 - 260) * 100),
+    pul: cl(R.pul),
+    mem: cl((R.mem - 2) / 6 * 100),
+    str: cl(R.str / 12 * 100),
+    tw: R.tw
+  };
+  const sober = (sc.ref*1.2 + sc.pul + sc.mem + sc.str + sc.tw*.8) / 5;
+  const lvl = Math.max(0, Math.min(10, Math.round((100 - sober) / 10)));
+  const lc = lvl <= 3 ? '#3ee08f' : lvl <= 6 ? '#ffb547' : '#ff3d6e';
+  S.ranking.push({name, lvl, t: Date.now()}); store('lp_rank', S.ranking);
+  const ang = -90 + lvl * 18;
+  const v = [
+    ['¿Te deja entrar el portero?', lvl <= 5 ? 'Pasas. Actúa normal.' : lvl <= 7 ? 'Depende del portero. Tú no hables.' : 'No pasas. Ni lo intentes.', lvl <= 5 ? 'SÍ' : lvl <= 7 ? 'QUIZÁ' : 'NO', lvl <= 5 ? '#3ee08f' : lvl <= 7 ? '#ffb547' : '#ff3d6e'],
+    ['¿Le escribes al ex?', lvl <= 2 ? 'Tú verás… pero no.' : 'Móvil bloqueado. Dáselo a un amigo.', 'NO', '#ff3d6e'],
+    ['¿Otra ronda?', lvl <= 4 ? 'Venga, sí.' : lvl <= 7 ? 'Primero un vaso de agua.' : 'Solo agua. Y algo de comer.', lvl <= 4 ? 'SÍ' : lvl <= 7 ? 'AGUA' : 'NO', lvl <= 4 ? '#3ee08f' : lvl <= 7 ? '#ffb547' : '#ff3d6e']
+  ];
+  const bar = (label, pct, val) => `<div><span>${label}</span><i><s style="width:${Math.round(pct)}%"></s></i><b>${val}</b></div>`;
+  stage.onclick = null;
+  stage.innerHTML = `<div class="result pop">
+    <span class="who">${esc(name)}</span>
+    <svg class="gauge" viewBox="0 0 200 118" role="img" aria-label="Nivel ${lvl} de 10">
+      <defs><linearGradient id="gg" x1="0" x2="1"><stop offset="0" stop-color="#3ee08f"/><stop offset=".5" stop-color="#ffb547"/><stop offset="1" stop-color="#ff3d6e"/></linearGradient></defs>
+      <path d="M20 104a80 80 0 0 1 160 0" fill="none" stroke="#3a1f2f" stroke-width="20" stroke-linecap="round"/>
+      <path d="M20 104a80 80 0 0 1 160 0" fill="none" stroke="url(#gg)" stroke-width="14" stroke-linecap="round"/>
+      <text x="14" y="117" font-size="10" fill="#8a6c7c" font-family="Bricolage Grotesque, sans-serif">0</text>
+      <text x="100" y="15" font-size="10" fill="#8a6c7c" text-anchor="middle" font-family="Bricolage Grotesque, sans-serif">5</text>
+      <text x="186" y="117" font-size="10" fill="#8a6c7c" text-anchor="end" font-family="Bricolage Grotesque, sans-serif">10</text>
+      <g class="needle" id="ndl" style="transform:rotate(-90deg)"><line x1="100" y1="104" x2="100" y2="34" stroke="#fbeee4" stroke-width="5" stroke-linecap="round"/></g>
+      <circle cx="100" cy="104" r="9" fill="#fbeee4"/>
+    </svg>
+    <div class="lvl" style="--lc:${lc}"><b>${lvl}/10 · ${LEVELS[lvl][0]}</b><span>${LEVELS[lvl][1]}</span></div>
+    <div class="verd">
+      ${v.map(x => `<div><small>${x[0]}</small><strong>${x[1]}</strong><em style="background:${x[3]}">${x[2]}</em></div>`).join('')}
+      <div class="drive"><small>¿Puedes conducir?</small><strong>Si has bebido, no. Esta prueba no mide el alcohol: pide un taxi o que conduzca quien no ha bebido.</strong><em style="background:#6fb7ff">NO</em></div>
+    </div>
+    <div class="bars">
+      ${bar('Reflejos', sc.ref, R.ref + ' ms')}
+      ${bar('Pulso', sc.pul, R.pul + ' %')}
+      ${bar('Memoria', sc.mem, R.mem + ' colores')}
+      ${bar('Colores', sc.str, R.str + ' netos')}
+      ${bar('Trabalenguas', sc.tw, R.tw === 100 ? 'Clavado' : R.tw === 50 ? 'A medias' : 'Desastre')}
+    </div>
+    <div class="actions"><button class="btn" id="again">SIGUIENTE JUGADOR</button></div>
+    ${rankHTML(S.ranking.slice().sort((a,b) => b.lvl - a.lvl))}
+  </div>`;
+  requestAnimationFrame(() => requestAnimationFrame(() => { const n = $('#ndl'); if(n) n.style.transform = `rotate(${ang}deg)`; }));
+  for(let k=0;k<=lvl;k++) later(() => tone(300 + k*60, .06, 'triangle', .06), 200 + k*120);
+  if(lvl >= 8) later(() => buzz([200,80,200]), 1500);
+  $('#again').onclick = () => { blip(); back(); };
+  window.scrollTo(0,0);
+}
+
+/* ---------- arranque ---------- */
+load('lp_18', false) ? home() : gate();
+</script>
+
+</body>
+</html>
