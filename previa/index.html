@@ -247,6 +247,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--amber); outline
 .list{width:100%; display:flex; flex-direction:column; gap:8px}
 .list div{background:var(--bg2); border:1px solid var(--line); border-radius:12px; padding:12px 14px; font-size:15px; line-height:1.4; color:var(--ink)}
 .list b{color:var(--c)}
+.list .chips{background:none; border:0; padding:0; border-radius:0}
 
 /* medidor */
 .steps{display:flex; gap:6px; justify-content:center}
@@ -701,8 +702,8 @@ const G = [
  {id:'llamada', nuevo:true, name:'LA LLAMADA', ds:'Te llama tu ex, tu madre o Hacienda. Aguanta sin reírte.', kind:'Por turnos · 2+', c:'#4fc3ff',
   rules:['El móvil recibe una llamada falsa: tu ex, tu madre, tu jefe, Hacienda…','Contestas con el altavoz y una voz te hace preguntas.','Responde metido en el papel. Si te ríes o te trabas, bebes 2.','Si cuelgas sin contestar, bebes 3.'],
   start: s => llamada(s)},
- {id:'confesionario', nuevo:true, name:'EL CONFESIONARIO', ds:'Secretos anónimos leídos en voz alta. ¿De quién es cada uno?', kind:'Pasar móvil · 3+', c:'#ff8fb1',
-  rules:['El móvil pasa y cada uno escribe un secreto sin que nadie lo vea.','Después se leen uno a uno, mezclados.','La mesa adivina de quién es cada uno.','Si aciertan, el autor bebe 2. Si no, el autor reparte 3.'],
+ {id:'confesionario', nuevo:true, name:'EL CONFESIONARIO', ds:'Secretos anónimos. Emparejad cada uno con su autor. Solo se destapa el más acertado.', kind:'Pasar móvil · 3+', c:'#ff8fb1',
+  rules:['El móvil pasa y cada uno escribe un secreto sin que nadie lo vea.','Se leen todos en voz alta, mezclados y sin autor.','Cada jugador, en secreto, empareja cada secreto con quien cree que lo escribió.','Solo se destapa el secreto que más gente acertó: su autor bebe un trago por acierto. El resto se quedan en secreto.'],
   start: s => confesionario(s)},
  {id:'cancion', nuevo:true, name:'¿QUÉ CANCIÓN ES?', ds:'Uno o dos segundos de canción. Y un modo que salta solo.', kind:'Todos · necesita internet', c:'#ff6a3d',
   rules:['Suena un trozo de canción de 1, 2 o 5 segundos.','El primero que la diga, reparte 2 tragos. Si nadie la sabe, bebéis todos.','Modo automático: el móvil salta solo cada cierto tiempo mientras hacéis la previa.','Necesita internet: las canciones son avances oficiales de Apple Music.'],
@@ -1760,15 +1761,15 @@ function confesionario(stage){
   setupPass(stage, 'Jugadores', '', names => {
     const secrets = []; let i = 0;
     const pass = () => {
-      stage.innerHTML = `<div class="turn pop"><small>Pásale el móvil a</small><h2>${esc(names[i])}</h2></div><p class="hint">Escribe un secreto. Nadie sabrá que es tuyo… hasta que lo adivinen.</p><div class="actions"><button class="btn big" data-a="w">ESCRIBIR</button></div>`;
+      stage.innerHTML = `<div class="turn pop"><small>Pásale el móvil a</small><h2>${esc(names[i])}</h2></div><p class="hint">Escribe un secreto. Nadie sabrá que es tuyo.</p><div class="actions"><button class="btn big" data-a="w">ESCRIBIR</button></div>`;
     };
     const write = () => {
       stage.innerHTML = `<p class="sub">Secreto de ${esc(names[i])}</p><textarea class="conf" id="cf" maxlength="220" placeholder="Idea: ${esc(rnd(CONFP))}"></textarea>
-        <p class="hint">Escríbelo como si lo contara otro: «Una vez me…».</p>
+        <p class="hint">Escríbelo sin pistas obvias: «Una vez me…».</p>
         <div class="actions"><button class="btn ghost" data-a="skip">PASAR</button><button class="btn" data-a="save">GUARDAR Y PASAR</button></div>`;
       setTimeout(() => { const t = $('#cf'); t && t.focus(); }, 60);
     };
-    const advance = () => { i++; if(i < names.length) pass(); else read(shuffle(secrets), 0); };
+    const advance = () => { i++; if(i < names.length) pass(); else listen(names, shuffle(secrets)); };
     stage.onclick = e => {
       const x = e.target.closest('[data-a]'); if(!x) return; blip();
       if(x.dataset.a === 'w') write();
@@ -1777,21 +1778,79 @@ function confesionario(stage){
     };
     pass();
   });
-  const read = (list, k) => {
-    if(!list.length){ stage.innerHTML = cardHTML('SIN CONFESIONES', 'Nadie ha escrito nada.', 'Cobardes. Bebéis todos.') + `<div class="actions"><button class="btn" data-a="re">OTRA RONDA</button></div>`; stage.onclick = e => { if(e.target.closest('[data-a=re]')) confesionario(stage); }; return; }
-    if(k >= list.length){ stage.innerHTML = cardHTML('FIN', 'Se acabaron las confesiones.', 'Lo que se dice en el confesionario, se queda en el confesionario.') + `<div class="actions"><button class="btn" data-a="re">OTRA RONDA</button></div>`; stage.onclick = e => { if(e.target.closest('[data-a=re]')){ blip(); confesionario(stage); } }; return; }
-    const c = list[k];
-    say('Confesión número ' + (k+1) + '. ' + c.t, {force:true});
-    stage.innerHTML = cardHTML(`CONFESIÓN ${k+1} DE ${list.length}`, '«' + esc(c.t) + '»', '¿De quién es? Debatid y, a la de tres, todos señalan.', '', false).replace('<div class="card pop">', `<div class="card pop"><button class="speak" data-say aria-label="Leer en voz alta">${SPK}</button>`)
-      + `<div class="actions"><button class="btn" data-a="rev">DESTAPAR AUTOR</button></div>`;
-    stage.onclick = e => {
-      const x = e.target.closest('[data-a]'); if(!x) return; blip();
-      if(x.dataset.a === 'rev'){
-        tone(300,.15,'sawtooth',.06); later(() => tone(220,.3,'sawtooth',.06), 160);
-        say('Lo escribió ' + c.who, {force:true});
-        x.parentElement.outerHTML = `<div class="turn pop"><small>Lo escribió</small><h2>${esc(c.who)}</h2></div><p class="hint">¿Acertasteis? <b>Bebe 2</b>. ¿No? <b>Reparte 3</b>.</p><div class="actions"><button class="btn" data-a="nx">SIGUIENTE</button></div>`;
-      } else if(x.dataset.a === 'nx') read(list, k+1);
+
+  /* 1. Se leen todos los secretos, sin autor */
+  const listen = (names, list) => {
+    if(list.length < 2){
+      stage.innerHTML = cardHTML('POCAS CONFESIONES', 'Hacen falta al menos dos secretos.', 'Cobardes. Bebéis todos.') + `<div class="actions"><button class="btn" data-a="re">OTRA RONDA</button></div>`;
+      stage.onclick = e => { if(e.target.closest('[data-a=re]')){ blip(); confesionario(stage); } }; return;
+    }
+    const readAll = () => { hush(); list.forEach((c, k) => say(`Confesión ${k+1}. ${c.t}`, {force:true, queue:true})); };
+    stage.innerHTML = `<p class="sub">Las confesiones de la noche</p>
+      <div class="list">${list.map((c,k) => `<div><b>${k+1}.</b> «${esc(c.t)}»</div>`).join('')}</div>
+      <p class="hint">Escuchadlas bien. Después, cada uno dirá en secreto de quién cree que es cada una.</p>
+      <div class="actions"><button class="btn ghost" data-a="read">LEER EN VOZ ALTA</button><button class="btn" data-a="go">A ADIVINAR</button></div>`;
+    readAll();
+    stage.onclick = e => { const x = e.target.closest('[data-a]'); if(!x) return; blip(); if(x.dataset.a === 'read') readAll(); else { hush(); guess(names, list); } };
+  };
+
+  /* 2. Cada jugador, en secreto, empareja cada secreto con un jugador */
+  const guess = (names, list) => {
+    const hits = list.map(() => 0), score = {}; let p = 0;
+    const pass = () => {
+      stage.innerHTML = `<div class="turn pop"><small>Pásale el móvil a</small><h2>${esc(names[p])}</h2></div><p class="hint">Empareja cada secreto con su autor. Que nadie mire.</p><div class="actions"><button class="btn big" data-a="g">EMPAREJAR</button></div>`;
     };
+    const panel = () => {
+      const me = names[p], pick = {};
+      const mine = list.map((c,k) => c.who === me ? k : -1).filter(k => k >= 0);
+      const todo = list.map((_,k) => k).filter(k => !mine.includes(k));
+      const others = names.filter(n => n !== me);
+      stage.innerHTML = `<p class="sub">${esc(me)}: ¿de quién es cada secreto?</p>
+        <div class="list">${todo.map(k => `<div data-k="${k}"><b>${k+1}.</b> «${esc(list[k].t)}»<div class="chips" style="justify-content:flex-start;margin-top:10px">${others.map(n => `<button data-n="${esc(n)}">${esc(n)}</button>`).join('')}</div></div>`).join('')}</div>
+        ${mine.length ? `<p class="muted">Tu secreto no sale en tu lista.</p>` : ''}
+        <div class="actions"><button class="btn" data-a="ok" disabled style="opacity:.4">GUARDAR Y PASAR</button></div>`;
+      const btn = $('[data-a=ok]', stage);
+      stage.onclick = e => {
+        const n = e.target.closest('[data-n]');
+        if(n){ blip(); const row = n.closest('[data-k]'); const k = +row.dataset.k; pick[k] = n.dataset.n;
+          row.querySelectorAll('[data-n]').forEach(b => b.classList.toggle('on', b === n));
+          const all = todo.every(t => pick[t]); btn.disabled = !all; btn.style.opacity = all ? 1 : .4; return; }
+        if(e.target.closest('[data-a=ok]') && !btn.disabled){
+          blip(); let good = 0;
+          todo.forEach(k => { if(pick[k] === list[k].who){ hits[k]++; good++; } });
+          score[me] = good; p++;
+          if(p < names.length){ pass(); stage.onclick = e2 => { if(e2.target.closest('[data-a=g]')){ blip(); panel(); } }; }
+          else reveal(names, list, hits, score);
+        }
+      };
+    };
+    pass();
+    stage.onclick = e => { if(e.target.closest('[data-a=g]')){ blip(); panel(); } };
+  };
+
+  /* 3. Solo se destapa el secreto más acertado */
+  const reveal = (names, list, hits, score) => {
+    stage.onclick = null;
+    const max = Math.max(...hits), top = max > 0 ? list.map((c,k) => hits[k] === max ? k : -1).filter(k => k >= 0) : [];
+    const best = Object.entries(score).sort((a,b) => b[1]-a[1])[0];
+    stage.innerHTML = `<div class="bigword" style="font-size:clamp(40px,12vw,64px)">CONTANDO…</div>`;
+    for(let k=0;k<22;k++) later(() => tone(90 + Math.random()*30, .05, 'triangle', .12), k*70);
+    later(() => {
+      if(!top.length){
+        say('Nadie ha acertado ningún secreto. Todos los secretos quedan a salvo.', {force:true});
+        stage.innerHTML = cardHTML('SECRETOS A SALVO', 'Nadie ha acertado ni uno.', 'Ningún autor se destapa. <b>Bebéis todos</b> por malos detectives.', '', false);
+      } else {
+        const who = top.map(k => list[k].who);
+        say(top.length > 1 ? 'Hay empate. Se destapan estos secretos.' : `El secreto más acertado es de ${who[0]}.`, {force:true});
+        stage.innerHTML = `<p class="sub">${top.length > 1 ? 'Empate: se destapan los más acertados' : 'El secreto más acertado'}</p>`
+          + top.map(k => `<div class="card pop" style="min-height:0"><div class="clabel">CONFESIÓN ${k+1} · ${hits[k]} DE ${names.length - 1} ACERTARON</div><div class="ctext" style="font-size:clamp(20px,5.6vw,26px)">«${esc(list[k].t)}»</div><div class="cfoot">Lo escribió <b style="color:var(--c);font-size:18px">${esc(list[k].who)}</b>. Bebe ${hits[k]} trago${hits[k]===1?'':'s'}, uno por cada acierto.</div></div>`).join('')
+          + `<p class="hint">El resto de secretos quedan en secreto.</p>`;
+        boom(); buzz([200,60,200]);
+      }
+      stage.innerHTML += (best && best[1] > 0 ? `<p class="hint">Mejor detective: <b>${esc(best[0])}</b>, con ${best[1]} acierto${best[1]===1?'':'s'}. Reparte 3.</p>` : '')
+        + `<div class="actions"><button class="btn" data-a="re">OTRA RONDA</button></div>`;
+      stage.onclick = e => { if(e.target.closest('[data-a=re]')){ blip(); confesionario(stage); } };
+    }, 1800);
   };
 }
 
