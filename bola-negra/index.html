@@ -31,7 +31,7 @@ const COSAS_DE_AISSA = [
 <meta name="apple-mobile-web-app-title" content="Bola Negra">
 <meta name="application-name" content="Bola Negra">
 <meta name="theme-color" content="#040806">
-<meta name="version" content="2026-09-29 22:40">
+<meta name="version" content="2026-09-29 22:47">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icono_180.png">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
@@ -1441,13 +1441,13 @@ body.banca #p-mesa, body.banca #p-inicio { filter: grayscale(1) brightness(.5); 
   // ───────────────────────── LOGROS ─────────────────────────
   // {n} se cambia por el nombre del jugador.
   const LOGROS = [
-    { id: 'primera', nom: 'Primera sangre', txt: 'Juega tu primera tirada', f: (S) => S.stats.tiradas >= 1 },
+    { id: 'primera', nom: 'Bautizo en la mesa', txt: 'Juega tu primera tirada', f: (S) => S.stats.tiradas >= 1 },
     { id: 'pleno', nom: 'Pleno de {n}', txt: 'Acierta un pleno', f: (S) => S.stats.plenos >= 1 },
     { id: 'plenos10', nom: '{n} el Francotirador', txt: 'Acierta 10 plenos', f: (S) => S.stats.plenos >= 10 },
     { id: 'rayo', nom: 'Le cayó un rayo', txt: 'Cobra un pleno en un número relámpago', f: (S) => S.stats.rayos >= 1 },
     { id: 'rayo500', nom: 'Electrocutado de gusto', txt: 'Cobra un relámpago de ×300 o más', f: (S) => S.stats.mejorRayo >= 300 },
     { id: 'bote', nom: 'El bote es de {n}', txt: 'Llévate el bote (o un trozo)', f: (S) => S.stats.botes >= 1 },
-    { id: 'allin', nom: 'Todo al {n}', txt: 'Apuéstalo todo en una tirada', f: (S) => S.stats.allIn >= 1 },
+    { id: 'allin', nom: '{n} va con todo', txt: 'Apuéstalo todo en una tirada', f: (S) => S.stats.allIn >= 1 },
     { id: 'allinmal', nom: 'Cero patatero', txt: 'Pierde un todo o nada... literalmente todo', f: (S) => S.stats.allInPerdidos >= 1 },
     { id: 'banca', nom: 'Tieso', txt: 'Arruínate por primera vez', f: (S) => S.stats.bancarrotas >= 1 },
     { id: 'banca3', nom: 'Cliente de la casa', txt: 'Arruínate tres veces', f: (S) => S.stats.bancarrotas >= 3 },
@@ -1464,7 +1464,7 @@ body.banca #p-mesa, body.banca #p-inicio { filter: grayscale(1) brightness(.5); 
     { id: 'turnos', nom: 'Currante', txt: 'Termina 5 turnos de trabajo', f: (S) => S.stats.turnos >= 5 },
     { id: 'minis', nom: 'Rey de la feria', txt: 'Juega 20 minijuegos', f: (S) => S.stats.minis >= 20 },
     { id: 'cartas', nom: 'Tahúr con trucos', txt: 'Usa 5 cartas de poder', f: (S) => S.stats.cartasUsadas >= 5 },
-    { id: 'golpe1k', nom: 'Golpe de {n}', txt: 'Gana 1.000 € en una sola tirada', f: (S) => S.stats.mejorGolpe >= 1000 },
+    { id: 'golpe1k', nom: 'El golpe de {n}', txt: 'Gana 1.000 € en una sola tirada', f: (S) => S.stats.mejorGolpe >= 1000 },
     { id: 'golpe10k', nom: 'Atraco a la banca', txt: 'Gana 10.000 € en una sola tirada', f: (S) => S.stats.mejorGolpe >= 10000 },
     { id: 'saldo10k', nom: 'Nuevo rico', txt: 'Llega a 10.000 €', f: (S) => S.stats.maxSaldo >= 10000 },
     { id: 'saldo1m', nom: 'Millonario de mentira', txt: 'Llega a 1.000.000 €', f: (S) => S.stats.maxSaldo >= 1000000 },
@@ -3611,6 +3611,7 @@ const App = (() => {
       if (S.banca.activa && $('bocadillo-banca')) return $('bocadillo-banca');
       if (pantalla === 'p-inicio') return $('bocadillo-inicio');
       if (pantalla === 'p-mesa') return $('bocadillo');
+      if (document.querySelector('.mini-escena')) return null;
       $('fausto-flotante').hidden = false;
       return $('bocadillo-flot');
     };
@@ -4252,6 +4253,7 @@ const App = (() => {
   async function jugarMini(id) {
     if (S.banca.activa) return;
     document.body.classList.add('girando');
+    $('fausto-flotante').hidden = true;
     const r = await Minis.jugar(id);
     document.body.classList.remove('girando');
     const J = BN.MINIJUEGOS[id];
