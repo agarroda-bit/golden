@@ -31,7 +31,7 @@ const COSAS_DE_AISSA = [
 <meta name="apple-mobile-web-app-title" content="Bola Negra">
 <meta name="application-name" content="Bola Negra">
 <meta name="theme-color" content="#040806">
-<meta name="version" content="2026-09-29 22:47">
+<meta name="version" content="2026-09-29 23:01">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icono_180.png">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
@@ -4265,7 +4265,7 @@ const App = (() => {
     guardar();
     const bien = r.nota >= 0.45;
     if (pr.pagado) { Sonido.premio(bien ? 2 : 1); Fx.confeti(bien ? 60 : 20); } else Sonido.perder();
-    await esperarModal(`<h3>${J.nombre}</h3><div class="centro" style="font-size:46px">${J.icono}</div><p class="centro">${esc(r.texto)} · nota ${Math.round(r.nota * 100)} %</p><div class="gran-cifra">+${eur(pr.pagado)}</div>${pr.pagado < pr.previsto ? '<p class="centro suave">Te tocaban ' + eur(pr.previsto) + ', pero has llegado al tope de hoy.</p>' : ''}<p class="centro suave">+${pr.xp} de experiencia</p><div class="botones"><button class="btn btn-oro" data-ok>VALE</button></div>`, { alAbrir(v) { v.querySelector('[data-ok]').onclick = () => Modal.cerrar(); } });
+    await esperarModal(`<h3>${J.nombre}</h3><div class="centro" style="font-size:46px">${J.icono}</div><p class="centro">${esc(r.texto)} · nota ${Math.round(r.nota * 100)} %</p><div class="gran-cifra">+${eur(pr.pagado)}</div>${pr.pagado < pr.previsto ? '<p class="centro suave">Te tocaban ' + eur(pr.previsto) + ', pero has llegado al tope de hoy.</p>' : ''}<p class="centro suave">+${pr.xp} de experiencia</p><div class="botones"><button class="btn btn-oro" data-ok disabled>VALE</button></div>`, { fijo: true, alAbrir(v) { const b = v.querySelector('[data-ok]'); setTimeout(() => { b.disabled = false; }, 700); b.onclick = () => Modal.cerrar(); } });
     Croupier.decir(bien ? 'mini_bien' : 'mini_mal', {}, { prioridad: 2 });
     for (const x of hechas) { const D = BN.MISIONES.find((m) => m.id === x); aviso('🎯 Misión cumplida: ' + BN.textoMision(D)); }
     for (const x of logros) mostrarLogro(x);
