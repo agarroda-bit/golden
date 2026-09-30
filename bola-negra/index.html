@@ -212,11 +212,146 @@ nav.bottom #bRec{background:linear-gradient(#0f8a4c,#0a5a32);border-color:#6cf0a
 #trkSvg .tfi.w5 circle{fill:#c3162f}#trkSvg .tfi.w10 circle{fill:#1f5bd6}#trkSvg .tfi.w25 circle{fill:#0f8a4c}#trkSvg .tfi.w100 circle{fill:#151515}#trkSvg .tfi.w500 circle{fill:#6b2bb8}
 #trkSvg .zbad rect{fill:#e2b54a}#trkSvg .zbad text{fill:#221;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:13px;text-anchor:middle;dominant-baseline:central}
 .cell,.presets button,.chips button,.actions button,nav.bottom button,.vista button,.nbsel button,#specials button{touch-action:manipulation}
+/* ===== casa, shisha, ofertas, ordenador ===== */
+.app{display:flex;flex-direction:column}
+.col{display:contents}
+.col-der>.presets,.col-der>.vista,.col-der>.vaviso,.col-der>.table{order:1}
+.col-centro>.pista{order:2}
+.col-der>.specials,.col-der>.chips,.col-der>.actions,.col-der>.tot,.col-der>.conesto{order:3}
+.col.col-casa{display:none}
+nav.bottom{gap:5px}
+nav.bottom button{padding:9px 3px;font-size:15px;line-height:1.05}
+nav.bottom #bCasa{background:linear-gradient(#8a5a2a,#5a3514);border-color:#ffd9a0;color:#fff4e0}
+nav.bottom #bCasa small{display:block;font-size:11px;opacity:.85}
+nav.bottom #bCasa.alerta{animation:evp .8s infinite alternate;border-color:#ff9a3a}
+.tot small{opacity:.75;font-size:13px}
+#pot{cursor:pointer}
+.conesto{text-align:center;font-size:15px;min-height:18px;margin-top:3px;color:#ffd9a0}
+.conesto b{color:#fff1b8}
+.shisha-mesa,.shisha-slot{margin:4px 0}
+.shisha{display:flex;align-items:center;gap:10px;padding:6px 10px;border-radius:12px;background:rgba(0,0,0,.35);border:1px solid rgba(226,181,74,.35)}
+.shisha canvas{width:60px;height:92px;image-rendering:pixelated;flex:0 0 auto;cursor:pointer;touch-action:none;-webkit-touch-callout:none;border-radius:8px}
+.shisha.fumando{border-color:#ff9a3a;box-shadow:0 0 16px rgba(255,120,40,.45)}
+.sh-info{display:flex;flex-direction:column;gap:2px;font-size:14px;min-width:0}
+.sh-info b{font-family:'Bungee',sans-serif;font-size:14px;color:var(--gold2)}
+.sh-info small{opacity:.7;font-size:12.5px}
+.sh-bot{display:flex;gap:6px;margin-top:3px;flex-wrap:wrap}
+.sh-bot button{font-size:13px;padding:4px 8px;border-radius:9px;border:1px solid var(--gold);background:rgba(226,181,74,.15)}
+.sh-flota{position:fixed;transform:translate(-50%,-100%);z-index:61;color:#fff1b8;font-weight:800;font-size:16px;text-shadow:0 2px 6px #000;pointer-events:none;animation:flota 1.5s ease-out forwards}
+@keyframes flota{to{transform:translate(-50%,-190%);opacity:0}}
+#humo{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:52}
+.oferta{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(76px + env(safe-area-inset-bottom,0px));width:calc(100% - 20px);max-width:460px;z-index:38;display:none;padding:12px;border-radius:14px;background:linear-gradient(#2a1a08,#140c04);border:2px solid #ffd9a0;box-shadow:0 10px 30px rgba(0,0,0,.7),0 0 24px rgba(255,190,90,.35)}
+.oferta.show{display:block;animation:pop .35s}
+.oferta.inline{position:static;transform:none;width:auto;max-width:none;margin:10px 0 0;left:auto;right:auto;bottom:auto;box-shadow:0 0 18px rgba(255,190,90,.3)}
+.of-x{position:absolute;top:4px;right:6px;width:auto;margin:0;padding:2px 8px;border:0;background:none;font-size:20px;color:#ffd9a0;opacity:.8}
+.oferta.inline .of-x{display:none}
+.of-cab{display:flex;gap:10px;align-items:center}
+.of-cara{font-size:34px}
+.of-cab b{display:block;font-size:17px;color:#fff1b8}
+.of-cab small{font-size:14px;opacity:.85}
+.of-precio{margin-top:6px;font-size:18px}
+.of-precio b{font-family:'Bungee',sans-serif;color:#ffd24a}
+.of-comp{font-size:14px;opacity:.9}
+.of-comp .bien{color:#7ff0a8;font-weight:800}.of-comp .mal{color:#ff8a8a;font-weight:800}
+.of-pie{display:flex;gap:8px;align-items:center;margin-top:8px;font-size:14px}
+.of-pie span{flex:1}
+.of-pie .plain,.of-pie .gold{width:auto;margin:0;padding:9px 12px;font-size:15px}
+.casa{position:fixed;inset:0;z-index:36;display:none;overflow-y:auto;background:radial-gradient(120% 60% at 50% 0%,#3a1c3a,#12080f 70%)}
+.casa.show{display:block}
+.casa-in{max-width:760px;margin:0 auto;padding:calc(10px + env(safe-area-inset-top,0px)) 10px 110px}
+.casa-cab{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+.casa-cab h3{order:3;flex-basis:100%;font-family:'Bungee',sans-serif;font-size:19px;color:var(--gold2);text-align:center;margin:4px 0 0}
+.casa-saldo{margin-left:auto}
+.casa-cab .plain{width:auto;margin:0;padding:8px 10px;font-size:15px}
+.casa-saldo{font-family:'Bungee',sans-serif;color:var(--gold2);font-size:15px}
+.casa-lienzo{position:relative;margin-top:8px;border-radius:12px;overflow:hidden;border:2px solid #7a5a1c;box-shadow:0 10px 30px rgba(0,0,0,.6)}
+#casaCanvas{display:block;width:100%;image-rendering:pixelated}
+.casa-lugar{display:none;margin-top:8px;padding:12px;border-radius:12px;background:rgba(10,4,12,.86);border:2px solid #7a5a1c;text-align:center}
+.casa-lugar.show{display:block}
+.casa-lugar h3{font-family:'Bungee',sans-serif;color:var(--gold2);font-size:18px}
+.casa-lugar p{font-size:15px;opacity:.85;margin:4px 0 0}
+.lugares{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:8px;margin-top:10px}
+.lugares button{display:flex;flex-direction:column;gap:4px;padding:6px;border-radius:12px;border:1px solid var(--gold);background:rgba(0,0,0,.45);text-align:center}
+.lugares button:active{transform:scale(.97)}
+.lugares canvas{width:100%;image-rendering:pixelated;border-radius:8px;display:block}
+.lugares b{font-size:18px;color:#fff1b8}
+.lugares span{font-size:13px;opacity:.8}
+.casa-vito{display:flex;gap:8px;align-items:flex-start;margin:10px 0}
+.casa-vito .av{background:radial-gradient(circle at 35% 30%,#fff1b8,#b8862a);color:#2a1a05;flex:0 0 38px;height:38px;border-radius:50%;display:grid;place-items:center;font-family:'Bungee',sans-serif}
+.casa-vito .txt.pop{animation:pop .3s}
+.casa-datos{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.casa-datos div{background:rgba(0,0,0,.35);border:1px solid rgba(226,181,74,.3);border-radius:10px;padding:6px 8px;text-align:center}
+.casa-datos small{display:block;font-size:12px;opacity:.75}
+.casa-datos b{font-family:'Bungee',sans-serif;font-size:15px;color:var(--gold2)}
+.sigfase,.imprev{margin:10px 0;padding:12px;border-radius:12px;background:rgba(0,0,0,.4);border:1px solid var(--gold);text-align:center}
+.sigfase span{display:block;opacity:.8;font-size:14px}
+.sigfase b{display:block;font-family:'Bungee',sans-serif;font-size:21px;color:#fff1b8;margin:2px 0}
+.sigfase em{display:block;font-style:normal;font-size:19px;font-weight:800;color:#ffd24a}
+.sigfase .gold:disabled{filter:grayscale(.8);opacity:.6}
+.imprev{border-color:#ff6a3a;background:rgba(80,20,0,.45)}
+.imprev b{display:block;font-size:18px;color:#ffb07a}
+.casa-cols{display:grid;grid-template-columns:1fr;gap:12px;margin-top:6px}
+.casa-cols h4{font-family:'Bungee',sans-serif;color:var(--gold2);font-size:15px;margin:8px 0 6px}
+.fases{list-style:none;padding:0;margin:0;display:grid;gap:4px}
+.fases li{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:9px;background:rgba(0,0,0,.3);font-size:16px}
+.fases li span{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:800;background:rgba(255,255,255,.1)}
+.fases li b{margin-left:auto;color:var(--gold2)}
+.fases li.ok{opacity:.65}.fases li.ok span{background:#0f8a4c}
+.fases li.now{border:1px solid var(--gold);background:rgba(226,181,74,.12)}
+.fases li.tot{background:none;font-weight:800;border-top:1px solid rgba(226,181,74,.3);border-radius:0}
+.oc{display:flex;justify-content:space-between;gap:8px;padding:6px 8px;border-radius:9px;background:rgba(0,0,0,.3);margin:4px 0;font-size:14px;opacity:.55}
+.oc.ok{opacity:1;border:1px solid var(--gold)}
+.oc span{opacity:.85;text-align:right}
+.suave{opacity:.7;font-size:14px}
+.creditos{position:fixed;inset:0;z-index:48;display:none;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 40%,#2a0a20,#000 75%);overflow:hidden}
+.creditos.show{display:flex}
+.cr-marco{height:62vh;width:min(90vw,440px);overflow:hidden;-webkit-mask-image:linear-gradient(transparent,#000 12%,#000 88%,transparent);mask-image:linear-gradient(transparent,#000 12%,#000 88%,transparent)}
+.cr-rollo{text-align:center;animation:rollo 26s linear forwards;padding-top:62vh}
+@keyframes rollo{to{transform:translateY(-100%)}}
+.cr-rollo h2{font-family:'Bungee',sans-serif;color:var(--gold2);font-size:30px;text-shadow:0 0 18px #e2b54a}
+.cr-rollo p{font-size:18px;margin:10px 0;line-height:1.3}
+.cr-rollo .cr-big{font-family:'Bungee',sans-serif;font-size:24px;color:#fff1b8}
+.cr-rollo .cr-vito{color:#ff8a8a;font-weight:800}
+.cr-cara{width:70px;height:70px;border-radius:50%;display:grid;place-items:center;font-family:'Bungee',sans-serif;font-size:34px;color:#2a1a05;background:radial-gradient(circle at 35% 30%,#ffb3a0,#c3162f);box-shadow:0 0 30px #ff3d5a;animation:rabia .18s infinite alternate;margin:8px 0}
+@keyframes rabia{from{transform:rotate(-6deg) translateX(-2px)}to{transform:rotate(6deg) translateX(2px)}}
+#crSeguir{width:auto;padding:12px 20px}
+.cr-fila{display:flex;align-items:center;gap:12px;max-width:min(92vw,460px);margin:6px 0 12px}
+.cr-fila .cr-cara{flex:0 0 70px;margin:0}
+.cr-grito{background:#2a0a14;border:2px solid #ff3d5a;border-radius:4px 16px 16px 16px;padding:8px 12px;font-weight:800;font-size:17px;line-height:1.25;color:#ffd0d0;min-height:44px}
+.cr-grito.pop{animation:pop .3s}
+body.encasa .oferta{bottom:calc(14px + env(safe-area-inset-bottom,0px))}
+@media (min-width:760px){.casa-cols{grid-template-columns:1.1fr 1fr}}
+@media (min-width:1100px) and (min-height:660px){
+ body{overflow:hidden}
+ .app{display:grid;max-width:none;width:100%;height:100vh;grid-template-columns:minmax(290px,380px) minmax(300px,400px) minmax(380px,560px);justify-content:center;align-items:start;gap:16px;padding:10px 16px 74px}
+ .col-izq{position:relative}
+ .col-izq #evt{position:absolute;left:0;right:0;top:100px;z-index:4}
+ .col-izq .hist{min-height:30px}
+ .col-izq .hc{min-height:17px}
+ .col-izq .bubbles{min-height:76px}
+ .conesto{min-height:0}
+ .col{display:flex;flex-direction:column;min-height:0;max-height:calc(100vh - 86px);overflow-y:auto;overflow-x:hidden}
+ .vista{display:none}
+ .table{display:grid!important}
+ .pista{display:block!important}
+ .col-centro{justify-content:flex-start;padding-top:6px}
+ .table{grid-template-rows:40px repeat(12,clamp(24px,calc((100vh - 430px) / 12),50px)) 32px}
+ .vaviso{position:fixed}
+ nav.bottom{justify-content:center}
+ nav.bottom button{max-width:190px}
+}
+@media (min-width:1500px) and (min-height:660px){
+ .app{grid-template-columns:minmax(290px,360px) minmax(300px,390px) minmax(380px,540px) minmax(260px,340px)}
+ .col.col-casa{display:flex;flex-direction:column;gap:8px}
+ .col-casa h4{font-family:'Bungee',sans-serif;color:var(--gold2);font-size:15px;text-align:center;margin-top:6px}
+ #casaMini{width:100%;image-rendering:pixelated;border-radius:10px;border:2px solid #7a5a1c}
+}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important}}
 </style>
 </head>
 <body>
 <div class="app">
+<div class="col col-izq">
   <header class="top">
     <div class="saldo"><small>Saldo de Aissa</small><div id="bal">1.000 €</div><span id="debt"></span></div>
     <div class="bote"><small>Bote</small><div id="pot">500 €</div><button class="mute" id="mute">Sonido sí</button></div>
@@ -233,6 +368,12 @@ nav.bottom #bRec{background:linear-gradient(#0f8a4c,#0a5a32);border-color:#6cf0a
     <div class="bubble c" id="cBub"><div class="av">V</div><div class="txt"><b>Vito:</b> <span></span></div></div>
     <div class="bubble a" id="aBub"><div class="av">A</div><div class="txt"><span></span></div></div>
   </div>
+  <div class="shisha-mesa" id="shMesa"></div>
+</div>
+<div class="col col-centro">
+  <div class="pista" id="pista"><div class="nbsel" id="nbsel">Vecinos por lado: <button data-nb="1">1</button><button data-nb="2">2</button><button data-nb="3">3</button><button data-nb="4">4</button></div><div class="pista-ayuda">Toca un número: juegas ese número y sus vecinos del cilindro. Toca una zona: la juegas entera. Mantén pulsado para quitar.</div><div id="trkAim"></div><svg id="trkSvg" viewBox="0 0 340 470" aria-label="Pista del cilindro"></svg></div>
+</div>
+<div class="col col-der">
   <div class="presets">
     <button data-p="2112">El<br>21-12</button>
     <button data-p="cero">Zona<br>del 0</button>
@@ -242,7 +383,6 @@ nav.bottom #bRec{background:linear-gradient(#0f8a4c,#0a5a32);border-color:#6cf0a
   <div class="vista" id="vista"><button data-v="tapete">Tapete</button><button data-v="cilindro">Cilindro</button></div>
   <div class="vaviso" id="vAviso">MODO VENTANA · toca el número de arriba a la izquierda de la ventana · se apaga solo al ponerla</div>
   <div class="table" id="table"></div>
-  <div class="pista" id="pista"><div class="nbsel" id="nbsel">Vecinos por lado: <button data-nb="1">1</button><button data-nb="2">2</button><button data-nb="3">3</button><button data-nb="4">4</button></div><div class="pista-ayuda">Toca un número: juegas ese número y sus vecinos del cilindro. Toca una zona: la juegas entera. Mantén pulsado para quitar.</div><div id="trkAim"></div><svg id="trkSvg" viewBox="0 0 340 470" aria-label="Pista del cilindro"></svg></div>
   <div class="specials" id="specials"></div>
   <div class="chips" id="chips"></div>
   <div class="actions">
@@ -251,19 +391,38 @@ nav.bottom #bRec{background:linear-gradient(#0f8a4c,#0a5a32);border-color:#6cf0a
     <button id="rep">Repetir</button>
     <button id="spin">GIRAR</button>
   </div>
-  <div class="tot">Apuesta: <b id="total">0 €</b></div>
+  <div class="tot">Apuesta: <b id="total">0 €</b><small id="cuota"></small></div>
+  <div class="conesto" id="conEsto"></div>
+</div>
+<div class="col col-casa"><h4>Mi casa en Marruecos</h4><canvas id="casaMini"></canvas><button class="gold" id="bCasa2">Abrir mi casa</button></div>
 </div>
 <nav class="bottom">
   <button id="bRec">Recuperar €</button>
   <button id="bRod">Pedirle a Rodri</button>
   <button id="bSt">Estadísticas</button>
+  <button id="bCasa">🏠 Mi casa</button>
 </nav>
 <div class="modal" id="modal"><div class="sheet" id="mbody"></div></div>
-<div class="bank" id="bank"><div class="inner"><h2>BANCARROTA</h2><p id="bankLine"></p><button class="gold" id="redBtn">Prueba de redención</button><p style="font-size:15px;opacity:.8">3 preguntas difíciles seguidas y recuperas 300 €.</p><p id="redCd" class="warn"></p><button class="plain" id="bankRodri">Pedirle a Rodri</button></div></div>
+<div class="bank" id="bank"><div class="inner"><h2>BANCARROTA</h2><p id="bankLine"></p><button class="gold" id="redBtn">Prueba de redención</button><p style="font-size:15px;opacity:.8">3 preguntas difíciles seguidas y recuperas 300 €.</p><p id="redCd" class="warn"></p><div class="shisha-slot" id="shBank"></div><button class="plain" id="bankRodri">Pedirle a Rodri</button></div></div>
 <div class="big" id="big"><h2></h2><div class="amt"></div><div class="sub"></div><div class="pot"></div></div>
 <div class="flash" id="flash"></div>
 <canvas id="fx"></canvas>
 <div class="toast" id="toast"></div>
+<div class="casa" id="casa"><div class="casa-in">
+ <header class="casa-cab"><button class="plain" id="casaCerrar">← A la mesa</button><h3 id="casaTit">Mi casa en Marruecos</h3><span class="casa-saldo" id="casaSaldo"></span></header>
+ <div class="casa-lugar" id="casaLugar"></div>
+ <div class="casa-lienzo"><canvas id="casaCanvas"></canvas></div>
+ <div class="casa-vito"><div class="av">V</div><div class="txt" id="casaVito">¿Ladrillos o un pleno al 21? Tú sabrás, Aissa.</div></div>
+ <div class="casa-datos" id="casaDatos"></div>
+ <div id="casaSig"></div>
+ <div class="casa-cols">
+  <div><h4>Fases</h4><ol class="fases" id="casaFases"></ol></div>
+  <div><h4>La azotea</h4><div class="shisha-slot" id="casaSh"></div><p id="casaShNo" class="suave">La shisha de la azotea llega con el tejado.</p><h4>Misiones ocultas</h4><div id="casaOcultas"></div></div>
+ </div>
+</div></div>
+<div class="creditos" id="creditos"><div class="cr-marco"><div class="cr-rollo"></div></div><div class="cr-fila"><div class="cr-cara">V</div><div class="cr-grito" id="crGrito"></div></div><button class="gold" id="crSeguir">Nueva meta: el hotel →</button></div>
+<div class="oferta" id="oferta"></div>
+<canvas id="humo"></canvas>
 
 <script>
 /* ===== COSAS DE AISSA: añade aquí frases personales, el croupier las usa de vez en cuando ===== */
@@ -310,24 +469,24 @@ const L={
 };
 const FRASES_RODRI=["Rodri es mejor jugador que yo","Prometo no calentarme","Si paga paga pero hoy no ha pagado","Rodri paga mis taxis y se lo agradezco"];
 const EVTS=[
- {type:'doble',name:'BOLA DOBLE',desc:'Salen dos números y cobras por los dos',left:1,w:3},
- {type:'dorada',name:'HORA DORADA',desc:'El rojo paga 2 a 1',left:3,w:3},
- {type:'cero',name:'NOCHE DEL CERO',desc:'El 0 a pleno paga 105 a 1',left:5,w:2},
- {type:'y2020',name:'AÑO 2020',desc:'El 20 a pleno paga 2020 a 1',left:1,w:1},
- {type:'todo',name:'TODO O NADA',desc:'Premios dobles. Si pierdes, te calientas',left:1,w:2}
+ {type:'doble',name:'BOLA DOBLE',desc:'Salen dos números: tu apuesta juega a medias en cada uno',left:1,w:3},
+ {type:'dorada',name:'HORA DORADA',desc:'El rojo paga 2 a 1 (premio extra máx. 150 €)',left:2,w:3},
+ {type:'cero',name:'NOCHE DEL CERO',desc:'El 0 a pleno paga 105 a 1 (premio extra máx. 150 €)',left:5,w:2},
+ {type:'y2020',name:'AÑO 2020',desc:'El 20 a pleno paga 2020 a 1 (premio extra máx. 2.020 €)',left:1,w:1},
+ {type:'todo',name:'TODO O NADA',desc:'Lo que ganes, doble. Lo que pierdas, también (y te calientas)',left:1,w:2}
 ];
 const ORDER=[0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33,1,20,14,31,9,22,18,29,7,28,12,35,3,26];
 const REDS=new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
-const SEG=Math.PI*2/37, CAP=2000, KEY='bolaNegra_aissa_v1';
+const SEG=Math.PI*2/37, CAP=4000, KEY='bolaNegra_aissa_v1';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const rand=a=>a[Math.floor(Math.random()*a.length)], ri=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const today=()=>{const d=new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()};
 const col=n=>n===0?'z':REDS.has(n)?'r':'k';
 function fmt(v){v=Math.round(v*100)/100;const neg=v<0;v=Math.abs(v);let [i,d]=v.toFixed(2).split('.');i=i.replace(/\B(?=(\d{3})+(?!\d))/g,'.');return(neg?'-':'')+i+(d!=='00'?','+d:'')+' €'}
-function defState(){return{bal:1000,pot:500,debt:0,heat:0,hist:[],spin:0,lastTotal:0,lastLost:false,lossRun:0,evt:null,lastBets:null,chip:5,day:'',streakDays:0,recDay:'',recAmt:0,qStreak:0,qBlock:0,redBlock:0,taxiBelow:false,mute:false,st:{spins:0,won:0,lost:0,best:0,plenos:0,taxi:0,v:0,t:{j:0,a:0,net:0},zero:0,y20:0,zj:0,vj:0},ach:{},vista:'tapete',nb:2}}
+function defState(){return{bal:1000,pot:500,debt:0,heat:0,hist:[],spin:0,lastTotal:0,lastLost:false,lossRun:0,evt:null,lastBets:null,chip:5,day:'',streakDays:0,recDay:'',recAmt:0,qStreak:0,qBlock:0,redBlock:0,taxiBelow:false,mute:false,st:{spins:0,won:0,lost:0,best:0,plenos:0,taxi:0,v:0,t:{j:0,a:0,net:0},zero:0,y20:0,zj:0,vj:0},ach:{},vista:'tapete',nb:2,casa:defCasa(),shisha:defShisha()}}
 let S;try{S=Object.assign(defState(),JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){S=defState()}
-S.st=Object.assign(defState().st,S.st||{});S.st.t=Object.assign({j:0,a:0,net:0},S.st.t||{});
+S.st=Object.assign(defState().st,S.st||{});S.casa=Object.assign(defCasa(),S.casa||{});S.shisha=Object.assign(defShisha(),S.shisha||{});S.st.t=Object.assign({j:0,a:0,net:0},S.st.t||{});
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 let bets={}, spinning=false, ventMode=false, curRays=[], hitN=null;
 
@@ -350,7 +509,9 @@ const vib=p=>{try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}};
 
 /* ===== ruleta ===== */
 let ctx,SZ=300,W=0,BA=Math.random()*6,BR=.87;
-function sizeCanvas(){const cv=$('#wheel');const w=Math.min($('.app').clientWidth*.82,310);cv.style.width=cv.style.height=w+'px';const dpr=window.devicePixelRatio||1;cv.width=cv.height=Math.round(w*dpr);SZ=w;ctx=cv.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);draw()}
+function sizeCanvas(){const cv=$('#wheel');let w=Math.min($('.app').clientWidth*.82,310);
+ if(matchMedia('(min-width:1100px) and (min-height:660px)').matches){const col=$('.col-izq');let otros=0;for(const ch of col.children){if(ch.id==='stage')continue;const cs=getComputedStyle(ch);if(cs.display==='none'||cs.position==='absolute')continue;otros+=ch.offsetHeight+parseFloat(cs.marginTop)+parseFloat(cs.marginBottom)}w=Math.max(200,Math.min(col.clientWidth*.92,380,innerHeight-84-otros-20))}
+ cv.style.width=cv.style.height=w+'px';const dpr=window.devicePixelRatio||1;cv.width=cv.height=Math.round(w*dpr);SZ=w;ctx=cv.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);draw()}
 function draw(){const c=ctx,s=SZ,cx=s/2,cy=s/2,R=s*.49;c.clearRect(0,0,s,s);
  let g=c.createRadialGradient(cx,cy,R*.8,cx,cy,R);g.addColorStop(0,'#3a2412');g.addColorStop(.6,'#7a4d26');g.addColorStop(1,'#1d1108');c.fillStyle=g;c.beginPath();c.arc(cx,cy,R,0,7);c.fill();
  c.fillStyle='#24160c';c.beginPath();c.arc(cx,cy,R*.9,0,7);c.fill();c.strokeStyle='rgba(226,181,74,.7)';c.lineWidth=1.5;c.stroke();
@@ -363,8 +524,8 @@ function draw(){const c=ctx,s=SZ,cx=s/2,cy=s/2,R=s*.49;c.clearRect(0,0,s,s);
  g=c.createRadialGradient(cx-R*.12,cy-R*.12,R*.05,cx,cy,r1);g.addColorStop(0,'#9a6a36');g.addColorStop(1,'#2a180b');c.fillStyle=g;c.beginPath();c.arc(cx,cy,r1,0,7);c.fill();
  c.save();c.translate(cx,cy);c.rotate(W);c.strokeStyle='#e2b54a';c.lineWidth=R*.035;c.lineCap='round';for(let k=0;k<4;k++){c.rotate(Math.PI/2);c.beginPath();c.moveTo(0,0);c.lineTo(R*.3,0);c.stroke();c.fillStyle='#f4d27a';c.beginPath();c.arc(R*.3,0,R*.03,0,7);c.fill()}c.fillStyle='#fff1b8';c.beginPath();c.arc(0,0,R*.08,0,7);c.fill();c.restore();
  const bx=cx+Math.cos(BA)*R*BR,by=cy+Math.sin(BA)*R*BR,br=R*.04;const bg=c.createRadialGradient(bx-br*.4,by-br*.4,1,bx,by,br);bg.addColorStop(0,'#fff');bg.addColorStop(1,'#999');c.fillStyle=bg;c.beginPath();c.arc(bx,by,br,0,7);c.fill()}
-function animate(result,dur=6200){return new Promise(res=>{const idx=ORDER.indexOf(result);const sW=W,eW=W+Math.PI*2*(2+Math.random());const target=eW+idx*SEG+SEG/2;const sB=BA;let eB=target;while(eB>sB-Math.PI*12)eB-=Math.PI*2;const t0=performance.now();let lp=-1,zoomed=false;
- function f(now){const t=Math.min(1,(now-t0)/dur);W=sW+(eW-sW)*(1-Math.pow(1-t,3));BA=sB+(eB-sB)*(1-Math.pow(1-t,4));
+function animate(result,dur=6200){return new Promise(res=>{ACELERON=0;const idx=ORDER.indexOf(result);const sW=W,eW=W+Math.PI*2*(2+Math.random());const target=eW+idx*SEG+SEG/2;const sB=BA;let eB=target;while(eB>sB-Math.PI*12)eB-=Math.PI*2;const t0=performance.now();let lp=-1,zoomed=false;
+ function f(now){const t=Math.min(1,(now-t0+ACELERON)/dur);W=sW+(eW-sW)*(1-Math.pow(1-t,3));BA=sB+(eB-sB)*(1-Math.pow(1-t,4));
   const rim=.87,pk=.72;if(t<.55)BR=rim;else if(t<.86){const u=(t-.55)/.31;BR=rim-(rim-pk)*u+Math.abs(Math.sin(u*Math.PI*5))*.07*(1-u)}else BR=pk;
   const rel=(((BA-W)%(Math.PI*2))+Math.PI*2)%(Math.PI*2),p=Math.floor(rel/SEG);if(p!==lp&&t>.45){lp=p;tick(.4+t*.6)}
   if(t>.75&&!zoomed){zoomed=true;$('#stage').classList.add('zoom')}
@@ -535,7 +696,7 @@ function enlazarTapete(){
  const tb=$('#table'),rel=e=>{const r=tb.getBoundingClientRect();return[e.clientX-r.left,e.clientY-r.top]};let pT=null,lpT=null;
  tb.addEventListener('pointerdown',e=>{ac();if(spinning)return;GEO=null;const[x,y]=rel(e);const a=objetivo(x,y,e.clientX,e.clientY);pT={id:e.pointerId,sx:e.clientX,sy:e.clientY,a,x,y,long:false};apuntar(a);
   clearTimeout(lpT);lpT=setTimeout(()=>{if(!pT)return;pT.long=true;apuntar(null);const q=objetivo(pT.x,pT.y,pT.sx,pT.sy,true);quitarApuesta(q&&q.k)},560)});
- tb.addEventListener('pointermove',e=>{if(!pT||e.pointerId!==pT.id||pT.long)return;if(Math.hypot(e.clientX-pT.sx,e.clientY-pT.sy)>10)clearTimeout(lpT);
+ tb.addEventListener('pointermove',e=>{if(!pT&&e.pointerType==='mouse'&&!spinning){const[x,y]=rel(e);apuntar(objetivo(x,y,e.clientX,e.clientY));return}if(!pT||e.pointerId!==pT.id||pT.long)return;if(Math.hypot(e.clientX-pT.sx,e.clientY-pT.sy)>10)clearTimeout(lpT);
   const[x,y]=rel(e),a=objetivo(x,y,e.clientX,e.clientY);pT.x=x;pT.y=y;if(JSON.stringify(a)!==JSON.stringify(pT.a)){pT.a=a;apuntar(a)}});
  tb.addEventListener('pointerup',e=>{if(!pT||e.pointerId!==pT.id)return;clearTimeout(lpT);const{a,long}=pT;pT=null;apuntar(null);if(!long)tocarAqui(a)});
  tb.addEventListener('pointercancel',()=>{clearTimeout(lpT);pT=null;apuntar(null)});
@@ -545,7 +706,9 @@ function enlazarTapete(){
   return e?(e.getAttribute('data-n')!=null?{n:+e.getAttribute('data-n')}:{z:e.getAttribute('data-z')}):null};let pK=null,lpK=null;
  sv.addEventListener('pointerdown',e=>{ac();if(spinning)return;const a=tgt(e.clientX,e.clientY);pK={id:e.pointerId,sx:e.clientX,sy:e.clientY,a,long:false};apuntarTrk(a);
   clearTimeout(lpK);lpK=setTimeout(()=>{if(!pK)return;pK.long=true;apuntarTrk(null);const q=pK.a;if(q)q.n!=null?quitarApuesta('n:'+q.n):quitarZona(q.z)},560)});
- sv.addEventListener('pointermove',e=>{if(!pK||e.pointerId!==pK.id||pK.long)return;if(Math.hypot(e.clientX-pK.sx,e.clientY-pK.sy)>10)clearTimeout(lpK);
+ tb.addEventListener('pointerleave',e=>{if(!pT&&e.pointerType==='mouse')apuntar(null)});
+ sv.addEventListener('pointerleave',e=>{if(!pK&&e.pointerType==='mouse')apuntarTrk(null)});
+ sv.addEventListener('pointermove',e=>{if(!pK&&e.pointerType==='mouse'&&!spinning){apuntarTrk(tgt(e.clientX,e.clientY));return}if(!pK||e.pointerId!==pK.id||pK.long)return;if(Math.hypot(e.clientX-pK.sx,e.clientY-pK.sy)>10)clearTimeout(lpK);
   const a=tgt(e.clientX,e.clientY);if(JSON.stringify(a)!==JSON.stringify(pK.a)){pK.a=a;apuntarTrk(a)}});
  sv.addEventListener('pointerup',e=>{if(!pK||e.pointerId!==pK.id)return;clearTimeout(lpK);const{a,long}=pK;pK=null;apuntarTrk(null);if(!long&&a)a.n!=null?ponerVecinos(a.n):ponerZona(a.z)});
  sv.addEventListener('pointercancel',()=>{clearTimeout(lpK);pK=null;apuntarTrk(null)});
@@ -567,7 +730,7 @@ function rollMult(){const x=Math.random();return x<.5?50:x<.75?100:x<.9?200:x<.9
 function payout(b,r,rays,evt){if(!b.nums.includes(r))return 0;let p=b.pay;
  if(b.nums.length===1){const ray=rays.find(x=>x.n===r);if(ray)p=ray.m;if(evt&&evt.type==='cero'&&r===0)p=Math.max(p,105);if(evt&&evt.type==='y2020'&&r===20)p=2020}
  if(evt&&evt.type==='dorada'&&b.key==='red')p=2;
- let w=b.amt*(p+1);if(evt&&evt.type==='todo')w*=2;return w}
+ let w=b.amt*(p+1);if(evt&&evt.type==='todo')w=b.amt*(2*p+1);return w}
 function isNear(results){const pl=Object.values(bets).filter(b=>b.nums.length===1).map(b=>b.nums[0]);return results.some(r=>{if(pl.includes(r))return false;const i=ORDER.indexOf(r);return pl.includes(ORDER[(i+1)%37])||pl.includes(ORDER[(i+36)%37])})}
 async function spin(){ac();if(spinning)return;const total=totalBets();
  if(total<=0){say('noBet');return}if(total>S.bal){say('Eso no lo tienes, Aissa.');return}
@@ -575,27 +738,29 @@ async function spin(){ac();if(spinning)return;const total=totalBets();
  let dh=0;if(S.lastLost&&S.lastTotal>0&&total>S.lastTotal*1.2)dh+=25;if(total>=S.bal*.5&&S.bal>=40)dh+=15;if(dh===0&&total<=S.lastTotal)dh-=10;
  const hb=S.heat;S.heat=Math.max(0,Math.min(100,S.heat+dh));
  if(S.heat>=70&&dh>0)say('heat');else if(total>=S.bal*.95&&S.bal>=40)say('allIn');else if(total<=2)say('tiny');else if(S.debt>0&&Math.random()<.25)say('debtOn');
+ S.casa.diaRuleta=today();
  if(hb>=50&&S.heat<40){S.bal+=20;say('cool')}
- S.lastBets=JSON.parse(JSON.stringify(bets));S.bal-=total;S.pot+=Math.max(1,Math.round(total*.02));
+ S.lastBets=JSON.parse(JSON.stringify(bets));const cuota=Math.min(Math.round(total*ECON.comisionBote*100)/100,Math.max(0,S.bal-total));S.bal-=total+cuota;S.pot=Math.round((S.pot+cuota)*100)/100;
  const evt=S.evt;curRays=[];hitN=null;$$('.cell.win').forEach(e=>e.classList.remove('win'));marcarPista([]);
- if(Math.random()<.2){const k=Math.random()<.35?2:1,ns=new Set();while(ns.size<k)ns.add(ri(0,36));curRays=[...ns].map(n=>({n,m:rollMult()}))}
+ if(window.__rayos){curRays=window.__rayos;window.__rayos=null}else if(Math.random()<.2){const k=Math.random()<.35?2:1,ns=new Set();while(ns.size<k)ns.add(ri(0,36));curRays=[...ns].map(n=>({n,m:rollMult()}))}
  render();
  if(curRays.length){const rb=$('#rayBanner');rb.innerHTML=curRays.map(x=>`RAYO ${x.n} x${x.m}`).join('<br>');rb.classList.add('show');$('#flash').classList.remove('go');void $('#flash').offsetWidth;$('#flash').classList.add('go');thunder();vib([30,40,30]);say('rays');draw();await sleep(1600);rb.classList.remove('show')}
  const results=[window.__forzar!=null?window.__forzar:ri(0,36)];window.__forzar=null;await animate(results[0]);
  if(evt&&evt.type==='doble'){hitN=results[0];draw();toast('¡Segunda bola!');await sleep(700);results.push(window.__forzar2!=null?window.__forzar2:ri(0,36));window.__forzar2=null;await animate(results[1],3800)}
- let win=0,potWon=0,pleno=false;const keys=Object.keys(bets);
- for(const r of results)for(const k of keys){const b=bets[k],w=payout(b,r,curRays,evt);if(w>0){win+=w;if(b.nums.length===1){pleno=true;if(curRays.some(x=>x.n===r)&&!potWon){potWon=S.pot;S.pot=500}}}}
+ const keys=Object.keys(bets);const RT=resolverTirada(bets,results,curRays,evt);let win=RT.win,potWon=0,pleno=RT.pleno;
+ if(RT.potTope>0){potWon=Math.min(S.pot,RT.potTope);S.pot=Math.max(500,Math.round((S.pot-potWon)*100)/100)}
  win+=potWon;hitN=results[results.length-1];draw();
  results.forEach(r=>{const e=$(`.cell[data-key="n:${r}"]`);e&&e.classList.add('win')});marcarPista(results);resFichas={b:bets,w:new Set(keys.filter(k=>results.some(r=>bets[k].nums.includes(r)))),hasta:Date.now()+2800};
  results.forEach(r=>{S.spin++;S.hist.push({n:r,i:S.spin,e:evt?evt.type:null,ray:(curRays.find(y=>y.n===r)||{}).m||0})});if(S.hist.length>300)S.hist=S.hist.slice(-300);
  const net=win-total;S.st.spins++;if(net>0)S.st.won+=net;else S.st.lost-=net;if(win>S.st.best)S.st.best=win;if(pleno)S.st.plenos++;
  const has2112=bets['n:21']&&bets['n:12'],hit2112=results.some(r=>r===21||r===12);
+ {const fz=S.casa.fase;if(has2112&&hit2112&&!S.casa.final&&fz>=3&&fz<=9)Casa.oculta('ladrillos2112');if(fz>=1&&bets['n:'+fz]&&results.includes(fz))Casa.oculta('ruletaSabe');if(potWon>0&&fz>=1&&fz<=9)Casa.oculta('boteObra')}
  if(has2112){S.st.t.j++;if(hit2112)S.st.t.a++;let w2=0;results.forEach(r=>['n:21','n:12'].forEach(k=>w2+=payout(bets[k],r,curRays,evt)));S.st.t.net+=w2-bets['n:21'].amt-bets['n:12'].amt}
  keys.filter(k=>k.startsWith('v:')).forEach(k=>{if(results.some(r=>bets[k].nums.includes(r)))S.st.v++});
  if(results.includes(0)&&bets['n:0'])S.st.zero++;if(results.includes(20)&&bets['n:20'])S.st.y20++;
  let paid=0;if(win>0&&S.debt>0){paid=Math.min(S.debt,Math.round(win*.5));S.debt-=paid}
  S.bal+=win-paid;S.lastTotal=total;S.lastLost=win<total;S.lossRun=S.lastLost?S.lossRun+1:0;
- if(evt&&evt.type==='todo'&&S.lastLost)S.heat=Math.min(100,S.heat+10);
+ if(evt&&evt.type==='todo'&&S.lastLost){S.heat=Math.min(100,S.heat+10);const ex=Math.min(total-win,Math.max(0,S.bal));if(ex>0){S.bal-=ex;setTimeout(()=>toast('Todo o nada: pierdes el doble (−'+fmt(ex)+')'),1100)}}
  if(evt){evt.left--;if(evt.left<=0)S.evt=null}
  if(win>0){const ratio=win/total,lvl=ratio>=200?3:ratio>=50?2:ratio>=10?1:0;
   if(lvl>0||pleno)bigWin(win,lvl,pleno,potWon);else{winS(0);vib(40)}
@@ -603,8 +768,8 @@ async function spin(){ac();if(spinning)return;const total=totalBets();
   if(pleno||Math.random()<.35)setTimeout(()=>aissa('aWin'),500)}
  else{sadS();vib(90);if(isNear(results))say('near');else if(has2112)say('t2112miss');else if(S.lossRun>=3)say('lossStreak');else say(Math.random()<.2?'cosas':'loss');if(S.lossRun>=2&&Math.random()<.65)setTimeout(()=>aissa('aLoss'),600)}
  if(paid)toast(`Rodri se cobra ${fmt(paid)} de la deuda`);
- if(S.bal<30&&!S.taxiBelow){S.taxiBelow=true;S.st.taxi++;setTimeout(()=>say('taxi'),2200)}if(S.bal>=30)S.taxiBelow=false;
- if(!S.evt&&Math.random()<.1){const pool=[];EVTS.forEach(e=>{for(let i=0;i<e.w;i++)pool.push(e)});S.evt=Object.assign({},rand(pool));setTimeout(()=>{toast('Próxima tirada: '+S.evt.name);thunder()},1500)}
+ if(S.bal<30&&!S.taxiBelow){S.taxiBelow=true;S.st.taxi++;setTimeout(()=>say('taxi'),2200);if(S.casa.fase>=4)Casa.oculta('sinTaxi')}if(S.bal>=30)S.taxiBelow=false;
+ if(!S.evt&&Math.random()<ECON.probEvento){const pool=[];EVTS.forEach(e=>{for(let i=0;i<e.w;i++)pool.push(e)});S.evt=Object.assign({},rand(pool));const ne=S.evt;setTimeout(()=>{toast('Próxima tirada: '+ne.name);thunder()},1500)}
  bets={};checkAch();spinning=false;save();render();setTimeout(render,2900);if(yVolver!=null)setTimeout(()=>volverA(yVolver),2600);
  if(S.bal<1)setTimeout(showBank,2200)}
 
@@ -640,8 +805,9 @@ function runQuiz(l,cb){const q=genQ(l),secs=[12,10,8][l],opts=shuffle(q.opts);
  let done=false;const fin=(ok,btn)=>{if(done)return;done=true;clearTimeout(qTimer);bar.style.transition='none';$$('#mbody .opt').forEach(b=>{b.disabled=true;if(b.textContent===q.ans)b.classList.add('good')});if(btn&&!ok)btn.classList.add('bad');if(ok){tone(880,.1,'triangle',.15);tone(1320,.15,'triangle',.12,.08)}else{tone(180,.3,'sawtooth',.08);vib(120)}cb(ok,q)};
  $$('#mbody .opt').forEach(b=>b.onclick=()=>fin(b.textContent===q.ans,b));qTimer=setTimeout(()=>fin(false,null),secs*1000)}
 function openRecover(){if(spinning)return;const left=Math.max(0,CAP-recToday()),blk=S.qBlock>Date.now();
- openModal(`<h3>Recuperar euros</h3><p>Preguntas sobre tu propia ruleta: fíjate en cada número que sale. Racha de aciertos: ${S.qStreak} (premio x${qMult().toFixed(2).replace('.',',')}).</p><p>Hoy aún puedes recuperar <b>${fmt(left)}</b>.</p>${blk?`<p class="warn">Castigado por fallar. Espera <span id="cd"></span> s.</p>`:''}${left<=0?'<p class="warn">Por hoy ya has recuperado el máximo. Vuelve mañana.</p>':''}<div class="lv"><button data-l="0">Fácil <b>${fmt(REW[0])}</b></button><button data-l="1">Media <b>${fmt(REW[1])}</b></button><button data-l="2">Difícil <b>${fmt(REW[2])}</b></button></div><button class="plain close">Volver a la mesa</button>`);
- if(blk){const u=()=>{const e=$('#cd');if(!e)return;const s=Math.ceil((S.qBlock-Date.now())/1000);if(s<=0){openRecover();return}e.textContent=s;setTimeout(u,500)};u()}
+ openModal(`<h3>Recuperar euros</h3><p>Preguntas sobre tu propia ruleta: fíjate en cada número que sale. Racha de aciertos: ${S.qStreak} (premio x${qMult().toFixed(2).replace('.',',')}).</p><p>Hoy aún puedes recuperar <b>${fmt(left)}</b>.</p>${blk?`<p class="warn">Castigado por fallar. Espera <span id="cd"></span> s.</p>`:''}${left<=0?'<p class="warn">Por hoy ya has recuperado el máximo. Vuelve mañana.</p>':''}<div class="lv"><button data-l="0">Fácil <b>${fmt(REW[0])}</b></button><button data-l="1">Media <b>${fmt(REW[1])}</b></button><button data-l="2">Difícil <b>${fmt(REW[2])}</b></button></div><button class="plain close">Volver a la mesa</button><div class="shisha-slot" data-sh="preguntas"></div>`);
+ Shisha.montar($('#mbody .shisha-slot'),'preguntas');
+ if(blk){const u=()=>{const e=$('#cd');if(!e||!$('#modal').classList.contains('show'))return;const s=Math.ceil((S.qBlock-Date.now())/1000);if(s<=0){openRecover();return}e.textContent=s;setTimeout(u,500)};u()}
  $$('#mbody .lv button').forEach(b=>{b.disabled=blk||left<=0;if(b.disabled)b.style.opacity=.4;b.onclick=()=>{const l=+b.dataset.l;runQuiz(l,(ok,q)=>{let msg;
   if(ok){const g=Math.min(Math.round(REW[l]*qMult()),Math.max(0,CAP-recToday()));S.qStreak++;if(S.recDay!==today()){S.recDay=today();S.recAmt=0}S.recAmt+=g;S.bal+=g;S.heat=Math.max(0,S.heat-5);say('qOk');msg=`<p class="q" style="color:#8ff0bb">+${fmt(g)}</p>`;confetti(30)}
   else{S.qStreak=0;S.qBlock=Date.now()+(l===2?40:20)*1000;say('qFail');msg=`<p class="warn">La respuesta era: ${q.ans}</p>`}
@@ -661,7 +827,7 @@ function openRodri(){if(spinning)return;
  if(S.debt>0){openModal(`<h3>Rodri</h3><p>«Primero me devuelves lo que me debes, listo.»</p><p>Le debes <b>${fmt(S.debt)}</b>. Se cobra la mitad de cada premio hasta que esté pagado.</p><button class="plain close">Vale</button>`);return}
  const ph=rand(FRASES_RODRI);
  openModal(`<h3>Pedirle a Rodri</h3><p>Rodri te presta <b>250 €</b> y le devuelves <b>500 €</b>: se cobra la mitad de cada premio hasta saldar la deuda.</p><p>Condición: escribe exactamente esto.</p><p class="phrase">${ph}</p><input id="ph" autocomplete="off" autocapitalize="off" placeholder="Escríbelo aquí"><button class="gold" id="okR">Aceptar la humillación</button><button class="plain close">Mejor no</button>`);
- $('#okR').onclick=()=>{if(norm($('#ph').value)!==norm(ph)){$('#ph').style.borderColor='#ff3d5a';toast('Así no, Aissa. Escríbelo bien.');return}S.bal+=250;S.debt=500;save();render();hideBank();$('#mbody').innerHTML=`<h3>Rodri</h3><p class="q">«${pick('rodri')}»</p><button class="gold close">A la mesa</button>`;bindClose();chipS();say('Dinero prestado de Rodri. Ya verás qué rápido se va.')}}
+ $('#okR').onclick=()=>{if(norm($('#ph').value)!==norm(ph)){$('#ph').style.borderColor='#ff3d5a';toast('Así no, Aissa. Escríbelo bien.');return}S.bal+=250;S.debt=500;if(S.casa.fase>=1&&S.casa.fase<10)Casa.oculta('rodriSocio');save();render();hideBank();$('#mbody').innerHTML=`<h3>Rodri</h3><p class="q">«${pick('rodri')}»</p><button class="gold close">A la mesa</button>`;bindClose();chipS();say('Dinero prestado de Rodri. Ya verás qué rápido se va.')}}
 
 /* ===== estadísticas y logros ===== */
 const ACH=[['sipaga','Si paga, paga','Acierta 10 plenos',()=>S.st.plenos>=10],['pata','A pata a casa','Baja 5 veces de la línea del taxi',()=>S.st.taxi>=5],['vent','El ventanero','Acierta 10 ventanas',()=>S.st.v>=10],['y2020','Como en 2020','Acierta el 20 a pleno',()=>S.st.y20>=1],['cero','Rey del cero','Acierta el 0 a pleno',()=>S.st.zero>=1],['t2112','Cae en uno, cae en el otro','Acierta el 21-12 cinco veces',()=>S.st.t.a>=5],['mecenas','Mecenas del casino','Pierde 10.000 € en total',()=>S.st.lost>=10000],['magnate','Aissa el magnate','Llega a 10.000 € de saldo',()=>S.bal>=10000]];
@@ -681,7 +847,7 @@ function render(){const b=$('#bal');b.textContent=fmt(S.bal);b.classList.toggle(
  $('#pot').textContent=fmt(S.pot);$('#debt').textContent=S.debt>0?'Deuda con Rodri: '+fmt(S.debt):'';
  const tf=$('#taxiFill');tf.style.width=Math.min(100,S.bal/300*100)+'%';tf.classList.toggle('low',S.bal<30);
  $('#heatFill').style.width=S.heat+'%';document.body.classList.toggle('hot',S.heat>=70);
- $('#total').textContent=fmt(totalBets());
+ $('#total').textContent=fmt(totalBets());{const t=totalBets();$('#cuota').textContent=t>0?' · +'+fmt(Math.round(t*ECON.comisionBote*100)/100)+' al bote':''}
  const multi=Object.values(bets).filter(b=>/^[cvslq]:/.test(b.key));
  $$('#table .cell').forEach(c=>{const k=c.dataset.key;const n=k.startsWith('n:')?+k.slice(2):null;c.classList.toggle('ray',n!=null&&curRays.some(x=>x.n===n));c.classList.toggle('vc',n!=null&&multi.some(b=>b.nums.includes(n)))});
  $('#specials').innerHTML=multi.map(b=>`<button data-k="${b.key}">${b.label}: ${fmt(b.amt)} ✕</button>`).join('');
@@ -691,7 +857,344 @@ function render(){const b=$('#bal');b.textContent=fmt(S.bal);b.classList.toggle(
  const H=S.hist.slice(-50);if(H.length>=8){const cnt={};for(let n=0;n<=36;n++)cnt[n]=0;H.forEach(x=>cnt[x.n]++);const arr=Object.entries(cnt).sort((a,b)=>b[1]-a[1]);$('#hc').innerHTML=`Calientes <b>${arr.slice(0,3).map(a=>a[0]).join(', ')}</b> &nbsp; Fríos <em>${arr.slice(-3).map(a=>a[0]).join(', ')}</em>`}else $('#hc').textContent='';
  $$('#chips button').forEach(x=>x.classList.toggle('sel',+x.dataset.v===S.chip));
  $('#spin').disabled=spinning;$('#vMode').classList.toggle('on',ventMode);$('#mute').textContent=S.mute?'Sonido no':'Sonido sí';
- $('#table').classList.toggle('vmode',ventMode);$('#vAviso').classList.toggle('show',ventMode);$$('#nbsel button').forEach(b=>b.classList.toggle('on',+b.dataset.nb===(S.nb||2)));pintarFichas();pintarPista()}
+ $('#table').classList.toggle('vmode',ventMode);$('#vAviso').classList.toggle('show',ventMode);$$('#nbsel button').forEach(b=>b.classList.toggle('on',+b.dataset.nb===(S.nb||2)));pintarFichas();pintarPista();pintarConEsto();Casa.actualizarBoton();if(Casa.abierta()){Casa.pintarPanel();$('#casaSaldo').textContent=fmt(S.bal)}}
+
+/* ===================================================================================
+   LA CASA EN MARRUECOS · EL HOTEL · LA SHISHA · EQUILIBRIO DE LA RULETA
+   (todo lo nuevo del segundo encargo; los números se retocan aquí arriba)
+   =================================================================================== */
+// Equilibrio de la ruleta: sin esto apostar daba dinero a la larga y la casa no tendría sentido
+const ECON={comisionBote:.02,boteMult:100,eventoTope:150,probEvento:.07,topeRecuperar:4000};
+function resolverTirada(bs,results,rays,evt){
+ const mitad=evt&&evt.type==='doble'&&results.length>1?.5:1;let base=0,extra=0,pleno=false,potTope=0;
+ for(const r of results)for(const k in bs){const b=bs[k],wN=payout(b,r,rays,null)*mitad,wE=evt&&evt.type!=='doble'?payout(b,r,rays,evt)*mitad:wN;
+  base+=wN;if(wE>wN)extra+=wE-wN;
+  if(wN>0&&b.nums.length===1){pleno=true;if(rays.some(x=>x.n===r))potTope=Math.max(potTope,b.amt*ECON.boteMult)}}
+ return{win:base+Math.min(extra,evt&&evt.type==='y2020'?2020:ECON.eventoTope),base,extra,pleno,potTope}}
+/* ---------- datos de la casa y el hotel ---------- */
+const LUGARES={
+ tanger:{nom:'Tánger',paisaje:'mar',txt:'El mar y el Estrecho'},
+ nador:{nom:'Nador',paisaje:'laguna',txt:'La laguna y los montes'},
+ alhucemas:{nom:'Alhucemas',paisaje:'montana',txt:'Las montañas y la bahía'},
+ casablanca:{nom:'Casablanca',paisaje:'ciudad',txt:'La ciudad junto al Atlántico'},
+ marrakech:{nom:'Marrakech',paisaje:'desierto',txt:'Palmeral, dunas y el Atlas'}
+};
+const FASES_CASA=[['Terreno',3000,'el terreno'],['Permiso de obra',1500,'el permiso de obra'],['Cimientos',4000,'los cimientos'],['Paredes',6000,'las paredes'],['Planta 1',7000,'la planta de arriba'],['Tejado y azotea',5500,'el tejado y la azotea'],['Patio con fuente',4500,'el patio con fuente'],['Zellige y decoración',6000,'el zellige'],['Piscina',7500,'la piscina'],['Casa terminada',5000,'los remates de la casa']];
+const FASES_HOTEL=[['Proyecto y licencia',12000,'el proyecto del hotel'],['Recepción',18000,'la recepción'],['Habitaciones (planta baja)',25000,'las habitaciones de abajo'],['Habitaciones (planta alta)',25000,'las habitaciones de arriba'],['Restaurante',20000,'el restaurante'],['Terraza con vistas',15000,'la terraza con vistas'],['Piscina grande',25000,'la piscina grande'],['Spa y hammam',30000,'el spa y el hammam'],['Jardín y palmeras',10000,'el jardín'],['Gran inauguración',20000,'la gran inauguración']];
+const HOTEL_HORA=150,HOTEL_TOPE_DIA=1800;
+// Compradores: f = rango de la oferta sobre el valor de la casa, min = minutos que dura la oferta
+const COMPRADORES=[
+ {id:'primo',nom:'El primo de Tánger',cara:'🧔',f:[.45,.75],min:10,w:3,frase:'«Te la quito de encima ya. Precio de amigo, ¿eh?»'},
+ {id:'dubai',nom:'Un inversor de Dubái',cara:'🕴️',f:[1.05,1.35],min:3,w:1,frase:'«Me gustan las vistas. Pago bien, pero decide rápido.»'},
+ {id:'frances',nom:'Monsieur Pierre, jubilado francés',cara:'👴',f:[.85,1.12],min:15,w:2,frase:'«C\'est magnifique! Para jubilarme aquí, parfait.»'},
+ {id:'agencia',nom:'Inmobiliaria Casas del Estrecho',cara:'🏢',f:[.65,.95],min:20,w:3,frase:'«Oferta firme y papeles en regla. Sin prisas.»'},
+ {id:'futbolista',nom:'Un futbolista retirado',cara:'⚽',f:[.9,1.25],min:6,w:2,frase:'«La quiero para los veranos. Te pago en el acto.»'},
+ {id:'youtuber',nom:'Un youtuber de casas',cara:'📱',f:[.55,1],min:8,w:2,frase:'«Para un vídeo: «Reformo la casa de Aissa». Mil visitas seguro.»'},
+ {id:'rodri',nom:'Rodri',cara:'🤝',f:[.25,.45],min:10,w:1,frase:'«Te la compro y te perdono los taxis de por vida.»'},
+ {id:'hotelera',nom:'Una cadena hotelera',cara:'🏨',f:[1.1,1.3],min:2,w:1,avanzada:true,frase:'«Queremos el terreno. Es nuestra última oferta.»'}
+];
+const IMPREVISTOS=[
+ {id:'adelanto',txt:'Los obreros piden un adelanto para seguir',p:(sig)=>Math.max(150,sig*.06)},
+ {id:'cemento',txt:'Ha subido el cemento: toca pagar la diferencia',p:(sig)=>sig*.08},
+ {id:'permiso',txt:'Falta un sello del ayuntamiento',p:()=>500+Math.random()*400},
+ {id:'tormenta',txt:'Una tormenta ha tirado los andamios',p:(sig,inv)=>Math.max(200,inv*.04)},
+ {id:'robo',txt:'Han robado material de la obra',p:(sig)=>sig*.05},
+ {id:'vecino',txt:'El vecino se queja del ruido: té, pastas y una valla nueva',p:()=>250},
+ {id:'inspeccion',txt:'Inspección de obra: multa porque nadie llevaba casco',p:()=>400}
+];
+const PIEZAS={puerta:'Puerta dorada',fuente:'Fuente de mármol',farolillos:'Farolillos de colores',gato:'Gato en la azotea',placaVolvio:'Placa «Aissa volvió»',luna:'Luna sobre la casa',palmera2:'Palmera doble',bici:'Bicicleta en la puerta',shishaOro:'Shisha de oro',placaNo:'Placa «No se vende»',hamaca:'Hamaca para Rodri',casco:'Casco dorado del capataz',parabolica:'Parabólica en la azotea',estrella:'Estrella de zellige',bandera:'Bandera con tu nombre'};
+// MISIONES OCULTAS: no se ven hasta descubrirlas
+const OCULTAS=[
+ {id:'diaLimpio',nom:'Día limpio',pista:'Construir una fase un día sin haber jugado a la ruleta',pieza:'puerta',euros:300},
+ {id:'tresNoes',nom:'Esta casa no está en venta',pista:'Rechazar 3 ofertas seguidas',pieza:'fuente'},
+ {id:'ladrillos2112',nom:'El 21-12 pone ladrillos',pista:'Acertar el 21-12 con la casa a medias',pieza:'farolillos',euros:2112},
+ {id:'reyAzotea',nom:'Rey de la azotea',pista:'Fumarse 10 shishas en la azotea (30 caladas buenas)',pieza:'gato'},
+ {id:'fenix',nom:'Ave fénix',pista:'Vender la casa y volver a construirla entera',pieza:'placaVolvio',euros:5000},
+ {id:'nocturna',nom:'Obra nocturna',pista:'Pagar una fase entre las 00:00 y las 06:00',pieza:'luna'},
+ {id:'aTodaMaquina',nom:'A toda máquina',pista:'Pagar 3 fases el mismo día',pieza:'palmera2'},
+ {id:'sinTaxi',nom:'Sin taxi pero con casa',pista:'Bajar de la línea del taxi con 4 fases o más construidas',pieza:'bici'},
+ {id:'humo',nom:'Maestro del humo',pista:'Echar 5 aros perfectos seguidos',pieza:'shishaOro'},
+ {id:'noSeVende',nom:'Ni por todo el oro',pista:'Rechazar una oferta por encima de lo invertido',pieza:'placaNo'},
+ {id:'rodriSocio',nom:'Rodri, socio capitalista',pista:'Pedirle dinero a Rodri con la obra empezada',pieza:'hamaca'},
+ {id:'jefeObra',nom:'Jefe de obra',pista:'Pagar 3 imprevistos seguidos en menos de 2 minutos cada uno',pieza:'casco'},
+ {id:'ruletaSabe',nom:'La ruleta sabe',pista:'Ganar un pleno al número de fases construidas',pieza:'parabolica'},
+ {id:'boteObra',nom:'El bote va a la obra',pista:'Llevarse el bote con la obra empezada',pieza:'estrella',euros:1000},
+ {id:'deAquiNo',nom:'De aquí no me muevo',pista:'Terminar la casa sin haberla vendido nunca',pieza:'bandera'}
+];
+const SABORES=[{id:'menta',nom:'Menta',c:[215,255,248],req:0},{id:'manzana',nom:'Doble manzana',c:[255,222,205],req:20},{id:'uva',nom:'Uva con menta',c:[228,208,255],req:50},{id:'sandia',nom:'Sandía',c:[255,205,222],req:100},{id:'limon',nom:'Limón helado',c:[250,250,205],req:180}];
+function defCasa(){return{lugar:null,fase:0,invertido:0,imprevisto:null,impEn:0,pagadosSeguidos:0,vendidas:0,reconstruyendo:false,piezas:[],oculta:{},hotel:0,hotelSi:false,hotelInv:0,hotelUlt:0,hotelHoy:0,hotelDia:'',caja:0,final:false,fasesHoy:0,fasesDia:'',diaRuleta:'',rechazadas:0,oferta:null,proxOferta:0,shAzotea:0,creditos:false}}
+function defShisha(){return{carbon:10,sabor:'menta',buenas:0,perfSeguidas:0,perfHoy:0,diaPerf:'',caladas:0}}
+Object.assign(L,{
+ casaTienta:['¿Ladrillos o un pleno al 21? Tú sabrás, Aissa.','Con eso pagas una fase de la casa. O me lo das a mí. Tú verás.','Cada ficha que pones es un ladrillo que no pones.','La casa puede esperar, ¿verdad? La bola no.','Eso es media obra encima del tapete. Qué valiente.'],
+ casaFase:['Mira qué bonita la obra. Qué pena que no sea un pleno.','Otra fase. Te estás volviendo responsable y me preocupa.','Ladrillo a ladrillo… Así no se hace uno rico, Aissa. Así se hace uno una casa.','Dinero que no vuelve a la mesa. Qué desperdicio.','Los obreros cobran seguro. Yo no. Esto no es justo.'],
+ casaVende:['¡Vendida! Ahora tráeme ese dinero a la mesa, que aquí te lo cuido.','Lo has vendido todo. Siéntate, que la bola te estaba esperando.','La obra a cero y tú con la cartera llena. Esto me gusta.'],
+ casaOferta:['Hay alguien que quiere tu casa. Yo que tú vendía y apostaba.','Una oferta, Aissa. Piensa en todos los plenos que caben ahí.'],
+ casaRechaza:['¿La rechazas? Vaya, el señor se ha vuelto propietario.','Tú sabrás. Esa oferta en la mesa eran muchas fichas.'],
+ casaParada:['Obra parada. Los obreros también saben lo que es no cobrar.','Sin pagar el imprevisto no se mueve ni un ladrillo, Aissa.'],
+ casaSinDinero:['Para esa fase no te llega. Aquí en la mesa sí se multiplica… o no.','Te falta dinero, constructor. ¿Probamos suerte?'],
+ casaFinal:['¡¿UNA CASA?! ¡¿Has terminado una casa?! ¡Esto es un casino, no una inmobiliaria!','Me has dejado sin cliente. Vuelve, que el hotel no se paga solo.','Enhorabuena. Te odio un poco.'],
+ shisha:['Fuma, fuma, que así pierdes más tranquilo.','Qué pachorra. Así da gusto perder.','Menta y paciencia. Lo único que no te cuesta dinero. Bueno, el carbón sí.'],
+ shishaAro:['Buen aro. Lástima que no pague 35 a 1.','Aro perfecto. Eres mejor echando humo que apostando.'],
+ shishaTos:['Tose, tose. Profesional.','Te has pasado de calada, campeón.'],
+ shishaSin:['Sin carbón no hay nube, Aissa.','Se acabó el carbón. Como tu saldo, pero más barato.'],
+ hotelAbre:['Un hotel. Ahora sí que me vas a pagar las copas.','Hotel abierto. Los huéspedes pagan y tú me lo traes. Así funciona esto.']
+});
+/* ---------- la casa: dinero, fases, ofertas, imprevistos, misiones ---------- */
+const Casa=(()=>{
+ let abierta=false,anim=null,fiesta=0,raf=null,confirmar=false,ultimoFrame=0;
+ const C=()=>S.casa,enHotel=()=>C().fase>=10&&C().hotelSi,lista=()=>enHotel()?FASES_HOTEL:FASES_CASA,actual=()=>enHotel()?C().hotel:C().fase;
+ function siguiente(){const L2=lista(),i=actual();return i<L2.length?{i,nom:L2[i][0],precio:L2[i][1],hotel:enHotel()}:null}
+ function pendientes(){const c=C();if(c.fase>=10&&!c.hotelSi)return[];return lista().slice(actual())}
+ function valor(){const c=C();return Math.round(c.invertido*(1+.03*c.fase))}
+ function decir(cat){const t=L[cat]?pick(cat):cat;if(abierta){const e=$('#casaVito');e.textContent=t;e.classList.remove('pop');void e.offsetWidth;e.classList.add('pop')}else say(t)}
+ function oculta(id){const c=C();if(c.oculta[id])return;const M=OCULTAS.find(x=>x.id===id);if(!M)return;c.oculta[id]=Date.now();if(M.pieza&&!c.piezas.includes(M.pieza))c.piezas.push(M.pieza);if(M.euros)S.bal+=M.euros;
+  setTimeout(()=>{toast('🔓 Misión oculta: '+M.nom+' · '+PIEZAS[M.pieza]+(M.euros?' + '+fmt(M.euros):''));winS(1);confetti(40)},400);save();render();pintar()}
+ function sonidoObra(){for(let i=0;i<14;i++){tone(180+Math.random()*120,.05,'square',.05,.15+i*.28);tone(900+Math.random()*400,.03,'triangle',.03,.2+i*.28)}}
+ function pagar(){const c=C(),s=siguiente();if(!s)return;if(spinning){toast('Espera a que pare la bola');return}
+  if(c.imprevisto){toast('Obra parada: primero paga el imprevisto');decir('casaParada');return}
+  if(S.bal<s.precio){decir('casaSinDinero');toast('Te faltan '+fmt(s.precio-S.bal)+' para '+s.nom.toLowerCase());return}
+  S.bal-=s.precio;const hoy=today();if(c.fasesDia!==hoy){c.fasesDia=hoy;c.fasesHoy=0}c.fasesHoy++;
+  if(s.hotel){c.hotel++;c.hotelInv+=s.precio}else{c.fase++;c.invertido+=s.precio}
+  anim={hotel:s.hotel,fase:s.hotel?c.hotel:c.fase,t0:performance.now(),dur:6500};sonidoObra();vib([20,40,20,40,20]);
+  S.st.fases=(S.st.fases||0)+1;
+  if(c.diaRuleta!==hoy)oculta('diaLimpio');if(new Date().getHours()<6)oculta('nocturna');if(c.fasesHoy>=3)oculta('aTodaMaquina');
+  if(!s.hotel&&c.fase===10){c.impEn=0;if(c.reconstruyendo)oculta('fenix');if(!c.vendidas)oculta('deAquiNo');c.reconstruyendo=false;c.oferta=null;setTimeout(finalCasa,6800)}
+  else if(s.hotel&&c.hotel===10){c.impEn=0;c.hotelUlt=Date.now();setTimeout(()=>{fiesta=performance.now()+9000;confetti(220);winS(3);decir('hotelAbre');toast('¡HOTEL ABIERTO! Ahora gana '+fmt(HOTEL_HORA)+' por hora (hasta '+fmt(HOTEL_TOPE_DIA)+' al día)')},6800)}
+  else{decir('casaFase');if(Math.random()<.35)c.impEn=Date.now()+(60+Math.random()*180)*1000;if(!s.hotel&&!c.proxOferta)c.proxOferta=Date.now()+(6+Math.random()*6)*60000}
+  save();render();pintar()}
+ function finalCasa(){const c=C();c.final=true;fiesta=performance.now()+12000;confetti(260);winS(3);document.body.classList.add('shake');setTimeout(()=>document.body.classList.remove('shake'),700);decir('casaFinal');save();pintar();setTimeout(creditos,3800)}
+ const GRITOS=['¡¿UNA CASA?!','¡Esto es un casino, no una inmobiliaria!','¡Con lo bien que íbamos, Aissa!','¿Y ahora quién me paga las copas?','¡Obreros! ¡Echadla abajo!','Me voy a quejar al ayuntamiento…','¡Ni un pleno! ¡Todo en ladrillos!','Bueno. Un hotel. Eso sí que no lo terminas.'];let grT=null;
+ function creditos(){const c=C(),lu=LUGARES[c.lugar]||LUGARES.tanger,el=$('#creditos');c.creditos=true;save();
+  let gi=0;const gr=$('#crGrito');gr.textContent=GRITOS[0];clearInterval(grT);grT=setInterval(()=>{if(!el.classList.contains('show')){clearInterval(grT);return}gi=(gi+1)%GRITOS.length;gr.textContent=GRITOS[gi];gr.classList.remove('pop');void gr.offsetWidth;gr.classList.add('pop');tone(120+Math.random()*60,.14,'sawtooth',.05);vib(25)},2600);
+  el.querySelector('.cr-rollo').innerHTML=`<h2>LA BOLA NEGRA</h2><p class="cr-big">La casa de Aissa<br>en ${lu.nom}</p><p>está terminada.</p><br><p><b>Dirección de obra</b><br>Aissa</p><p><b>Financiación</b><br>Preguntas, ruleta, algún milagro y ${fmt(c.invertido)}</p><p><b>Préstamos y taxis</b><br>Rodri</p><p><b>Obreros</b><br>Mohamed, Paco, Youssef y el del casco</p><p><b>Zellige</b><br>Hecho a mano, pieza a pieza</p><p><b>Humo</b><br>La shisha de la azotea</p><br><p><b>Croupier</b><br>Vito</p><p class="cr-vito">«¡¿UNA CASA?! ¡Esto es un casino, no una inmobiliaria!»</p><p class="cr-vito">«Me has dejado sin cliente…»</p><p class="cr-vito">«…pero vuelve, que un hotel no se paga solo.»</p><br><p class="cr-big">FIN</p><p>(de momento)</p>`;
+  el.classList.add('show');const r=el.querySelector('.cr-rollo');r.style.animation='none';void r.offsetWidth;r.style.animation='';winS(2)}
+ function cerrarCreditos(){clearInterval(grT);C().hotelSi=true;save();$('#creditos').classList.remove('show');pintarPanel();toast('Nueva meta desbloqueada: EL HOTEL');decir('Vale, casa hecha. Ahora un hotel. A ver cuánto tardas en traerme el dinero.');pintar()}
+ // ----- imprevistos y ofertas (se revisan cada segundo) -----
+ function tic(){const c=C(),ahora=Date.now();if(!c.lugar)return;
+  if(c.impEn&&ahora>=c.impEn&&!c.imprevisto&&siguiente()){const I=rand(IMPREVISTOS),s=siguiente(),pr=Math.round(I.p(s?s.precio:3000,enHotel()?c.hotelInv:c.invertido)/10)*10;
+   c.imprevisto={id:I.id,txt:I.txt,precio:pr,desde:ahora};c.impEn=0;save();toast('🚧 Imprevisto en la obra: '+I.txt+' ('+fmt(pr)+')');decir('casaParada');pintarPanel();pintar()}
+  if(!enHotel()&&c.fase>=1&&c.fase<=9&&!c.oferta&&c.proxOferta&&ahora>=c.proxOferta){const pool=[];COMPRADORES.forEach(b=>{if(b.avanzada&&c.fase<7)return;for(let i=0;i<b.w;i++)pool.push(b)});
+   const B=rand(pool),f=B.f[0]+Math.random()*(B.f[1]-B.f[0]),pr=Math.max(100,Math.round(valor()*f/50)*50);
+   c.oferta={id:B.id,precio:pr,caduca:ahora+B.min*60000};c.proxOferta=ahora+(12+Math.random()*18)*60000;save();vib([30,60,30]);tone(880,.12,'triangle',.12);tone(1320,.18,'triangle',.1,.12);decir('casaOferta');pintarOferta()}
+  if(c.oferta&&ahora>=c.oferta.caduca){const B=COMPRADORES.find(x=>x.id===c.oferta.id);c.oferta=null;confirmar=false;save();toast((B?B.nom:'El comprador')+' se ha ido: la oferta ha caducado');pintarOferta()}
+  if(c.oferta)pintarOferta(true);
+  acumularHotel()}
+ function vender(){const c=C(),o=c.oferta;if(!o)return;if(!confirmar){confirmar=true;pintarOferta();return}
+  S.bal+=o.precio;c.vendidas++;c.reconstruyendo=true;S.st.ventas=(S.st.ventas||0)+1;
+  Object.assign(c,{fase:0,invertido:0,imprevisto:null,impEn:0,oferta:null,rechazadas:0,proxOferta:0});confirmar=false;anim=null;
+  toast('Casa vendida por '+fmt(o.precio)+'. La obra vuelve al terreno.');chipS();winS(1);decir('casaVende');save();render();pintarOferta();pintar()}
+ function rechazar(){const c=C(),o=c.oferta;if(!o)return;c.rechazadas++;if(o.precio>c.invertido)oculta('noSeVende');if(c.rechazadas>=3)oculta('tresNoes');c.oferta=null;confirmar=false;decir('casaRechaza');save();pintarOferta()}
+ function pagarImprevisto(){const c=C(),i=c.imprevisto;if(!i)return;if(S.bal<i.precio){toast('No te llega para el imprevisto: '+fmt(i.precio));return}
+  S.bal-=i.precio;c.pagadosSeguidos=Date.now()-i.desde<120000?c.pagadosSeguidos+1:0;if(c.pagadosSeguidos>=3)oculta('jefeObra');c.imprevisto=null;chipS();toast('Imprevisto pagado. La obra sigue.');save();render();pintarPanel();pintar()}
+ function acumularHotel(){const c=C();if(c.hotel<10)return;const ahora=Date.now();if(!c.hotelUlt){c.hotelUlt=ahora;return}
+  let t=Math.max(c.hotelUlt,ahora-90*864e5);while(t<ahora){const d=new Date(t),dia=d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(),fin=new Date(d.getFullYear(),d.getMonth(),d.getDate()+1).getTime(),hasta=Math.min(ahora,fin);
+   if(c.hotelDia!==dia){c.hotelDia=dia;c.hotelHoy=0}const g=Math.min((hasta-t)/3.6e6*HOTEL_HORA,Math.max(0,HOTEL_TOPE_DIA-c.hotelHoy));if(g>0){c.caja+=g;c.hotelHoy+=g}t=hasta}
+  c.hotelUlt=ahora;if(abierta){const v=$('#cajaV');if(v)v.textContent=fmt(Math.floor(c.caja));const b=$('#cobCaja');if(b)b.textContent='Cobrar la caja ('+fmt(Math.floor(c.caja))+')'}}
+ function cobrarCaja(){const c=C(),g=Math.floor(c.caja);if(g<1){toast('La caja del hotel está vacía');return}c.caja-=g;S.bal+=g;winS(1);toast('Caja del hotel: +'+fmt(g));save();render();pintarPanel()}
+ // ----- pantalla -----
+ const escritorio=()=>matchMedia('(min-width:1100px) and (min-height:660px)').matches;
+ function colocarOferta(){const el=$('#oferta'),sig=$('#casaSig');if(abierta){if(el.nextElementSibling!==sig)sig.parentNode.insertBefore(el,sig)}else{const d=escritorio()?$('.col-centro'):document.body;if(el.parentNode!==d)d.appendChild(el)}el.classList.toggle('inline',abierta||escritorio())}
+ function abrir(){abierta=true;$('#casa').classList.add('show');document.body.classList.add('encasa');$('#casaSaldo').textContent=fmt(S.bal);pintarPanel();colocarOferta();pintarOferta();if(!C().lugar)elegirLugar();else{medir();bucle()}}
+ function cerrar(){abierta=false;$('#casa').classList.remove('show');document.body.classList.remove('encasa');colocarOferta();pintarOferta();render()}
+ function alternar(){abierta?cerrar():abrir()}
+ function elegirLugar(){const el=$('#casaLugar');el.innerHTML='<h3>¿Dónde construyes tu casa?</h3><p>Se elige una vez. Cada sitio tiene su paisaje.</p><div class="lugares">'+Object.entries(LUGARES).map(([id,l])=>`<button data-l="${id}"><canvas width="200" height="125"></canvas><b>${l.nom}</b><span>${l.txt}</span></button>`).join('')+'</div>';
+  el.classList.add('show');$('.casa-lienzo').style.display='none';
+  el.querySelectorAll('button').forEach(b=>{Pix.escena(b.querySelector('canvas'),{t:performance.now(),lugar:b.dataset.l,fase:0,hotel:0,piezas:[],parada:false,rev:null,fiesta:false});
+   b.onclick=()=>{C().lugar=b.dataset.l;el.classList.remove('show');$('.casa-lienzo').style.display='';chipS();save();medir();bucle();pintarPanel();pintar();decir('Una casa en '+LUGARES[b.dataset.l].nom+'. Qué bonito. Ahora a ver de dónde sacas el dinero.')}})}
+ function pintarPanel(){if(!$('#casa'))return;const c=C(),s=siguiente(),lu=LUGARES[c.lugar];
+  $('#casaTit').textContent=(enHotel()?'Hotel en ':'Mi casa en ')+(lu?lu.nom:'Marruecos');
+  const L2=lista(),hechas=actual();
+  $('#casaDatos').innerHTML=enHotel()?`<div><small>Hotel</small><b>${c.hotel}/10</b></div><div><small>Invertido en el hotel</small><b>${fmt(c.hotelInv)}</b></div><div><small>Caja del hotel</small><b id="cajaV">${fmt(Math.floor(c.caja))}</b></div>`
+   :`<div><small>Valor de la casa</small><b>${fmt(valor())}</b></div><div><small>Invertido</small><b>${fmt(c.invertido)}</b></div><div><small>Fases</small><b>${c.fase}/10</b></div>`;
+  let sig='';
+  if(c.imprevisto)sig=`<div class="imprev"><b>🚧 Obra parada</b><span>${c.imprevisto.txt}</span><div><button class="gold" id="pagImp">Pagar ${fmt(c.imprevisto.precio)}</button></div></div>`;
+  else if(s)sig=`<div class="sigfase"><span>Siguiente fase</span><b>${s.nom}</b><em>${fmt(s.precio)}</em><button class="gold" id="pagFase" ${S.bal<s.precio?'disabled':''}>${S.bal<s.precio?'Te faltan '+fmt(s.precio-S.bal):'Pagar y construir'}</button></div>`;
+  else if(!c.hotelSi)sig=`<div class="sigfase"><b>¡Casa terminada!</b><span>Diez fases, ${fmt(c.invertido)} en ladrillos. Vito no se lo cree.</span><button class="gold" id="verCred">Ver los créditos y desbloquear el hotel</button></div>`;
+  else sig=`<div class="sigfase"><b>¡Hotel terminado y abierto!</b><span>Gana ${fmt(HOTEL_HORA)} por hora, hasta ${fmt(HOTEL_TOPE_DIA)} al día.</span><button class="gold" id="cobCaja">Cobrar la caja (${fmt(Math.floor(c.caja))})</button></div>`;
+  if(enHotel()&&c.hotel<10&&c.caja>=1)sig+='';
+  $('#casaSig').innerHTML=sig;
+  $('#casaFases').innerHTML=L2.map(([n,p],i)=>`<li class="${i<hechas?'ok':i===hechas?'now':''}"><span>${i<hechas?'✓':i+1}</span>${n}<b>${fmt(p)}</b></li>`).join('')+`<li class="tot">Total<b>${fmt(L2.reduce((a,x)=>a+x[1],0))}</b></li>`;
+  const des=OCULTAS.filter(m=>c.oculta[m.id]);
+  $('#casaOcultas').innerHTML=`<p>Misiones ocultas: <b>${des.length}/${OCULTAS.length}</b> descubiertas</p>`+OCULTAS.map(m=>c.oculta[m.id]?`<div class="oc ok"><b>${m.nom}</b><span>${PIEZAS[m.pieza]}${m.euros?' + '+fmt(m.euros):''}</span></div>`:`<div class="oc"><b>???</b><span>Misión oculta</span></div>`).join('');
+  $('#casaSh').style.display=c.fase>=6?'':'none';$('#casaShNo').style.display=c.fase>=6?'none':'';
+  const a=$('#pagFase');if(a)a.onclick=pagar;const b=$('#pagImp');if(b)b.onclick=pagarImprevisto;const d=$('#cobCaja');if(d)d.onclick=cobrarCaja;const e=$('#verCred');if(e)e.onclick=creditos;
+  actualizarBoton()}
+ let ofOculta=null;
+ function pintarOferta(soloReloj){const c=C(),o=c.oferta,el=$('#oferta');if(!o||(!abierta&&!escritorio()&&ofOculta===o.caduca)){el.classList.remove('show');return}const B=COMPRADORES.find(x=>x.id===o.id),q=Math.max(0,Math.ceil((o.caduca-Date.now())/1000));
+  if(soloReloj){const r=el.querySelector('.of-reloj');if(r)r.textContent=Math.floor(q/60)+':'+String(q%60).padStart(2,'0');return}
+  const dif=o.precio-c.invertido;
+  el.innerHTML=`<button class="of-x" id="ofX" aria-label="Luego">×</button><div class="of-cab"><span class="of-cara">${B.cara}</span><div><b>${B.nom}</b><small>${B.frase}</small></div></div><div class="of-precio">Te ofrece <b>${fmt(o.precio)}</b> por la casa</div><div class="of-comp">Vale ${fmt(valor())} · has invertido ${fmt(c.invertido)} · <span class="${dif>=0?'bien':'mal'}">${dif>=0?'+':''}${fmt(dif)}</span></div><div class="of-pie"><span>Caduca en <b class="of-reloj">${Math.floor(q/60)}:${String(q%60).padStart(2,'0')}</b></span><button class="plain" id="ofNo">Rechazar</button><button class="gold" id="ofSi">${confirmar?'¿Seguro? La obra vuelve al terreno':'Vender'}</button></div>`;
+  el.classList.add('show');$('#ofNo').onclick=rechazar;$('#ofSi').onclick=vender;$('#ofX').onclick=()=>{ofOculta=o.caduca;confirmar=false;pintarOferta();toast('La oferta sigue en «Mi casa» hasta que caduque')}}
+ function actualizarBoton(){const c=C(),b=$('#bCasa');if(!b)return;const s=siguiente(),q=c.oferta?Math.max(0,Math.ceil((c.oferta.caduca-Date.now())/1000)):0;
+  const sub=c.imprevisto?'¡obra parada!':c.oferta?'¡oferta! '+Math.floor(q/60)+':'+String(q%60).padStart(2,'0'):s?(enHotel()?c.hotel:c.fase)+'/10':c.fase>=10&&!c.hotelSi?'¡terminada!':'caja '+fmt(Math.floor(c.caja));
+  const h=(enHotel()?'🏨 Mi hotel':'🏠 Mi casa')+'<small>'+sub+'</small>';if(b.innerHTML!==h)b.innerHTML=h;b.classList.toggle('alerta',!!c.imprevisto||!!c.oferta)}
+ // ----- dibujo -----
+ let cv=null;function medir(){cv=$('#casaCanvas');const w=cv.getBoundingClientRect().width||320,dpr=Math.min(2,devicePixelRatio||1);cv.width=Math.round(w*dpr);cv.height=Math.round(w*dpr*125/200)}
+ function pintar(){if(abierta&&cv)Pix.escena(cv,estadoDibujo());const m=$('#casaMini');if(m&&m.offsetParent){const w=m.getBoundingClientRect().width,dpr=Math.min(2,devicePixelRatio||1);if(m.width!==Math.round(w*dpr)){m.width=Math.round(w*dpr);m.height=Math.round(w*dpr*125/200)}Pix.escena(m,estadoDibujo())}}
+ function estadoDibujo(){const c=C(),t=performance.now();let rev=null;if(anim){const u=(t-anim.t0)/anim.dur;if(u>=1)anim=null;else rev={hotel:anim.hotel,fase:anim.fase,u}}
+  return{t,lugar:c.lugar||'tanger',fase:c.fase,hotel:c.hotel,piezas:c.piezas,parada:!!c.imprevisto,rev,fiesta:t<fiesta}}
+ function bucle(){cancelAnimationFrame(raf);const f=(t)=>{if(!abierta&&!($('#casaMini')&&$('#casaMini').offsetParent)){raf=null;return}if(t-ultimoFrame>(abierta||anim||t<fiesta?40:140)){ultimoFrame=t;pintar()}raf=requestAnimationFrame(f)};raf=requestAnimationFrame(f)}
+ return{siguiente,pendientes,valor,pagar,abrir,cerrar,alternar,tic,pintarPanel,pintarOferta,colocarOferta,actualizarBoton,oculta,decir,enHotel,creditos,cerrarCreditos,medir,bucle,vender,rechazar,pagarImprevisto,cobrarCaja,abierta:()=>abierta,C}
+})();
+/* ---------- pixel art (lienzo de 200×125, se escala sin suavizar) ---------- */
+const Pix=(()=>{
+ const W=200,H=125;let cv=null,g=null;
+ const r=(x,y,w,h,c)=>{g.fillStyle=c;g.fillRect(Math.round(x),Math.round(y),Math.max(1,Math.round(w)),Math.max(1,Math.round(h)))};
+ const p=(x,y,c)=>{g.fillStyle=c;g.fillRect(Math.round(x),Math.round(y),1,1)};
+ const hash=(x,y)=>{let h=(x*374761393+y*668265263)^0x5bd1e995;h=(h^(h>>>13))*1274126177;return((h^(h>>>16))>>>0)/4294967296};
+ const F={A:'010101111101101',B:'110101110101110',C:'011100100100011',D:'110101101101110',E:'111100110100111',F:'111100110100100',G:'011100101101011',H:'101101111101101',I:'111010010010111',J:'001001001101010',K:'101101110101101',L:'100100100100111',M:'101111111101101',N:'110101101101101',O:'010101101101010',P:'110101110100100',Q:'010101101110011',R:'110101110101101',S:'011100010001110',T:'111010010010010',U:'101101101101111',V:'101101101101010',W:'101101111111101',X:'101101010101101',Y:'101101010010010',Z:'111001010100111',0:'111101101101111',1:'010110010010111',2:'110001010100111',3:'110001010001110',4:'101101111001001',5:'111100110001110',6:'011100111101111',7:'111001010010010',8:'111101111101111',9:'111101111001110',' ':'000000000000000','.':'000000000000010','!':'010010010000010','-':'000000111000000'};
+ function txt(s,x,y,c){s=s.toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g,'');for(const ch of s){const gl=F[ch]||F[' '];for(let i=0;i<15;i++)if(gl[i]==='1')p(x+(i%3),y+Math.floor(i/3),c);x+=4}}
+ const anchoTxt=s=>s.length*4-1;
+ function monte(cx,base,w,h,col,col2){for(let x=Math.max(0,cx-w/2|0);x<=Math.min(W-1,cx+w/2);x++){const hh=Math.round(h*(1-Math.abs(x-cx)/(w/2)));if(hh>0){r(x,base-hh,1,hh,col);if(col2&&x>cx&&hh>2)r(x,base-hh,1,Math.max(1,hh*.45|0),col2)}}}
+ function palmera(x,base,h,e){const t=performance.now()/1000;for(let i=0;i<h;i++){const dx=Math.round(Math.sin(i/h*1.4)*2*e);r(x+dx,base-i,2,1,i%3?'#7a5230':'#5e3d22')}
+  const tx=x+Math.round(Math.sin(1.4)*2*e),ty=base-h;const sw=Math.sin(t*1.3+x)*.6;
+  [[-1,0],[1,0],[-.8,-.5],[.8,-.5],[-.4,-.9],[.4,-.9]].forEach(([dx,dy])=>{for(let k=1;k<=9;k++){const px=tx+1+dx*k+sw*(k/9),py=ty+dy*k+(k*k)/14;p(px,py,k%2?'#2f7a3d':'#3f9a4d');if(k>3)p(px,py+1,'#2a6a35')}});
+  r(tx,ty+1,2,2,'#6b4a1e')}
+ function cielo(s){const b=['#231640','#35195a','#522266','#772b6c','#a23a64','#cc5552','#ea7a45','#f6a44a'],bh=10;
+  b.forEach((c,i)=>{r(0,i*bh,W,bh,c);if(i)for(let x=i%2;x<W;x+=2)p(x,i*bh,b[i-1])});
+  const sx=148,sy=70,sr=12;for(let y=-sr;y<=sr;y++)for(let x=-sr;x<=sr;x++){const d=x*x+y*y;if(d<=sr*sr&&sy+y<80)p(sx+x,sy+y,d<(sr-3)*(sr-3)?'#ffe28c':'#ffc462')}
+  if(s.piezas.includes('luna')){for(let y=-5;y<=5;y++)for(let x=-5;x<=5;x++)if(x*x+y*y<=25&&(x+2)*(x+2)+y*y>9)p(30+x,14+y,'#f4f0da');for(let i=0;i<22;i++){const x=hash(i,1)*W|0,y=hash(i,2)*30|0;if((s.t/400+i)%7>1)p(x,y,'#fff6d6')}}}
+ function paisaje(s){const t=s.t/1000,l=s.lugar;
+  if(l==='tanger'){r(0,70,W,4,'#4a3563');monte(40,74,90,12,'#a36f55','#8a5a45');for(let i=0;i<26;i++){const x=6+hash(i,3)*62|0,y=62+hash(i,4)*10|0;if(y>=74-Math.round(12*(1-Math.abs(x-40)/45))){r(x,y,3,2,'#f1ece2');p(x+1,y+1,'#2f6fb5')}}
+   r(0,74,W,16,'#27456f');for(let i=0;i<40;i++){const x=(hash(i,5)*W+t*6*(i%3+1))%W|0,y=75+hash(i,6)*14|0;p(x,y,'#3f6a99')}for(let y=75;y<89;y+=2)if(Math.sin(t*3+y)>-.3)r(144+Math.sin(t*2+y)*2,y,8,1,'#f2a24a');r(100,70,8,2,'#1d1830');r(103,66,1,4,'#1d1830')}
+  else if(l==='nador'){monte(40,74,110,26,'#4b3060','#3d2752');monte(150,74,120,20,'#553468','#472b5a');r(0,74,W,16,'#2f6f78');for(let i=0;i<30;i++)p(hash(i,7)*W,76+hash(i,8)*12,'#4d939b');for(let x=4;x<W;x+=9)r(x,86,1,3,'#556b2f')}
+  else if(l==='alhucemas'){monte(55,80,140,44,'#5b4652','#4a3844');monte(20,80,70,30,'#6e5646','#5a4639');for(let i=0;i<40;i++){const x=hash(i,9)*110|0,y=48+hash(i,10)*28|0;p(x,y,'#3f6b45')}r(110,76,90,14,'#2b5b8a');for(let i=0;i<24;i++)p(110+hash(i,11)*90,77+hash(i,12)*12,'#4b7aaa');r(170,72,10,5,'#5a4a3a');r(172,70,6,2,'#6a5848')}
+  else if(l==='casablanca'){r(0,72,W,18,'#2a4f7a');for(let i=0;i<30;i++)p((hash(i,13)*W+t*8)%W,74+hash(i,14)*14,'#44709f');const tor=[[8,20],[20,28],[34,16],[46,34],[60,22],[72,30],[86,18]];tor.forEach(([x,h],i)=>{r(x,72-h,10,h,'#2d2340');for(let yy=72-h+2;yy<70;yy+=3)for(let xx=x+2;xx<x+9;xx+=3)if(hash(xx,yy)>.45)p(xx,yy,'#ffd27a')});r(186,52,5,22,'#f2efe8');for(let yy=54;yy<72;yy+=6)r(186,yy,5,3,'#c0392b');r(185,49,7,3,'#3a3a3a');if(Math.sin(t*2)>0)r(182,50,15,1,'#ffec9a')}
+  else{monte(60,70,150,34,'#6a4a60','#5a3e52');monte(150,70,120,28,'#7a5468','#654458');for(let x=0;x<W;x++){const h1=Math.round(34*(1-Math.abs(x-60)/75)),h2=Math.round(28*(1-Math.abs(x-150)/60)),hh=Math.max(h1,h2);if(hh>22)r(x,70-hh,1,Math.max(1,hh-22),'#f4f0ea')}
+   r(0,70,W,6,'#b5563a');for(let x=0;x<W;x+=6)r(x,67,3,3,'#b5563a');for(let x=2;x<W;x+=14){palmera(x,82,10,.5)}r(0,76,W,14,'#e3a15a');for(let x=0;x<W;x++){const y=80+Math.round(Math.sin(x/9)*2);r(x,y,1,90-y,'#d58f48')}}}
+ function suelo(){r(0,88,W,37,'#d8a266');for(let y=88;y<H;y+=2)for(let x=(y/2)%3|0;x<W;x+=3){const h=hash(x,y);if(h<.18)p(x,y,'#c48f58');else if(h>.9)p(x,y,'#e8b87c')}}
+ // --- la casa por fases (1..10) ---
+ function arco(x,y,w,h,col){r(x,y+2,w,h-2,col);r(x+1,y+1,w-2,1,col);r(x+2,y,w-4,1,col)}
+ function casa(s,o){const f=s.fase,pz=s.piezas,t=s.t/1000,X=o.dx||0;
+  const reveal=(k,fn,bx)=>{if(k>f)return;if(s.rev&&!s.rev.hotel&&s.rev.fase===k){const u=Math.min(1,s.rev.u*1.15);g.save();g.beginPath();g.rect(0,bx[1]+bx[3]*(1-u),W,bx[3]*u+1);g.clip();fn();g.restore()}else fn()};
+  g.save();g.translate(X,0);
+  if(f===0){r(58,97,84,1,'#b98a58');r(62,80,34,9,'#f1e3c8');txt('SE VENDE',64,82,'#8a2a1a');r(78,89,2,9,'#6b4a2a');return g.restore()}
+  reveal(1,()=>{[[58,96],[142,96],[58,107],[142,107]].forEach(([x,y])=>r(x,y-4,2,5,'#7a5230'));for(let x=60;x<142;x+=2){p(x,93,'#f2efe8');p(x,104,'#f2efe8')}if(f<4){r(46,78,26,9,'#f1e3c8');txt('AISSA',48,80,'#7a3a1a');r(58,87,2,10,'#6b4a2a')}},[46,78,98,30]);
+  reveal(2,()=>{if(f<5){r(148,82,18,12,'#f7f3e8');r(148,82,18,1,'#c9b99a');txt('OK',152,85,'#2f8a3f');r(156,94,2,6,'#6b4a2a')}},[146,80,22,20]);
+  reveal(3,()=>{r(64,103,72,5,'#8e8e88');r(64,103,72,1,'#b5b5ae');if(f<4)for(let x=66;x<136;x+=6)r(x,99,1,4,'#6a4a3a')},[64,99,72,9]);
+  reveal(4,()=>{r(66,80,68,23,'#efe2c8');r(128,80,6,23,'#d9c6a2');r(66,101,68,2,'#d8c49c');
+   const puerta=pz.includes('puerta')?'#e3b54a':(f>=8?'#7a4a26':'#3d2718');arco(94,85,12,18,puerta);if(f>=8){for(let y=89;y<103;y+=3)r(95,y,10,1,pz.includes('puerta')?'#c9962e':'#5e3818');p(97,95,'#e3b54a');p(102,95,'#e3b54a')}
+   const lz=f>=10?'#ffd27a':'#3d2718';arco(72,86,8,10,lz);arco(120,86,8,10,lz)},[66,80,68,23]);
+  reveal(5,()=>{r(70,62,60,18,'#f3e7d0');r(124,62,6,18,'#dcc9a8');const lz=f>=10?'#ffd27a':'#3d2718';[76,96,116].forEach(x=>{arco(x,66,8,10,lz);r(x-2,67,2,9,'#2f6fb5');r(x+8,67,2,9,'#2f6fb5')});r(66,79,68,2,'#e2d2b2')},[66,62,68,19]);
+  reveal(6,()=>{r(68,58,64,4,'#f6ecd8');for(let x=68;x<131;x+=6)r(x,55,3,3,'#f6ecd8');r(114,48,14,10,'#efe2c8');arco(119,51,5,7,'#3d2718');
+   if(f<10){r(84,53,4,5,'#b8923a');r(85,50,2,3,'#c23a1a')}if(pz.includes('shishaOro')){r(88,53,3,5,'#e3b54a');p(89,51,'#ff7a2a')}
+   if(pz.includes('gato')){r(72,52,5,3,'#1a1a1a');r(71,50,2,2,'#1a1a1a');p(71,49,'#1a1a1a');p(72,49,'#1a1a1a');p(71,51,'#9fd35a');r(77,50,1,3,'#1a1a1a');p(78,49,'#1a1a1a')}
+   if(pz.includes('parabolica')){r(100,50,6,4,'#e8e8e8');r(102,54,2,4,'#9a9a9a');p(99,49,'#e8e8e8')}
+   if(pz.includes('bandera')){r(126,40,1,15,'#6b4a2a');r(127,40,20,7,'#c0392b');txt('AISSA',128,41,'#fff1b8')}},[66,40,82,22]);
+  reveal(7,()=>{const piedra=pz.includes('fuente')?'#f2f2f2':'#1f6fb2';r(30,106,40,2,'#c9b08a');for(let x=30;x<70;x+=4)p(x,106,'#1b8a5a');r(38,101,18,5,piedra);if(pz.includes('fuente'))for(let x=39;x<55;x+=3)p(x,103,'#bdbdbd');r(40,100,14,2,'#6fd3ee');r(46,95,2,6,'#e8e8e8');for(let i=0;i<4;i++){const u=((t*1.5+i/4)%1);p(46+(i%2?-2:3)*u,95+u*5,'#9fe4f5')}},[30,93,42,15]);
+  reveal(8,()=>{for(let x=66;x<134;x++){p(x,99,['#1f6fb2','#f4efe4','#1b8a5a','#f4efe4'][x%4]);p(x,100,['#f4efe4','#e8b640','#f4efe4','#1f6fb2'][x%4])}for(let x=70;x<130;x++)p(x,81,['#1b8a5a','#f4efe4','#1f6fb2','#e8b640'][x%4]);
+   for(let y=85;y<103;y++){p(92,y,y%2?'#1f6fb2':'#f4efe4');p(107,y,y%2?'#1f6fb2':'#f4efe4')}r(88,86,2,3,'#e3b54a');r(110,86,2,3,'#e3b54a');if(Math.sin(t*5)>-.5){p(88,89,'#ffe08a');p(110,89,'#ffe08a')}
+   [[82,100],[114,100]].forEach(([x,y])=>{r(x,y,3,3,'#b5563a');r(x-1,y-2,5,2,'#3f9a4d')});if(pz.includes('estrella')){const cx=100,cy=76;[[0,-3],[0,3],[-3,0],[3,0],[-2,-2],[2,2],[-2,2],[2,-2]].forEach(([a,b])=>p(cx+a,cy+b,'#1f6fb2'));r(cx-1,cy-1,3,3,'#e8b640')}},[66,74,68,30]);
+  reveal(9,()=>{r(140,100,40,8,'#f4efe4');r(142,101,36,6,'#39c3d8');for(let i=0;i<10;i++){const x=142+((hash(i,20)*36+t*4)%36),y=101+hash(i,21)*5;p(x,y,'#a6ecf5')}r(176,97,1,4,'#cfcfcf');r(178,97,1,4,'#cfcfcf');p(177,98,'#cfcfcf')},[140,96,40,12]);
+  reveal(10,()=>{r(0,109,W,2,'#4f9a4a');for(let x=2;x<W;x+=5)p(x,108,x%3?'#e84a6a':'#f2c230');palmera(24,108,24,1);palmera(186,104,20,-1);txt('CASA DE AISSA',74,82,'#7a3a1a');
+   if(pz.includes('farolillos')||f>=10)for(let x=68;x<132;x+=4)p(x,57,['#e84a4a','#f2c230','#3fb35a','#3f8fe0'][(x/4+Math.floor(t*2))%4|0])},[0,74,W,40]);
+  if(pz.includes('palmera2'))palmera(160,106,26,-1);if(pz.includes('bici')){[[82,105],[89,105]].forEach(([x,y])=>{p(x-1,y,'#222');p(x+1,y,'#222');p(x,y-1,'#222');p(x,y+1,'#222')});r(82,103,8,1,'#c0392b');p(86,101,'#222')}
+  if(pz.includes('placaNo'))(()=>{r(136,90,24,7,'#f1e3c8');txt('NO SE',138,91,'#8a2a1a')})();if(pz.includes('placaVolvio')){r(20,92,28,7,'#e3b54a');txt('VOLVIO',21,93,'#3a2a1a')}
+  if(pz.includes('hamaca')&&f>=10){for(let x=0;x<14;x++)p(170+x,98+Math.round(Math.sin(x/13*Math.PI)*3),'#e84a6a')}
+  g.restore()}
+ function obreros(s,parada){const t=s.t/1000,cas=s.piezas.includes('casco');const pos=parada?[[70,103],[78,103],[128,103]]:[[60+((t*12)%70),106],[74,98],[124,98]];
+  pos.forEach(([x,y],i)=>{r(x,y-8,3,2,cas&&i===0?'#ffd84a':'#f2c230');r(x,y-6,3,2,'#c68a5a');r(x,y-4,3,3,'#2f5fa0');if(!parada){r(x,y-1,1,1,'#1f3050');r(x+2,y-1,1,1,'#1f3050');const up=Math.sin(t*10+i*2)>0;r(x+3,y-(up?6:4),1,2,'#9a9a9a')}else{r(x-1,y-2,5,1,'#1f3050')}});
+  if(parada){r(90,108,20,7,'#c0392b');txt('PARADA',91,109,'#fff1b8')}}
+ function polvo(s,bx){const t=s.t/1000;for(let i=0;i<30;i++){const u=(t*.8+hash(i,30))%1,x=bx[0]+hash(i,31)*bx[2],y=bx[1]+bx[3]-u*18;g.globalAlpha=(1-u)*.8;p(x+Math.sin(t*3+i)*2,y,'#e6c79a');g.globalAlpha=1}}
+ // --- el hotel (en la colina, al fondo a la izquierda) ---
+ function hotel(s){const f=s.hotel,t=s.t/1000;if(!f&&s.fase<10)return;
+  const rv=(k,fn,bx)=>{if(k>f)return;if(s.rev&&s.rev.hotel&&s.rev.fase===k){const u=Math.min(1,s.rev.u*1.15);g.save();g.beginPath();g.rect(0,bx[1]+bx[3]*(1-u),W,bx[3]*u+1);g.clip();fn();g.restore()}else fn()};
+  r(0,86,66,3,'#c89662');if(f<1){r(6,76,24,7,'#f1e3c8');txt('HOTEL',8,78,'#2f6fb5');r(16,83,2,4,'#6b4a2a');return}
+  rv(1,()=>{if(f<10){r(50,46,2,40,'#f2c230');r(26,46,36,2,'#f2c230');r(28,48,1,10,'#555');r(26,58,5,3,'#8a8a8a')}r(4,76,20,7,'#f1e3c8');txt('HOTEL',5,78,'#2f6fb5')},[4,46,58,40]);
+  rv(2,()=>{r(8,74,52,12,'#f0dfc0');for(let x=11;x<58;x+=8)arco(x,77,6,9,'#3d2718')},[8,74,52,12]);
+  rv(3,()=>{for(let x=11;x<58;x+=8)r(x+1,78,4,2,f>=10?'#ffd27a':'#6fb3e0')},[8,76,52,4]);
+  rv(4,()=>{r(10,62,48,12,'#f4e6cc');for(let x=13;x<56;x+=7){arco(x,64,5,7,f>=10?'#ffd27a':'#3d2718');r(x-1,70,7,1,'#6b4a2a')}},[10,62,48,12]);
+  rv(5,()=>{r(58,72,8,14,'#efe2c8');for(let x=56;x<68;x+=2)r(x,70,1,3,x%4?'#c0392b':'#f4efe4')},[56,70,12,16]);
+  rv(6,()=>{r(10,59,48,3,'#f6ecd8');[[16,'#e84a6a'],[30,'#3f8fe0'],[44,'#f2c230']].forEach(([x,c])=>{r(x-3,54,7,2,c);r(x,56,1,3,'#6b4a2a')})},[10,53,48,9]);
+  rv(7,()=>{r(6,88,40,4,'#f4efe4');r(7,89,38,2,'#39c3d8');p(10+(t*6%34),89,'#a6ecf5')},[6,87,40,5]);
+  rv(8,()=>{for(let y=0;y<6;y++){const w=Math.round(Math.sqrt(36-y*y));r(2-w+6,74-y,w*2,1,'#f7f3ea')}r(7,68,2,2,'#e3b54a')},[0,67,14,8]);
+  rv(9,()=>{palmera(62,88,14,-1);palmera(3,86,12,1)},[0,70,70,20]);
+  rv(10,()=>{txt('HOTEL AISSA',12,56,'#e3b54a');for(let x=10;x<58;x+=3)p(x,53,['#e84a4a','#f2c230','#3fb35a','#3f8fe0'][(x+Math.floor(t*3))%4])},[8,50,54,10])}
+ function fuegos(s){const t=s.t/1000;for(let k=0;k<5;k++){const ph=(t*.7+k*.21)%1,cx=20+hash(k,40+Math.floor(t*.7+k*.21))*160,cy=12+hash(k,41+Math.floor(t*.7+k*.21))*30;const cols=['#ff5a6a','#ffd24a','#6fd3ee','#b27bff','#7dff9a'];
+  if(ph<.25){p(cx,cy+(1-ph*4)*40,'#fff1b8')}else for(let a=0;a<12;a++){const ang=a/12*Math.PI*2,rr=(ph-.25)*28;g.globalAlpha=1-(ph-.25)/.75;p(cx+Math.cos(ang)*rr,cy+Math.sin(ang)*rr,cols[k]);g.globalAlpha=1}}}
+ function escena(dest,s){if(!cv){cv=document.createElement('canvas');cv.width=W;cv.height=H;g=cv.getContext('2d')}
+  cielo(s);paisaje(s);suelo();hotel(s);casa(s,{});
+  if(s.rev&&!s.rev.hotel){obreros(s,false);polvo(s,[60,60,90,48])}else if(s.rev&&s.rev.hotel){polvo(s,[4,50,60,40])}
+  if(s.parada&&s.fase<10)obreros(s,true);
+  if(s.fiesta)fuegos(s);
+  const d=dest.getContext('2d');d.imageSmoothingEnabled=false;d.clearRect(0,0,dest.width,dest.height);d.drawImage(cv,0,0,W,H,0,0,dest.width,dest.height)}
+ return{escena}
+})();
+/* ---------- la shisha ---------- */
+const Shisha=(()=>{
+ const widgets=[];let fum=null,humo=[],hcv=null,hg=null,raf=null,burb=null,ultTxt=0;
+ const Sh=()=>S.shisha,sabor=()=>SABORES.find(x=>x.id===Sh().sabor)||SABORES[0];
+ function montar(cont,lugar){if(!cont)return;cont.innerHTML=`<div class="shisha" data-lugar="${lugar}"><canvas width="30" height="46"></canvas><div class="sh-info"><b>Shisha</b><span class="sh-sab"></span><span class="sh-car"></span><small>Mantén pulsada la boquilla${lugar==='mesa'?' (o la S)':' (o espacio)'}</small><div class="sh-bot"><button class="sh-comprar">+10 carbón · 5 €</button><button class="sh-cambia">Sabor</button></div></div></div>`;
+  for(let i=widgets.length-1;i>=0;i--)if(!widgets[i].el.isConnected)widgets.splice(i,1);
+  const el=cont.querySelector('.shisha'),c=el.querySelector('canvas');const w={el,c,lugar};widgets.push(w);
+  c.addEventListener('pointerdown',e=>{e.preventDefault();ac();empezar(w)});['pointerup','pointercancel','pointerleave'].forEach(ev=>c.addEventListener(ev,()=>soltar(w)));c.addEventListener('contextmenu',e=>e.preventDefault());
+  el.querySelector('.sh-comprar').onclick=()=>{if(S.bal<5){toast('No te llega ni para carbón');return}S.bal-=5;Sh().carbon+=10;chipS();save();render();refrescar()};
+  el.querySelector('.sh-cambia').onclick=()=>{const des=SABORES.filter(x=>Sh().buenas>=x.req),i=des.findIndex(x=>x.id===Sh().sabor);Sh().sabor=des[(i+1)%des.length].id;save();refrescar();const sig=SABORES.find(x=>Sh().buenas<x.req);toast('Sabor: '+sabor().nom+(sig?' · '+sig.nom+' se desbloquea con '+sig.req+' caladas buenas':''))};
+  refrescar()}
+ function refrescar(){widgets.forEach(w=>{if(!w.el.isConnected)return;w.el.querySelector('.sh-sab').textContent=sabor().nom;w.el.querySelector('.sh-car').textContent='🔥 carbón: '+Sh().carbon;dibujarShisha(w,performance.now())})}
+ function visible(w){return w.el.isConnected&&w.el.offsetParent!==null}
+ function donde(){const ab=Casa.abierta(),md=$('#modal').classList.contains('show'),bk=$('#bank').classList.contains('show');if($('#creditos').classList.contains('show'))return null;return widgets.find(w=>visible(w)&&(ab?w.lugar==='casa':md?w.lugar==='preguntas':bk?w.lugar==='banca':w.lugar==='mesa'))||null}
+ let primera=true;
+ function empezar(w){if(fum)return;w=w&&w.el?w:donde();if(!w){if(Casa.abierta()&&S.casa.fase<6)toast('La shisha de la azotea llega con el tejado');return}if(Sh().carbon<=0){if(Date.now()-ultTxt>4000){ultTxt=Date.now();say(pick('shishaSin'))}toast('Sin carbón: compra 10 por 5 €');return}
+  fum={w,t0:performance.now()};burbujas(true);arrancar()}
+ function soltar(w){if(!fum||(w&&w.el&&fum.w!==w))return;const d=(performance.now()-fum.t0)/1000,ww=fum.w;fum=null;burbujas(false);if(d<.25)return;
+  const sh=Sh();sh.carbon--;sh.caladas++;const hoy=today();if(sh.diaPerf!==hoy){sh.diaPerf=hoy;sh.perfHoy=0}
+  const rc=ww.c.getBoundingClientRect(),x=rc.left+rc.width*.85,y=rc.top+rc.height*.72;let aros=0,msg='';
+  if(d>3){humo.push(...nube(x,y,14,1.2));S.heat=Math.min(100,S.heat+3);tos();sh.perfSeguidas=0;if(Math.random()<.5)say(pick('shishaTos'));msg='Te has pasado'}
+  else if(d>=1.5){const perf=d>=2&&d<=2.4;aros=perf?3:1+(d>1.8&&d<2.7?1:0);humo.push(...nube(x,y,20,1));for(let i=0;i<aros;i++)humo.push({tipo:'aro',x,y,t:-i*.35,vida:2.6,perf:perf&&i===aros-1});
+   sh.buenas++;S.heat=Math.max(0,S.heat-(perf?8:5));recortar(perf);
+   if(perf){sh.perfSeguidas++;if(sh.perfHoy<20){sh.perfHoy++;S.bal+=5;msg='Aro perfecto · +5 €'}else msg='Aro perfecto';tone(1320,.25,'sine',.06,.1);if(sh.perfSeguidas>=5)Casa.oculta('humo');if(Math.random()<.35)say(pick('shishaAro'))}else{sh.perfSeguidas=0;msg='Buena calada'}
+   if(ww.lugar==='casa'&&S.casa.fase>=6){S.casa.shAzotea++;if(S.casa.shAzotea>=30)Casa.oculta('reyAzotea')}
+   const nuevo=SABORES.find(x=>x.req===sh.buenas&&x.req>0);if(nuevo)setTimeout(()=>toast('Sabor desbloqueado: '+nuevo.nom),600);
+   if(primera){primera=false;say('Fuma, fuma, que así pierdes más tranquilo.')}else if(Math.random()<.12)say(pick('shisha'))}
+  else{humo.push(...nube(x,y,10,.8));S.heat=Math.max(0,S.heat-2);sh.perfSeguidas=0;msg='Calada corta'}
+  exhalar(d);if(msg)flotar(ww,msg);save();render();refrescar();arrancar()}
+ // Cada buena calada recorta la espera: castigo de preguntas, redención o la bola girando
+ function recortar(perf){const a=Date.now();if(S.qBlock>a)S.qBlock-=perf?5000:3000;if(S.redBlock>a)S.redBlock-=perf?8000:5000;if(spinning)ACELERON+=perf?900:500}
+ function nube(x,y,n,f){const col=sabor().c,out=[];for(let i=0;i<n;i++)out.push({tipo:'nube',x:x+(Math.random()-.5)*8,y:y+(Math.random()-.5)*6,vx:(Math.random()-.3)*1.2*f,vy:-(.4+Math.random()*1.1)*f,r:4+Math.random()*6,t:0,vida:1.6+Math.random()*1.4,col});return out}
+ function flotar(w,msg){const r=w.el.getBoundingClientRect(),d=document.createElement('div');d.className='sh-flota';d.textContent=msg;d.style.left=(r.left+r.width/2)+'px';d.style.top=(r.top-6)+'px';document.body.appendChild(d);setTimeout(()=>d.remove(),1500)}
+ function burbujas(on){clearInterval(burb);burb=null;if(!on)return;const a=ac();if(!a)return;burb=setInterval(()=>{const t=a.currentTime;const o=a.createOscillator(),g2=a.createGain();o.type='sine';const f0=160+Math.random()*180;o.frequency.setValueAtTime(f0,t);o.frequency.exponentialRampToValueAtTime(f0*2.2,t+.06);g2.gain.setValueAtTime(.0001,t);g2.gain.linearRampToValueAtTime(.08+Math.random()*.06,t+.01);g2.gain.exponentialRampToValueAtTime(.0001,t+.09);o.connect(g2).connect(a.destination);o.start(t);o.stop(t+.1)},70+Math.random()*50)}
+ function ruido(dur,frec,vol){const a=ac();if(!a)return;const n=a.createBuffer(1,a.sampleRate*dur,a.sampleRate),dd=n.getChannelData(0);for(let i=0;i<dd.length;i++)dd[i]=(Math.random()*2-1)*(1-i/dd.length);const s=a.createBufferSource();s.buffer=n;const fl=a.createBiquadFilter();fl.type='bandpass';fl.frequency.value=frec;fl.Q.value=.8;const g2=a.createGain();g2.gain.value=vol;s.connect(fl).connect(g2).connect(a.destination);s.start()}
+ function exhalar(d){ruido(Math.min(1.6,.5+d*.4),700,.12)}
+ function tos(){[0,160,330].forEach(ms=>setTimeout(()=>ruido(.14,900,.25),ms))}
+ function arrancar(){if(raf)return;hcv=$('#humo');hg=hcv.getContext('2d');let tp=performance.now();const f=t=>{const dt=Math.min(.05,(t-tp)/1000);tp=t;dibujarHumo(dt);if(fum&&fum.w.el.isConnected)dibujarShisha(fum.w,t);
+  for(let i=widgets.length-1;i>=0;i--)if(!widgets[i].el.isConnected)widgets.splice(i,1);
+  if(humo.length||fum)raf=requestAnimationFrame(f);else{raf=null;hg.clearRect(0,0,innerWidth,innerHeight);widgets.forEach(w=>{if(visible(w))dibujarShisha(w,t)})}};raf=requestAnimationFrame(f)}
+ function dibujarHumo(dt){const dpr=Math.min(2,devicePixelRatio||1);if(hcv.width!==innerWidth*dpr){hcv.width=innerWidth*dpr;hcv.height=innerHeight*dpr}hg.setTransform(dpr,0,0,dpr,0,0);hg.clearRect(0,0,innerWidth,innerHeight);
+  humo=humo.filter(q=>{q.t+=dt;if(q.t<0)return true;if(q.t>q.vida)return false;const u=q.t/q.vida;
+   if(q.tipo==='nube'){q.x+=q.vx;q.y+=q.vy;q.vx*=.99;q.r+=.25;const gr=hg.createRadialGradient(q.x,q.y,0,q.x,q.y,q.r);gr.addColorStop(0,`rgba(${q.col},${.32*(1-u)})`);gr.addColorStop(1,`rgba(${q.col},0)`);hg.fillStyle=gr;hg.beginPath();hg.arc(q.x,q.y,q.r,0,7);hg.fill()}
+   else{const rr=6+u*34,yy=q.y-u*120;hg.strokeStyle=q.perf?`rgba(255,241,184,${.9*(1-u)})`:`rgba(235,245,245,${.75*(1-u)})`;hg.lineWidth=q.perf?4-u*2:3-u*1.5;hg.beginPath();hg.ellipse(q.x+u*20,yy,rr,rr*.42,0,0,7);hg.stroke()}
+   return true})}
+ function dibujarShisha(w,t){const g2=w.c.getContext('2d'),on=fum&&fum.w===w,d=on?(t-fum.t0)/1000:0,cal=on?Math.min(1,d/2.2):0,R2=(x,y,a,b,c)=>{g2.fillStyle=c;g2.fillRect(x,y,a,b)};
+  g2.clearRect(0,0,30,46);const oro=S.casa.piezas.includes('shishaOro')&&w.lugar==='casa';
+  // manguera y boquilla
+  for(let i=0;i<14;i++){const x=16+i*.8,y=24+Math.sin(i/14*Math.PI)*10+i*.2;R2(x|0,y|0,1,1,'#4a2a5a')}R2(26,36,3,2,oro?'#ffe08a':'#e3b54a');R2(28,35,1,1,on?'#fff':'#c9962e');
+  // vaso
+  const vc=oro?'#b8923a':'#1f6f6a';for(let y=30;y<45;y++){const ww=Math.round(Math.sqrt(Math.max(0,49-(y-38)*(y-38)))*1.1);R2(14-ww,y,ww*2,1,y>35?vc:'#2f8a84')}R2(9,33,1,6,'rgba(255,255,255,.35)');
+  if(on)for(let i=0;i<5;i++){const u=((t/300+i*.2)%1);R2(12+(i*3)%6,42-u*8|0,1,1,'#bff5f0')}
+  // tronco, plato, cazoleta
+  R2(13,12,3,19,oro?'#ffe08a':'#e3b54a');R2(12,16,5,1,'#b8923a');R2(12,24,5,1,'#b8923a');R2(7,11,15,2,oro?'#ffe08a':'#e3b54a');R2(10,7,9,4,'#a0522d');R2(10,7,9,1,'#c0703d');
+  const ca=on?(Math.sin(t/60)>0?'#ffb13b':'#ff7a2a'):'#6b2a18',cb=on?'#ffe08a':'#3a1a14';R2(11,5,3,2,ca);R2(15,5,3,2,ca);if(on){R2(12,5,1,1,cb);R2(16,5,1,1,cb)}
+  if(cal>0){g2.fillStyle=`rgba(255,120,40,${.25*cal})`;g2.fillRect(8,2,13,6)}
+  w.el.classList.toggle('fumando',on)}
+ return{montar,empezar,soltar,refrescar,arrancar}
+})();
+let ACELERON=0;
+/* ---------- «con esto pagas…» ---------- */
+let tentado=false;
+function pintarConEsto(){const el=$('#conEsto');if(!el)return;const t=totalBets(),L2=Casa.pendientes();if(t===0)tentado=false;
+ if(!L2.length||t<150){el.textContent='';return}let k=0,acum=0;while(k<L2.length&&acum+L2[k][1]<=t){acum+=L2[k][1];k++}
+ const nom=i=>L2[i][2]||L2[i][0].toLowerCase(),y=a=>a.length>1?a.slice(0,-1).join(', ')+' y '+a[a.length-1]:a[0];
+ el.innerHTML=k===0?'🧱 Esto es el '+Math.round(t/L2[0][1]*100)+' % de <b>'+nom(0)+'</b>':'🧱 Con esto pagas <b>'+y(L2.slice(0,k).map((x,i)=>nom(i)))+'</b>';
+ if(!tentado&&!spinning&&t>=L2[0][1]*.25){tentado=true;say('casaTienta')}}
+/* ---------- teclado ---------- */
+function enMesa(){return!$('#modal').classList.contains('show')&&!Casa.abierta()&&!$('#bank').classList.contains('show')&&!$('#creditos').classList.contains('show')}
+document.addEventListener('keydown',e=>{if(e.target&&/INPUT|TEXTAREA/.test(e.target.tagName))return;const k=(e.key||'').toLowerCase();
+ if(e.code==='Space'){e.preventDefault();if(e.repeat)return;if(enMesa())spin();else Shisha.empezar();return}
+ if(e.repeat)return;
+ if(/^[1-6]$/.test(k)&&enMesa()){S.chip=[1,5,10,25,100,500][+k-1];chipS();render();save();return}
+ if(k==='r'&&enMesa())$('#rep').click();else if(k==='d'&&enMesa())$('#dbl').click();else if(k==='b'&&enMesa())$('#clr').click();else if(k==='c'){ac();Casa.alternar()}else if(k==='s')Shisha.empezar();else if(k==='escape'&&Casa.abierta())Casa.cerrar()});
+document.addEventListener('keyup',e=>{const k=(e.key||'').toLowerCase();if(e.code==='Space'||k==='s')Shisha.soltar()});
 
 /* ===== arranque ===== */
 [1,5,10,25,100,500].forEach(v=>{const b=document.createElement('button');b.dataset.v=v;b.textContent=v;b.onclick=()=>{S.chip=v;chipS();render();save()};$('#chips').appendChild(b)});
@@ -702,12 +1205,17 @@ $('#dbl').onclick=()=>{if(spinning)return;const t=totalBets();if(!t)return;if(t*
 $('#rep').onclick=()=>{if(spinning||!S.lastBets)return;const t=Object.values(S.lastBets).reduce((a,b)=>a+b.amt,0);if(t>S.bal){say('Repetir no puedes: ya no te llega.');return}bets=JSON.parse(JSON.stringify(S.lastBets));chipS();render()};
 $('#spin').onclick=spin;$('#bRec').onclick=openRecover;$('#bRod').onclick=openRodri;$('#bSt').onclick=openStats;
 $('#mute').onclick=()=>{S.mute=!S.mute;save();render()};
+$('#pot').onclick=()=>toast('Bote: se lo lleva un pleno acertado en un número con rayo (hasta 100 veces tu ficha). Cada tirada le suma un 2 % de lo apostado.');
 document.addEventListener('pointerdown',()=>ac(),{once:true});
 window.addEventListener('resize',sizeCanvas);
 buildTable();buildTrack();sizeCanvas();enlazarTapete();ponerVista(S.vista==='cilindro'?'cilindro':'tapete');
+Shisha.montar($('#shMesa'),'mesa');Shisha.montar($('#casaSh'),'casa');Shisha.montar($('#shBank'),'banca');sizeCanvas();
+$('#bCasa').onclick=()=>{ac();chipS();Casa.abrir()};$('#bCasa2').onclick=()=>{ac();chipS();Casa.abrir()};$('#casaCerrar').onclick=()=>{chipS();Casa.cerrar()};$('#crSeguir').onclick=()=>{chipS();Casa.cerrarCreditos()};
+setInterval(()=>{Casa.tic();Casa.actualizarBoton()},1000);Casa.pintarOferta();Casa.actualizarBoton();Casa.bucle();
+window.addEventListener('resize',()=>{if(Casa.abierta())Casa.medir();Casa.colocarOferta();Casa.pintarOferta();Casa.bucle()});Casa.colocarOferta();
 (function daily(){const d=today();if(S.day===d)return;const y=new Date(Date.now()-864e5),ys=y.getFullYear()+'-'+(y.getMonth()+1)+'-'+y.getDate();S.streakDays=S.day===ys?S.streakDays+1:1;const first=!S.day;S.day=d;if(first)return;const b=100+Math.min(S.streakDays-1,6)*25;S.bal+=b;S.heat=Math.max(0,S.heat-40);setTimeout(()=>toast(`Premio diario: ${fmt(b)} (racha de ${S.streakDays} ${S.streakDays===1?'día':'días'})`),800)})();
 save();render();say('greet');
-if(document.fonts)document.fonts.ready.then(draw);
+if(document.fonts)document.fonts.ready.then(()=>sizeCanvas());
 if(S.bal<1)setTimeout(showBank,800);
 </script>
 </body>
