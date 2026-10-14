@@ -1,0 +1,67 @@
+/* Lupa KDP — Opciones. Estilo de la casa: noche + oro + azul hielo, Oswald y Rubik.
+   Regla fija: toda casilla que rellena Rodri va en AMARILLO con «TÚ:» y una cabecera en palabras. */
+@font-face { font-family: 'Lupa Oswald'; src: url('../fuentes/oswald.woff2') format('woff2'); font-weight: 200 700; }
+@font-face { font-family: 'Lupa Rubik'; src: url('../fuentes/rubik.woff2') format('woff2'); font-weight: 300 900; }
+
+:root {
+  --bg: #0B0F1A; --bg2: #131A2B; --bg3: #18213a; --fg: #F4F1EA; --muted: #A7AEBC; --line: #26304A;
+  --oro: #D4A64A; --oro2: #E8C47A; --hielo: #5FB8E6; --ok: #5FD39A; --warn: #F2B84B; --bad: #F08A80;
+  --display: 'Lupa Oswald', Oswald, Impact, 'Arial Narrow', sans-serif;
+  --body: 'Lupa Rubik', Rubik, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--bg); color: var(--fg); font: 400 14.5px/1.5 var(--body); -webkit-font-smoothing: antialiased; }
+body { background-image: radial-gradient(ellipse at 20% -10%, rgba(95,184,230,.12), transparent 50%), radial-gradient(ellipse at 90% 0%, rgba(212,166,74,.10), transparent 45%); min-height: 100vh; }
+.envoltorio { max-width: 1040px; margin: 0 auto; padding: 24px 16px 64px; }
+header { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px; padding-bottom: 8px; }
+.antetitulo { font-size: 12px; letter-spacing: .18em; text-transform: uppercase; color: var(--oro); font-weight: 500; }
+h1 { font-family: var(--display); font-weight: 700; text-transform: uppercase; letter-spacing: .04em; font-size: clamp(30px, 5vw, 44px); line-height: 1; margin: 6px 0 0; color: var(--fg); }
+h1 i { font-style: normal; color: var(--oro); }
+h2 { font-family: var(--display); font-weight: 500; text-transform: uppercase; letter-spacing: .05em; font-size: 22px; margin: 0 0 10px; color: var(--oro); }
+h3 { font-family: var(--display); font-weight: 500; font-size: 17px; margin: 0 0 6px; color: var(--hielo); letter-spacing: .03em; }
+p { margin: 0 0 8px; }
+a { color: var(--hielo); }
+.nota { font-size: 12.5px; color: var(--muted); }
+nav.pestanas { display: flex; gap: 6px; flex-wrap: wrap; margin: 16px 0; position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 8px 0; border-bottom: 1px solid var(--line); }
+nav.pestanas button { border: 1px solid var(--line); background: var(--bg2); color: var(--fg); padding: 7px 14px; border-radius: 999px; font: 500 13.5px var(--body); cursor: pointer; }
+nav.pestanas button[aria-selected="true"] { background: var(--oro); color: #1a1200; border-color: var(--oro); }
+.bloque { background: var(--bg2); border: 1px solid var(--line); border-radius: 14px; padding: 16px; margin: 0 0 16px; }
+.rejilla { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; }
+.rejilla > * { min-width: 0; }
+button { font: 500 13px var(--body); cursor: pointer; border-radius: 9px; border: 1px solid var(--line); background: var(--bg3); color: var(--fg); padding: 7px 12px; }
+button:hover { border-color: var(--hielo); }
+button:focus-visible, select:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px solid var(--oro); outline-offset: 2px; }
+button.oro { background: var(--oro); border-color: var(--oro); color: #1a1200; font-weight: 700; }
+button.hielo { background: var(--hielo); border-color: var(--hielo); color: #06202e; font-weight: 700; }
+button.peligro { color: var(--bad); border-color: rgba(240,138,128,.5); }
+button[disabled] { opacity: .5; cursor: not-allowed; }
+.fila { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.hueco { flex: 1; }
+label.campo { display: grid; gap: 4px; font-size: 12px; color: var(--muted); }
+select, input, textarea { font: 500 14px var(--body); color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 7px 9px; }
+/* Casillas de Rodri: amarillas, con «TÚ:» y cabecera en palabras. */
+.casilla-tuya { display: grid; gap: 4px; }
+.casilla-tuya > span { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--oro); font-weight: 700; }
+.casilla-tuya input, .casilla-tuya select, .casilla-tuya textarea { border: 2px solid #E8C547; background: #FFF1A8; color: #1a1200; }
+.casilla-tuya input::placeholder, .casilla-tuya textarea::placeholder { color: #7d6a2a; }
+.chip { display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 11.5px; font-weight: 700; }
+.chip.aviso { background: rgba(242,184,75,.16); color: var(--warn); }
+.chip.ok { background: rgba(95,211,154,.16); color: var(--ok); }
+.chip.hielo { background: rgba(95,184,230,.16); color: var(--hielo); }
+.chip.tenue { background: rgba(167,174,188,.14); color: var(--muted); }
+.chip.mal { background: rgba(240,138,128,.16); color: var(--bad); }
+.aviso { border-radius: 10px; padding: 9px 12px; font-size: 13px; border: 1px solid rgba(242,184,75,.45); background: rgba(242,184,75,.1); color: var(--warn); }
+.aviso.ok { border-color: rgba(95,211,154,.45); background: rgba(95,211,154,.1); color: var(--ok); }
+.aviso.error { border-color: rgba(240,138,128,.5); background: rgba(240,138,128,.1); color: var(--bad); }
+.aviso.info { border-color: rgba(95,184,230,.45); background: rgba(95,184,230,.1); color: var(--hielo); }
+.tabla { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; background: var(--bg); }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th, td { padding: 7px 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+th { font-family: var(--display); font-weight: 500; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--oro); background: var(--bg2); position: sticky; top: 0; }
+td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+tr.total td { font-weight: 700; border-top: 2px solid var(--oro); }
+.cifra-grande { font-family: var(--display); font-size: 40px; line-height: 1; color: var(--oro); font-variant-numeric: tabular-nums; }
+.grafica { width: 100%; max-width: 640px; height: auto; background: var(--bg); border: 1px solid var(--line); border-radius: 12px; display: block; }
+.oculto { display: none !important; }
+.aviso-flotante { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); background: var(--oro); color: #1a1200; padding: 8px 16px; border-radius: 999px; font-weight: 700; font-size: 13.5px; z-index: 50; box-shadow: 0 10px 30px rgba(0,0,0,.5); }

@@ -1,0 +1,35 @@
+{
+  "manifest_version": 3,
+  "name": "Lupa KDP",
+  "version": "0.1.0",
+  "description": "Ventas estimadas, regalía KDP y tendencia del BSR de cada libro mientras navegas por Amazon.es y Amazon.com. Uso privado.",
+  "minimum_chrome_version": "116",
+  "icons": {
+    "16": "iconos/16.png",
+    "32": "iconos/32.png",
+    "48": "iconos/48.png",
+    "128": "iconos/128.png"
+  },
+  "action": {
+    "default_title": "Lupa KDP: en una ficha de Amazon, enseña el panel; fuera de Amazon, abre las opciones",
+    "default_icon": {
+      "16": "iconos/16.png",
+      "32": "iconos/32.png"
+    }
+  },
+  "options_page": "opciones/opciones.html",
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "permissions": [
+    "storage",
+    "unlimitedStorage",
+    "clipboardWrite"
+  ],
+  "host_permissions": [
+    "https://www.amazon.es/*",
+    "https://www.amazon.com/*",
+    "https://*.frame.claudeusercontent.com/*"
+  ]
+}

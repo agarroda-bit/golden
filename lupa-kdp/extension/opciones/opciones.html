@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lupa KDP · Opciones</title>
+    <link rel="icon" href="../iconos/32.png" />
+    <link rel="stylesheet" href="opciones.css" />
+  </head>
+  <body>
+    <div class="envoltorio">
+      <header>
+        <div>
+          <div class="antetitulo">Ediciones Buen Rato · Amazon KDP</div>
+          <h1>Lupa <i>KDP</i></h1>
+        </div>
+        <div class="nota" id="version"></div>
+      </header>
+
+      <nav class="pestanas" role="tablist">
+        <button role="tab" data-pestana="curvas" aria-selected="true">Curvas de ventas</button>
+      </nav>
+
+      <main>
+        <!-- ============================================================ CURVAS -->
+        <section id="vista-curvas" data-vista="curvas">
+          <div class="bloque">
+            <h2>Curvas de ventas</h2>
+            <p class="nota">
+              Una curva pasa el puesto en ventas (BSR) a ventas al día. Cada tienda y cada formato usa la suya. Las de fábrica salen de tablas públicas de
+              Amazon EE. UU.: en Amazon.es la cifra sale con la etiqueta «Estimación EE. UU. — sin calibrar para España» hasta que calibres la tuya con tus ventas de KDP.
+            </p>
+            <div id="curvas-fabrica" class="rejilla"></div>
+          </div>
+        </section>
+      </main>
+    </div>
+    <script src="../lib/base.js"></script>
+    <script src="../lib/tiendas.js"></script>
+    <script src="../lib/regalias.js"></script>
+    <script src="../lib/estimacion.js"></script>
+    <script src="opciones.js"></script>
+  </body>
+</html>

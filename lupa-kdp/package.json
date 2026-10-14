@@ -1,0 +1,22 @@
+{
+  "name": "lupa-kdp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Lupa KDP: extensión de Chrome que enseña en Amazon.es y Amazon.com las ventas estimadas, la regalía KDP y la tendencia del BSR de cada libro. Uso privado.",
+  "type": "module",
+  "scripts": {
+    "test": "npm run test:unidad && npm run test:lectores && npm run test:extension",
+    "test:unidad": "node --test \"tests/unidad/*.test.js\"",
+    "test:lectores": "playwright test --project=lectores",
+    "test:extension": "playwright test --project=extension",
+    "test:real": "LUPA_REAL=1 playwright test --project=real",
+    "fixtures": "node scripts/capturar-fixtures.mjs",
+    "iconos": "node scripts/iconos.mjs",
+    "fuentes": "node scripts/fuentes.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0",
+    "@fontsource-variable/oswald": "5.3.0",
+    "@fontsource-variable/rubik": "5.3.0"
+  }
+}

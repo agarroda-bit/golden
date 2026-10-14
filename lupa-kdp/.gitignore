@@ -1,0 +1,8 @@
+node_modules/
+.tmp/
+test-results/
+playwright-report/
+*.log
+.DS_Store
+# Capturas completas de Amazon (solo se suben las recortadas de tests/fixtures)
+capturas/
