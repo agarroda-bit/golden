@@ -87,3 +87,18 @@ export async function historial(sw) {
       .map(([, v]) => v);
   });
 }
+
+/** Id de la pestaña de Chrome de una página de Playwright (se busca por su URL). */
+export async function idPestana(sw, page) {
+  const url = page.url();
+  return sw.evaluate(async (u) => {
+    const pestanas = await chrome.tabs.query({});
+    const t = pestanas.find((x) => x.url === u) || pestanas.find((x) => (x.url || '').startsWith(u.split('?')[0]));
+    return t ? t.id : null;
+  }, url);
+}
+
+/** Cambia el BSR general de una ficha guardada (para simular otra lectura otro día). */
+export function conBsr(html, bsr) {
+  return html.replace(/nº [\d.]+ en (Libros|Tienda Kindle) \(/, (_m, cat) => `nº ${bsr.toLocaleString('es-ES')} en ${cat} (`);
+}

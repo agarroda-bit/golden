@@ -134,7 +134,9 @@
       avisos.push(`calculada con el precio de catálogo (${L.dinero(ficha.precioCatalogo, tienda.moneda)}), no con la oferta`);
     }
     if (regalia <= 0) avisos.push('con este precio KDP no pagaría nada: el precio no cubre la impresión (¿es a color o no es de KDP?)');
-    const iva = tienda.iva ? ` (precio sin IVA del ${L.porcentaje(tienda.iva)}: ${L.dinero(precioSinIva, tienda.moneda)})` : '';
+    const umbral = L.dinero(r.umbral60, tienda.moneda);
+    const porQue = tasa === r.tasaAlta ? `Paga el ${L.porcentaje(tasa)} porque el precio${tienda.iva ? ' sin IVA' : ''} llega a ${umbral}.` : `Paga el ${L.porcentaje(tasa)} porque el precio${tienda.iva ? ' sin IVA' : ''} no llega a ${umbral}.`;
+    const nota = tienda.iva ? `Precio sin el ${L.porcentaje(tienda.iva)} de IVA: ${L.dinero(precioSinIva, tienda.moneda)}. ${porQue}` : porQue;
     return {
       ok: true,
       tipo: 'impreso',
@@ -147,7 +149,8 @@
       tamano,
       tinta,
       encuadernacion,
-      explicacion: `${L.porcentaje(tasa)} × ${L.dinero(precioSinIva, tienda.moneda)} − ${L.dinero(c.coste, tienda.moneda)} de impresión (${encuadernacion}, ${tamano}, ${ficha.paginas} págs., tinta ${tinta})${iva}`,
+      explicacion: `${L.porcentaje(tasa)} × ${L.dinero(precioSinIva, tienda.moneda)} − ${L.dinero(c.coste, tienda.moneda)} de impresión (${encuadernacion}, ${tamano}, ${ficha.paginas} págs., tinta ${tinta})`,
+      nota,
       avisos,
     };
   }
@@ -176,6 +179,7 @@
         precioSinIva,
         coste: entrega,
         explicacion: `70 % × ${L.dinero(precioSinIva, tienda.moneda)}${entrega ? ` − ${L.dinero(entrega, tienda.moneda)} de entrega` : ''}`,
+        nota: `${tienda.iva ? `Precio sin el ${L.porcentaje(tienda.iva)} de IVA: ${L.dinero(precioSinIva, tienda.moneda)}. ` : ''}El 70 % se paga entre ${L.dinero(min, tienda.moneda)} y ${L.dinero(max, tienda.moneda)}.`,
         avisos,
       };
     }

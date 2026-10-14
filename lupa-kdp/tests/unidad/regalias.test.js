@@ -41,6 +41,8 @@ test('regalía de papel en Amazon.es: 60 % del precio sin IVA desde 9,99 €, 50
   cerca(b.regalia, 0.6 * (12.99 / 1.04) - (0.75 + 150 * 0.016));
   assert.match(b.explicacion, /60 % × 12,49 € − 3,15 € de impresión \(tapa blanda, grande, 149 págs\., tinta negra\)/);
   assert.ok(b.avisos.some((x) => /tinta negra/.test(x)));
+  assert.equal(b.nota, 'Precio sin el 4 % de IVA: 12,49 €. Paga el 60 % porque el precio sin IVA llega a 9,99 €.');
+  assert.equal(a.nota, 'Precio sin el 4 % de IVA: 9,61 €. Paga el 50 % porque el precio sin IVA no llega a 9,99 €.');
 });
 
 test('regalía de papel en Amazon.com (sin IVA) y precio que no cubre la impresión', () => {

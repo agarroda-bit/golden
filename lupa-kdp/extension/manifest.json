@@ -29,7 +29,27 @@
   ],
   "host_permissions": [
     "https://www.amazon.es/*",
-    "https://www.amazon.com/*",
-    "https://*.frame.claudeusercontent.com/*"
+    "https://www.amazon.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.amazon.es/*",
+        "https://www.amazon.com/*"
+      ],
+      "js": [
+        "lib/base.js",
+        "lib/tiendas.js",
+        "lib/regalias.js",
+        "lib/estimacion.js",
+        "lib/lector.js",
+        "lib/historial.js",
+        "lib/biblioteca.js",
+        "contenido/ui.js",
+        "contenido/panel.js",
+        "contenido/amazon.js"
+      ],
+      "run_at": "document_idle"
+    }
   ]
 }
