@@ -116,3 +116,20 @@ Cualquiera de estas cosas se puede cambiar.
     página ya ha conectado con su nube: claude.ai abre antes un marco escondido de «calentamiento» en el
     mismo dominio, y ahí Lupa no se queda con ninguna idea.
 34. **Sin permiso «tabs» ni acceso a todas las webs**: solo Amazon.es, Amazon.com y ese marco.
+
+## Solo libros
+
+35. **Lupa solo actúa en libros.** En la ficha de un reloj o de cualquier otra cosa no pinta nada ni guarda
+    nada (se reconoce un libro por la ficha de libro, el ISBN, la longitud de impresión, el formato o el
+    puesto en Libros / Tienda Kindle). En las búsquedas, «Ver ventas» solo sale en tarjetas que enseñan un
+    formato de libro; sin libros en la página no sale ni la barra. «Los más vendidos» solo en las listas de
+    Libros y de Kindle.
+
+## Pruebas con Amazon de verdad
+
+36. **Desde la nube de Claude, Amazon.es pidió la comprobación de robot tras unas pocas páginas** (la IP de
+    la nube queda marcada) y no se ha intentado saltar. Las fichas reales de la sopa de letras y del Murdoku
+    se leyeron con el lector de páginas de Claude (otra red) y con eso se reconstruyeron dos fichas con la
+    estructura y los textos reales para los simulacros. La prueba con la extensión en Amazon.es de verdad
+    está lista para el Mac de Rodri: `npm run test:real` (ventana visible, perfil temporal, cookies
+    rechazadas, pausas de 8-15 s, se para si sale la comprobación de robot).

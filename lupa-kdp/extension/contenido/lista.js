@@ -359,11 +359,28 @@
     // Solo las pruebas automáticas acortan la pausa (con una marca interna); Rodri no puede bajarla.
     const { modoPruebas } = await chrome.storage.local.get('modoPruebas').catch(() => ({}));
     if (modoPruebas && Array.isArray(modoPruebas.pausa)) estado.pausa = modoPruebas.pausa;
-    crearBarra();
-    escanear();
+    // Sin libros en la página (una búsqueda de relojes, una lista de otra sección), Lupa no pinta nada.
+    if (!L.lector.leerLista(document, location.href).items.length) {
+      estado.dormida = true;
+      // Puede que Amazon pinte los resultados un poco después: se mira otra vez al cambiar la página.
+      const obs = new MutationObserver(() => {
+        if (L.lector.leerLista(document, location.href).items.length) {
+          obs.disconnect();
+          estado.dormida = false;
+          crearBarra();
+          escanear();
+        }
+      });
+      obs.observe(document.body, { childList: true, subtree: true });
+      setTimeout(() => obs.disconnect(), 15000);
+    } else {
+      crearBarra();
+      escanear();
+    }
     // Amazon añade libros al bajar (Los más vendidos) o al filtrar: se les pone su botón.
     let reloj = null;
     new MutationObserver((cambios) => {
+      if (estado.dormida || !estado.barra) return;
       if (cambios.every((c) => [...c.addedNodes].every((n) => n.nodeType !== 1 || n.hasAttribute('data-lupa-kdp')))) return;
       clearTimeout(reloj);
       reloj = setTimeout(escanear, 400);

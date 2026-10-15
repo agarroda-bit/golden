@@ -73,7 +73,8 @@
 
   async function modoFicha() {
     let ficha = L.lector.leerFicha(document, location.href);
-    if (!ficha.ok) return;
+    // Solo libros: en un reloj o una cafetera, Lupa no pinta nada ni guarda nada.
+    if (!ficha.ok || !L.lector.esLibro(document, ficha)) return;
     // Amazon a veces termina de pintar los detalles un poco después: un segundo intento si falta el BSR.
     if (!Number.isFinite(ficha.bsr.general)) {
       await L.pausa(1500);

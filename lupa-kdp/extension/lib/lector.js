@@ -369,6 +369,32 @@
     };
   }
 
+  /**
+   * ¿Es un libro? (Lupa solo enseña su panel en libros, no en relojes ni en nada más.)
+   * Señales: la ficha se marca como libro, trae ISBN o «Longitud de impresión», su formato es de libro o
+   * su puesto general es en Libros / Tienda Kindle.
+   */
+  function esLibro(doc, ficha) {
+    if (!ficha || !ficha.ok) return false;
+    const dp = doc.querySelector('#dp');
+    if (dp && /\b(book|ebooks)\b/.test(dp.className)) return true;
+    if (ficha.formato && L.tipoFormato(ficha.formato) !== 'otro') return true;
+    if (ficha.bsr && ficha.bsr.categoriaGeneral) return true;
+    if (ficha.isbn13 || ficha.tamanoArchivoMB != null) return true;
+    if (doc.querySelector('[id^="tmm-grid-swatch-PAPERBACK"], [id^="tmm-grid-swatch-HARDCOVER"], [id^="tmm-grid-swatch-KINDLE"], #ebooksProductTitle')) return true;
+    for (const [k] of detalles(doc)) if (casa(k, T().paginas) || casa(k, T().isbn13) || casa(k, T().isbn10)) return true;
+    return false;
+  }
+
+  /** ¿La tarjeta de una búsqueda es de un libro? (enseña un formato de libro o la línea «de AUTOR | fecha»). */
+  const FORMATOS_TARJETA = /\b(tapa blanda|tapa dura|versi[oó]n kindle|formato kindle|kindle|libro de bolsillo|espiral|paperback|hardcover|audiolibro|audible)\b/i;
+  function tarjetaDeLibro(el) {
+    return FORMATOS_TARJETA.test(txt(el.querySelector('[data-cy="price-recipe"]') || el).slice(0, 4000));
+  }
+
+  /** ¿La página de «Los más vendidos» es de libros o de Kindle? */
+  const esListaDeLibros = (url) => /\/(books|digital-text|kindle-store|boost|libros)\b|\/zgbs\/(books|digital-text)/i.test(String(url || ''));
+
   // ------------------------------------------------------------------ listas
 
   /** Contenedor de cada libro en «Los más vendidos» (varios diseños de Amazon). */
@@ -389,13 +415,14 @@
     };
     if (tipo === 'busqueda') {
       for (const el of doc.querySelectorAll('[data-component-type="s-search-result"][data-asin]')) {
+        if (!tarjetaDeLibro(el)) continue;
         const asin = (el.getAttribute('data-asin') || '').toUpperCase();
         const h2 = el.querySelector('h2');
         const titulo = h2 ? L.limpiar(h2.getAttribute('aria-label') || txt(h2)).replace(/^(anuncio patrocinado|sponsored ad)\s*[-–:]\s*/i, '') : null;
         const patrocinado = el.classList.contains('AdHolder') || !!el.querySelector('a[href*="/sspa/click"]');
         anadir(el, asin, { titulo, patrocinado, puesto: null });
       }
-    } else if (tipo === 'mas-vendidos') {
+    } else if (tipo === 'mas-vendidos' && esListaDeLibros(url)) {
       let contenedores = [];
       for (const s of SEL_MAS_VENDIDOS) {
         contenedores = [...doc.querySelectorAll(s)];
@@ -423,5 +450,5 @@
     return { tipo, items };
   }
 
-  L.lector = { detectarRobot, asinDeUrl, tipoPagina, detalles, leerBsr, leerPrecio, leerFicha, leerLista, precioDeTexto, numeroResenas };
+  L.lector = { detectarRobot, asinDeUrl, tipoPagina, detalles, leerBsr, leerPrecio, leerFicha, leerLista, precioDeTexto, numeroResenas, esLibro, esListaDeLibros };
 })((globalThis.LUPA = globalThis.LUPA || {}));
