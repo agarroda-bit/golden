@@ -153,22 +153,24 @@
 
   // ------------------------------------------------------------------ precio y formato
 
+  // Primero el precio de la caja de compra; si la ficha llega sin él (pasa al leerla en segundo plano:
+  // Amazon lo rellena después con sus scripts), el del formato elegido («desde 5,99 €»).
   const SEL_PRECIO = [
-    '#tmmSwatches .swatchElement.selected .slot-price .a-color-price',
-    '#tmmSwatches .swatchElement.selected .slot-price .a-color-base',
-    '#tmmSwatches .swatchElement.selected .slot-price',
-    '#tmmSwatches .a-button-selected .slot-price',
-    '[id^="tmm-grid-swatch-"].selected .slot-price .a-offscreen',
-    '[id^="tmm-grid-swatch-"].selected .slot-price',
     '#corePriceDisplay_desktop_feature_div .priceToPay .a-offscreen',
     '#corePrice_feature_div .priceToPay .a-offscreen',
-    '#corePrice_feature_div .a-price .a-offscreen',
-    '#corePriceDisplay_desktop_feature_div .a-price .a-offscreen',
     '#apex_desktop .priceToPay .a-offscreen',
+    '#corePriceDisplay_desktop_feature_div .a-price:not(.a-text-price) .a-offscreen',
+    '#corePrice_feature_div .a-price:not(.a-text-price) .a-offscreen',
     '#price',
     '#newBuyBoxPrice',
     '#kindle-price',
     '#price_inside_buybox',
+    '[id^="tmm-grid-swatch-"].selected .slot-price .a-offscreen',
+    '[id^="tmm-grid-swatch-"].selected .slot-price',
+    '#tmmSwatches .swatchElement.selected .slot-price .a-color-price',
+    '#tmmSwatches .swatchElement.selected .slot-price .a-color-base',
+    '#tmmSwatches .swatchElement.selected .slot-price',
+    '#tmmSwatches .a-button-selected .slot-price',
     '#buyNewSection .a-color-price',
     '#buybox .a-color-price',
   ];
@@ -207,6 +209,10 @@
   function leerFormato(doc, mapa) {
     const binding = primero(doc, ['#productBinding', '#bookEdition + #productBinding']);
     if (binding) return txt(binding);
+    // Fichas actuales: en la línea del autor, «Formato: Tapa blanda».
+    for (const s of doc.querySelectorAll('#bylineInfo span')) {
+      if (/^(formato|format)\s*:?$/i.test(txt(s)) && s.nextElementSibling && txt(s.nextElementSibling)) return txt(s.nextElementSibling);
+    }
     const sub = primero(doc, ['#productSubtitle', '#subtitle', '#bookEdition']);
     if (sub) {
       const f = txt(sub).split(/\s[–—-]\s/)[0];
@@ -225,6 +231,15 @@
     if (detalle(mapa, T().tamanoArchivo)) return 'Versión Kindle';
     if (doc.querySelector('#ebooksProductTitle, #kindle-price')) return 'Versión Kindle';
     return null;
+  }
+
+  /** «492 Reseñas», «(1.234)», «1,2 mil valoraciones», «12K ratings» → número (o null). */
+  function numeroResenas(texto) {
+    const t = L.limpiar(texto);
+    const mil = t.match(/(\d+(?:[.,]\d+)?)\s*(mil|k)\b/i);
+    if (mil) return Math.round(L.decimal(mil[1]) * 1000);
+    const m = t.match(/\d[\d.,\s]*/);
+    return m ? L.entero(m[0]) : null;
   }
 
   // ------------------------------------------------------------------ la ficha entera
@@ -303,7 +318,7 @@
     // Reseñas y nota.
     let resenas = null;
     const r = doc.querySelector('#acrCustomerReviewText, #acrCustomerReviewLink #acrCustomerReviewText');
-    if (r) resenas = L.entero(txt(r));
+    if (r) resenas = numeroResenas(r.getAttribute('aria-label') || '') ?? numeroResenas(txt(r));
     else if (doc.querySelector('#averageCustomerReviews_feature_div, #averageCustomerReviews') && /s[eé] el primero|be the first|sin valoraciones|no customer reviews/i.test(txt(doc.querySelector('#averageCustomerReviews_feature_div, #averageCustomerReviews')))) resenas = 0;
     let nota = null;
     const pop = doc.querySelector('#acrPopover');
@@ -408,5 +423,5 @@
     return { tipo, items };
   }
 
-  L.lector = { detectarRobot, asinDeUrl, tipoPagina, detalles, leerBsr, leerPrecio, leerFicha, leerLista, precioDeTexto };
+  L.lector = { detectarRobot, asinDeUrl, tipoPagina, detalles, leerBsr, leerPrecio, leerFicha, leerLista, precioDeTexto, numeroResenas };
 })((globalThis.LUPA = globalThis.LUPA || {}));
