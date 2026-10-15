@@ -84,3 +84,10 @@ test('formatos que no tienen regalía de KDP', () => {
   assert.equal(L.tipoFormato('Hardcover'), 'impreso');
   assert.equal(L.encuadernacion('Tapa dura'), 'tapa dura');
 });
+
+test('aviso cuando la editorial no es de KDP', () => {
+  const kdp = R.regaliaImpreso({ tienda: 'amazon.es', formato: 'Tapa blanda', precio: 12.99, paginas: 120, medidas: '15.24 x 0.7 x 22.86 cm', editorial: 'Independently published' });
+  assert.ok(!kdp.avisos.some((x) => /no parece de KDP/.test(x)));
+  const otra = R.regaliaImpreso({ tienda: 'amazon.es', formato: 'Tapa blanda', precio: 17, paginas: 224, medidas: '15.24 x 1.4 x 22.86 cm', editorial: 'Ediciones Temas de Hoy' });
+  assert.ok(otra.avisos.some((x) => /editorial «Ediciones Temas de Hoy»: no parece de KDP/.test(x)));
+});

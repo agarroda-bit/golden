@@ -134,6 +134,9 @@
       avisos.push(`calculada con el precio de catálogo (${L.dinero(ficha.precioCatalogo, tienda.moneda)}), no con la oferta`);
     }
     if (regalia <= 0) avisos.push('con este precio KDP no pagaría nada: el precio no cubre la impresión (¿es a color o no es de KDP?)');
+    if (ficha.editorial && !/independently published|publicado de forma independiente|publicaci[oó]n independiente|createspace|kindle direct/i.test(ficha.editorial)) {
+      avisos.push(`editorial «${ficha.editorial}»: no parece de KDP; es la regalía que tendría si lo fuera`);
+    }
     const umbral = L.dinero(r.umbral60, tienda.moneda);
     const porQue = tasa === r.tasaAlta ? `Paga el ${L.porcentaje(tasa)} porque el precio${tienda.iva ? ' sin IVA' : ''} llega a ${umbral}.` : `Paga el ${L.porcentaje(tasa)} porque el precio${tienda.iva ? ' sin IVA' : ''} no llega a ${umbral}.`;
     const nota = tienda.iva ? `Precio sin el ${L.porcentaje(tienda.iva)} de IVA: ${L.dinero(precioSinIva, tienda.moneda)}. ${porQue}` : porQue;
