@@ -19,18 +19,109 @@
 
       <nav class="pestanas" role="tablist">
         <button role="tab" data-pestana="curvas" aria-selected="true">Curvas de ventas</button>
+        <button role="tab" data-pestana="calibracion" aria-selected="false">Calibración</button>
+        <button role="tab" data-pestana="historial" aria-selected="false">Historial</button>
+        <button role="tab" data-pestana="biblioteca" aria-selected="false">Biblioteca</button>
+        <button role="tab" data-pestana="ajustes" aria-selected="false">Regalía y ritmo</button>
       </nav>
 
       <main>
         <!-- ============================================================ CURVAS -->
-        <section id="vista-curvas" data-vista="curvas">
+        <section data-vista="curvas">
           <div class="bloque">
-            <h2>Curvas de ventas</h2>
+            <h2>Qué curva usa cada tienda</h2>
             <p class="nota">
-              Una curva pasa el puesto en ventas (BSR) a ventas al día. Cada tienda y cada formato usa la suya. Las de fábrica salen de tablas públicas de
-              Amazon EE. UU.: en Amazon.es la cifra sale con la etiqueta «Estimación EE. UU. — sin calibrar para España» hasta que calibres la tuya con tus ventas de KDP.
+              Una curva pasa el puesto en ventas (BSR) a ventas al día. Cada tienda y cada formato usa la suya. Las de fábrica salen de tablas públicas de Amazon EE. UU.: en
+              Amazon.es la cifra sale con la etiqueta «Estimación EE. UU. — sin calibrar para España» hasta que calibres la tuya en la pestaña «Calibración».
             </p>
+            <div class="tabla"><table id="asignacion"><thead><tr><th>Tienda</th><th>Tapa blanda (y demás impresos)</th><th>Kindle</th></tr></thead><tbody></tbody></table></div>
+            <div id="aviso-asignacion" class="nota"></div>
+          </div>
+          <div class="bloque">
+            <h2>Curvas de fábrica</h2>
             <div id="curvas-fabrica" class="rejilla"></div>
+          </div>
+          <div class="bloque">
+            <h2>Tus curvas</h2>
+            <div id="curvas-propias" class="rejilla"></div>
+          </div>
+          <div class="bloque">
+            <h2>Crear una curva propia</h2>
+            <p class="nota">Una línea por punto: el BSR y las ventas al día, separados por «;». Entre dos puntos se interpola en escala logarítmica.</p>
+            <div class="rejilla">
+              <label class="casilla-tuya"><span>TÚ: nombre de la curva</span><input id="cp-nombre" placeholder="p. ej. Mi tabla de España" /></label>
+              <label class="casilla-tuya"><span>TÚ: formato</span><select id="cp-formato"><option value="impreso">Tapa blanda (y demás impresos)</option><option value="kindle">Kindle</option></select></label>
+            </div>
+            <label class="casilla-tuya" style="margin-top: 10px"><span>TÚ: puntos (BSR;ventas al día)</span><textarea id="cp-puntos" rows="6" placeholder="1000;5&#10;10000;0,8&#10;100000;0,1"></textarea></label>
+            <div class="fila" style="margin-top: 10px"><button id="cp-comprobar">Comprobar sin guardar</button><button id="cp-guardar" class="oro">Guardar curva</button><span id="cp-resultado" class="nota"></span></div>
+          </div>
+        </section>
+
+        <!-- ============================================================ CALIBRACIÓN -->
+        <section data-vista="calibracion" class="oculto">
+          <div class="bloque">
+            <h2>1 · Tu informe de ventas de KDP</h2>
+            <p class="nota">En KDP, «Informes» → descarga el informe de pedidos o de ventas (.xlsx) y súbelo aquí. También vale un .csv. Lupa reconoce las columnas de fecha, ASIN/ISBN, tienda, formato y unidades en castellano o en inglés; si no las reconoce, te deja elegirlas.</p>
+            <label class="casilla-tuya"><span>TÚ: informe de KDP (.xlsx o .csv)</span><input id="cal-informe" type="file" accept=".xlsx,.csv,.txt,.tsv" /></label>
+            <div id="cal-informe-resumen" style="margin-top: 10px"></div>
+          </div>
+          <div class="bloque">
+            <h2>2 · Lecturas de BSR de tus libros</h2>
+            <p class="nota">Lupa guarda el BSR cada vez que abres la ficha de uno de tus libros en Amazon (pestaña «Historial»). Si tienes lecturas apuntadas en otro sitio, súbelas en un CSV con columnas Fecha;ASIN;BSR (y si quieres Tienda;Formato).</p>
+            <label class="casilla-tuya"><span>TÚ: lecturas de BSR (opcional, .csv)</span><input id="cal-lecturas" type="file" accept=".csv,.txt,.tsv,.xlsx" /></label>
+            <div id="cal-lecturas-resumen" style="margin-top: 10px"></div>
+          </div>
+          <div class="bloque">
+            <h2>3 · Ajustar la curva</h2>
+            <p class="nota">Cada día con BSR de uno de tus libros y sus ventas de ese día es un punto de datos (un día sin ventas dentro de las fechas del informe cuenta como 0). La curva es ventas/día = a × BSR<sup>−b</sup>, ajustada por máxima verosimilitud.</p>
+            <div class="fila">
+              <label class="casilla-tuya"><span>TÚ: tienda</span><select id="cal-tienda"><option value="amazon.es">Amazon.es</option><option value="amazon.com">Amazon.com</option></select></label>
+              <label class="casilla-tuya"><span>TÚ: formato</span><select id="cal-formato"><option value="impreso">Tapa blanda (y demás impresos)</option><option value="kindle">Kindle</option></select></label>
+              <button id="cal-calcular" class="hielo" style="align-self: end">Calcular la curva</button>
+            </div>
+            <div id="cal-resultado" style="margin-top: 12px"></div>
+          </div>
+        </section>
+
+        <!-- ============================================================ HISTORIAL -->
+        <section data-vista="historial" class="oculto">
+          <div class="bloque">
+            <div class="fila"><h2 style="margin: 0">Historial de lecturas</h2><span class="hueco"></span><button id="hist-csv" class="oro">CSV de todo</button></div>
+            <p class="nota">Cada vez que Lupa lee una ficha (abriéndola, con «Ver ventas» o con «Analizar página») guarda la fecha y hora, el BSR, el precio, las reseñas y la nota.</p>
+            <div class="tabla"><table id="historial"><thead><tr><th>Libro</th><th>Tienda</th><th>ASIN</th><th class="n">Lecturas</th><th>Desde</th><th class="n">BSR ahora</th><th class="n">Mejor</th><th>Tendencia</th><th></th></tr></thead><tbody></tbody></table></div>
+          </div>
+        </section>
+
+        <!-- ============================================================ BIBLIOTECA -->
+        <section data-vista="biblioteca" class="oculto">
+          <div class="bloque">
+            <h2>Ideas mandadas a la Biblioteca</h2>
+            <p class="nota">«Mandar a la Biblioteca» abre la Biblioteca Buen Rato y la idea entra sola por «Tus ideas de libro» (Lupa rellena las casillas y pulsa «Mandar a la fábrica»). Aquí ves cada idea y si llegó.</p>
+            <div class="tabla"><table id="ideas"><thead><tr><th>Fecha</th><th>Libro</th><th>Estado</th><th></th></tr></thead><tbody></tbody></table></div>
+          </div>
+          <div class="bloque">
+            <h2>Dirección de la Biblioteca</h2>
+            <label class="casilla-tuya"><span>TÚ: dirección de la Biblioteca Buen Rato</span><input id="url-biblioteca" type="url" /></label>
+            <div class="fila" style="margin-top: 8px"><button id="guardar-url-biblioteca" class="oro">Guardar</button><span id="aviso-url-biblioteca" class="nota"></span></div>
+          </div>
+        </section>
+
+        <!-- ============================================================ AJUSTES -->
+        <section data-vista="ajustes" class="oculto">
+          <div class="bloque">
+            <h2>Regalía de papel</h2>
+            <p class="nota">Como KDP desde el 10/06/2025: el 60 % del precio sin IVA si llega a 9,99 € (o 9,99 $), y el 50 % si no llega. Si quieres el 60 % siempre, pon 0 en el umbral.</p>
+            <div class="rejilla">
+              <label class="casilla-tuya"><span>TÚ: umbral del porcentaje alto (precio sin IVA)</span><input id="aj-umbral" inputmode="decimal" /></label>
+              <label class="casilla-tuya"><span>TÚ: porcentaje alto (%)</span><input id="aj-alta" inputmode="decimal" /></label>
+              <label class="casilla-tuya"><span>TÚ: porcentaje bajo (%)</span><input id="aj-baja" inputmode="decimal" /></label>
+            </div>
+            <div class="fila" style="margin-top: 10px"><button id="aj-guardar" class="oro">Guardar</button><button id="aj-defecto">Volver a lo de KDP</button><span id="aj-aviso" class="nota"></span></div>
+          </div>
+          <div class="bloque">
+            <h2>Ritmo en búsquedas y «Los más vendidos»</h2>
+            <p>«Analizar página» lee las fichas de una en una, con una pausa al azar de <b>4 a 6 segundos</b> entre ficha y ficha y como mucho <b>30 fichas por página</b>. Una ficha leída hace menos de 60 minutos sale del historial y no se vuelve a pedir. Si Amazon pide comprobar que eres una persona, Lupa se para del todo.</p>
+            <p class="nota">Estos límites no se pueden cambiar. Lupa nunca abre páginas que no tengas delante ni trabaja en segundo plano.</p>
           </div>
         </section>
       </main>
@@ -39,6 +130,11 @@
     <script src="../lib/tiendas.js"></script>
     <script src="../lib/regalias.js"></script>
     <script src="../lib/estimacion.js"></script>
+    <script src="../lib/historial.js"></script>
+    <script src="../lib/exportar.js"></script>
+    <script src="../lib/biblioteca.js"></script>
+    <script src="../lib/hojas.js"></script>
+    <script src="../lib/calibracion.js"></script>
     <script src="opciones.js"></script>
   </body>
 </html>

@@ -79,6 +79,18 @@ function asignarCurva(tienda, formato, id) {
   });
 }
 
+// ============================================================ calibración (datos importados en Opciones)
+
+function guardarCalibracion(cambios) {
+  return enCola(async () => {
+    const { calibracion } = await chrome.storage.local.get('calibracion');
+    const nueva = { ...(calibracion || {}), ...(cambios || {}), actualizada: new Date().toISOString() };
+    for (const k of Object.keys(cambios || {})) if (cambios[k] === null) delete nueva[k];
+    await chrome.storage.local.set({ calibracion: nueva });
+    return { ok: true, calibracion: nueva };
+  });
+}
+
 // ============================================================ historial
 
 async function leerEntrada(tienda, asin) {
@@ -289,6 +301,8 @@ const MANEJADORES = {
   guardarCurva: (m) => guardarCurva(m.curva),
   borrarCurva: (m) => borrarCurva(m.id),
   asignarCurva: (m) => asignarCurva(m.tienda, m.formato, m.id),
+  guardarCalibracion: (m) => guardarCalibracion(m.cambios),
+  leerCalibracion: async () => ({ ok: true, calibracion: (await chrome.storage.local.get('calibracion')).calibracion || null }),
   mandarBiblioteca: (m, s) => mandarBiblioteca(m.idea, s),
   ideaPendiente: (_m, s) => ideaPendiente(s),
   ideaEntregada: (m) => ideaEntregada(m),

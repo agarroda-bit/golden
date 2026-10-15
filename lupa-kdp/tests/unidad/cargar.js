@@ -7,3 +7,5 @@ export const L = globalThis.LUPA;
 await import('../../extension/lib/historial.js');
 await import('../../extension/lib/exportar.js');
 await import('../../extension/lib/biblioteca.js');
+await import('../../extension/lib/hojas.js');
+await import('../../extension/lib/calibracion.js');
