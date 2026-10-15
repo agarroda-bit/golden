@@ -133,3 +133,25 @@ Cualquiera de estas cosas se puede cambiar.
     estructura y los textos reales para los simulacros. La prueba con la extensión en Amazon.es de verdad
     está lista para el Mac de Rodri: `npm run test:real` (ventana visible, perfil temporal, cookies
     rechazadas, pausas de 8-15 s, se para si sale la comprobación de robot).
+37. **15/10 a las 00:46 UTC Amazon volvió a abrir la puerta** y la prueba real con la extensión cargada pasó
+    (sopa y Murdoku leídos; Buen Rato aún no está a la venta). La ficha de la sopa se guardó de verdad y
+    sustituye a la reconstruida; la del Murdoku sigue reconstruida. Tres minutos después Amazon volvió a
+    ponerse en guardia, ahora con otra defensa (siguiente punto).
+38. **Pantalla de verificación del navegador (Akamai, «bm-verify»)**: una página casi en blanco que hace una
+    prueba con JavaScript y recarga. Si llega al leer una ficha en segundo plano («Ver ventas», «Analizar
+    página»), cuenta como comprobación de robot: Lupa se para y lo avisa (una descarga no ejecuta esa prueba,
+    ni se intenta). En una pestaña normal no se avisa: el navegador de Rodri la pasa solo, como siempre, y
+    Amazon recarga la ficha. Se reconoce por su `meta refresh` con «bm-verify» y su script
+    `/_sec/verify?provider=interstitial`, solo en páginas sin texto a la vista.
+39. **Media hora sin «Analizar página» después de una comprobación de robot** (dice hasta qué hora). «Ver
+    ventas» libro a libro sí funciona. El «!» del icono se quita con la primera ficha que se lea bien pasada
+    esa media hora.
+40. **El IVA del precio depende de la dirección de entrega de Amazon.** Con la misma sopa de letras: 5,99 €
+    entregando en Madrid y 5,76 € (= 5,99 / 1,04) entregando en Estados Unidos. Lupa lee la dirección de la
+    cabecera («Entrega en Madrid 28013», «Enviar a Estados Unidos»): península y Baleares (o si no se ve) →
+    se quita el 4 %; Canarias, Ceuta, Melilla y fuera de la UE → el precio ya viene sin IVA y no se quita
+    (se avisa); otro país de la UE → lleva el IVA de allí, se quita el 4 % y se avisa de que puede variar unos
+    céntimos. Para Rodri, con su dirección en España, no cambia nada.
+41. **`npm run fixtures` guarda las páginas nuevas aparte** (`tests/fixtures/nuevas/`), sin pisar las de las
+    pruebas: el BSR cambia cada hora y las pruebas de siempre llevan cifras fijas. `npm run test:lectores`
+    comprueba que Lupa sigue leyendo enteras las nuevas, sin cifras fijas.

@@ -2,32 +2,19 @@
 // borra al acabar (nunca el Chrome de Rodri), cookies rechazadas y ritmo de persona (entra por la portada,
 // pausas de 8 a 15 s). Abre las tres fichas del encargo: una sopa de letras, un Murdoku y un libro de
 // Buen Rato, y apunta lo que enseña el panel de Lupa. Si Amazon pide comprobar que eres una persona,
-// se para (no lo intenta saltar) y lo apunta. Resultado en .tmp/real/resultado.json y capturas .png.
+// se para (no lo intenta saltar) y lo apunta. Resultado en .tmp/real/resultado.json, capturas .png y el HTML
+// de cada ficha.
 //
 // Libro de Buen Rato: si se sabe su ASIN, LUPA_BUEN_RATO_ASIN=B0… npm run test:real; si no, se busca
 // «Buen Rato Recuerdos» en Amazon.es y se coge el primer libro cuyo autor sea Buen Rato.
 import fs from 'node:fs';
 import path from 'node:path';
 import { expect, test } from '@playwright/test';
-import { RAIZ, abrirConExtension } from '../ayuda.js';
+import { RAIZ, abrir, abrirConExtension, dormir, esRobot, pausaPersona, rechazarCookies } from '../ayuda.js';
 
 test.skip(!process.env.LUPA_REAL, 'Solo con «npm run test:real» (abre Amazon.es de verdad).');
 
 const SALIDA = path.join(RAIZ, '.tmp', 'real');
-const dormir = (ms) => new Promise((r) => setTimeout(r, ms));
-const pausaPersona = () => dormir(8000 + Math.random() * 7000);
-
-async function esRobot(pagina) {
-  return pagina.evaluate(() => !!document.querySelector('form[action*="validateCaptcha"]') || /Introduce los caracteres|seguir comprando|continue shopping|Enter the characters/i.test(document.body ? document.body.innerText.slice(0, 3000) : ''));
-}
-
-async function rechazarCookies(pagina) {
-  const boton = pagina.locator('#sp-cc-rejectall-link, input#sp-cc-rejectall-link, button:has-text("Rechazar")').first();
-  if (await boton.isVisible().catch(() => false)) {
-    await boton.click();
-    await dormir(1500);
-  }
-}
 
 /** Lo que enseña el panel de Lupa en la ficha abierta. */
 async function leerPanel(pagina) {
@@ -51,6 +38,7 @@ async function leerPanel(pagina) {
       regalia: t('[data-regalia]'),
       explicacion: t('[data-explica]'),
       errores: [...r.querySelectorAll('.error')].map((e) => e.textContent.replace(/\s+/g, ' ').trim()),
+      avisos: [...r.querySelectorAll('.avisos li')].map((e) => e.textContent.replace(/\s+/g, ' ').trim()),
       datos,
     };
   });
@@ -64,8 +52,7 @@ test('tres fichas reales de Amazon.es: sopa de letras, Murdoku y Buen Rato', asy
   const guardar = () => fs.writeFileSync(path.join(SALIDA, 'resultado.json'), JSON.stringify(resultado, null, 2));
   try {
     const p = await ext.contexto.newPage();
-    await p.goto('https://www.amazon.es/', { waitUntil: 'domcontentloaded' });
-    await dormir(3000);
+    await abrir(p, 'https://www.amazon.es/', { espera: 3000 });
     if (await esRobot(p)) {
       resultado.parado = 'Amazon pide comprobar que eres una persona ya en la portada: prueba parada sin insistir.';
       return;
@@ -100,12 +87,13 @@ test('tres fichas reales de Amazon.es: sopa de letras, Murdoku y Buen Rato', asy
 
     for (const f of fichas) {
       await pausaPersona();
-      await p.goto(f.url, { waitUntil: 'domcontentloaded' });
-      await dormir(2000);
+      const resp = await abrir(p, f.url);
       if (await esRobot(p)) {
         resultado.parado = `Amazon pidió comprobar que eres una persona al abrir ${f.nombre}: prueba parada sin insistir.`;
         break;
       }
+      // La ficha tal como llega, por si hay que convertirla en página de prueba (scripts/recortar-fixture.mjs).
+      fs.writeFileSync(path.join(SALIDA, `${f.nombre.replace(/\s+/g, '-')}.html`), resp ? await resp.text().catch(() => '') : '');
       const panel = await leerPanel(p);
       resultado.fichas.push({ nombre: f.nombre, url: f.url, ...panel });
       await p.screenshot({ path: path.join(SALIDA, `${f.nombre.replace(/\s+/g, '-')}.png`) });

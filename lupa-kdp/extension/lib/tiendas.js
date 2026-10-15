@@ -28,6 +28,28 @@
     },
   };
 
+  /**
+   * ¿Qué IVA lleva el precio que enseña Amazon.es? Depende de la dirección de entrega de la cabecera
+   * («Entrega en Madrid 28013», «Enviar a Estados Unidos»). Comprobado el 15/10/2026 con la misma
+   * sopa de letras: 5,99 € entregando en Madrid y 5,76 € (= 5,99 / 1,04) entregando en Estados Unidos.
+   *   'espana'  → península y Baleares: lleva el 4 % de IVA (lo normal para Rodri).
+   *   'sin-iva' → Canarias, Ceuta, Melilla y países de fuera de la UE: Amazon lo enseña ya sin IVA.
+   *   'ue'      → otro país de la UE: lleva el IVA de los libros de ese país (que no es el 4 %).
+   *   null      → no se sabe: se supone España, como siempre.
+   */
+  const PAISES_UE = /alemania|austria|b[eé]lgica|bulgaria|chipre|croacia|dinamarca|eslovaquia|eslovenia|estonia|finlandia|francia|grecia|hungr[ií]a|irlanda|italia|letonia|lituania|luxemburgo|malta|pa[ií]ses bajos|holanda|polonia|portugal|rep[uú]blica checa|chequia|ruman[ií]a|suecia/i;
+  const FUERA_UE = /estados unidos|ee\.\s?uu\.|reino unido|suiza|noruega|islandia|andorra|gibraltar|liechtenstein|m[oó]naco|san marino|marruecos|m[eé]xico|canad[aá]|argentina|chile|colombia|per[uú]|brasil|uruguay|venezuela|ecuador|bolivia|paraguay|cuba|rep[uú]blica dominicana|puerto rico|costa rica|panam[aá]|guatemala|australia|nueva zelanda|jap[oó]n|china|india|turqu[ií]a|israel|emiratos|arabia saud[ií]|sud[aá]frica|singapur|corea/i;
+  L.zonaDeEntrega = (texto) => {
+    const t = L.limpiar(texto);
+    if (!t) return null;
+    const cp = t.match(/\b(\d{2})\d{3}\b/);
+    if (/canarias|las palmas|tenerife|ceuta|melilla/i.test(t) || (cp && ['35', '38', '51', '52'].includes(cp[1]))) return 'sin-iva';
+    if (/espa[nñ]a/i.test(t) || (cp && Number(cp[1]) >= 1 && Number(cp[1]) <= 50)) return 'espana';
+    if (FUERA_UE.test(t)) return 'sin-iva';
+    if (PAISES_UE.test(t)) return 'ue';
+    return null;
+  };
+
   /** «www.amazon.es» → 'amazon.es'; cualquier otra web → null. */
   L.tiendaDeHost = (host) => {
     const h = String(host || '').toLowerCase().replace(/^www\.|^smile\./, '');

@@ -129,3 +129,60 @@ export async function servirBiblioteca(contexto, { consulta = '', marcoPrevio = 
   await contexto.route(/^https:\/\/claude\.ai\/artifact\//, (ruta) => ruta.fulfill({ status: 200, contentType: 'text/html; charset=utf-8', body: leerFixture('biblioteca-marco.html').replace('__QUERY__', consulta).replace('<!--PREVIO-->', previo) }));
   await contexto.route(/^https:\/\/[\w-]+\.frame\.claudeusercontent\.com\//, (ruta) => ruta.fulfill({ status: 200, contentType: 'text/html; charset=utf-8', body: leerFixture('biblioteca-simulada.html') }));
 }
+
+// ------------------------------------------------------------------ Amazon de verdad (test:real, fixtures)
+
+export const dormir = (ms) => new Promise((r) => setTimeout(r, ms));
+/** Pausa de persona entre página y página: de 8 a 15 segundos. */
+export const pausaPersona = () => dormir(8000 + Math.random() * 7000);
+
+/**
+ * ¿Es la comprobación de robot de Amazon? Las mismas frases que usa Lupa (extension/lib/tiendas.js).
+ * Ojo: «Seguir comprando» a secas sale en el menú de la cuenta de cualquier página normal de
+ * Amazon.es; la comprobación dice «…el botón de abajo para seguir comprando».
+ */
+export async function esRobot(pagina) {
+  return pagina.evaluate(
+    () =>
+      !!document.querySelector('form[action*="validateCaptcha"], input#captchacharacters') ||
+      /introduce los caracteres que (ves|aparecen)|bot[oó]n de abajo para seguir comprando|enter the characters you see below|below to continue shopping|asegurarnos de que no eres un robot|make sure you('|’)re not a robot/i.test(document.body ? document.body.innerText.slice(0, 3000) : ''),
+  );
+}
+
+/** «Rechazar» en el aviso de cookies de Amazon, si sale. */
+export async function rechazarCookies(pagina) {
+  const boton = pagina.locator('#sp-cc-rejectall-link, input#sp-cc-rejectall-link, button:has-text("Rechazar")').first();
+  if (await boton.isVisible().catch(() => false)) {
+    await boton.click();
+    await dormir(1500);
+  }
+}
+
+/** ¿Es la pantalla de verificación del navegador (Akamai «bm-verify»)? Mientras navega, cuenta como sí. */
+export async function esVerificacion(pagina) {
+  return pagina
+    .evaluate(() => !!document.querySelector('meta[http-equiv="refresh" i][content*="bm-verify"]') || [...document.scripts].some((s) => /_sec\/verify\?provider=interstitial/.test(s.textContent)))
+    .catch(() => true);
+}
+
+/**
+ * Abre una dirección como una persona y devuelve la respuesta de la página que queda. Si Amazon pone
+ * delante su pantalla de verificación del navegador, la pasa el propio navegador con el JavaScript de
+ * Amazon (como haría Chrome); aquí solo se espera a la página de verdad. No se salta nada.
+ */
+export async function abrir(pagina, url, { espera = 2500 } = {}) {
+  const respuestas = [];
+  const oir = (r) => {
+    if (r.request().isNavigationRequest() && r.frame() === pagina.mainFrame()) respuestas.push(r);
+  };
+  pagina.on('response', oir);
+  try {
+    await pagina.goto(url, { waitUntil: 'domcontentloaded' });
+    await dormir(espera);
+    for (let i = 0; i < 20 && (await esVerificacion(pagina)); i++) await dormir(1000);
+    await pagina.waitForLoadState('domcontentloaded').catch(() => {});
+    return respuestas[respuestas.length - 1] || null;
+  } finally {
+    pagina.off('response', oir);
+  }
+}

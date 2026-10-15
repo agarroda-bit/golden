@@ -19,7 +19,31 @@
   };
   const casa = (texto, lista) => lista.some((re) => re.test(texto));
 
-  /** ¿Es la página de «comprueba que no eres un robot»? Devuelve el motivo o null. */
+  /** ¿Tiene la página más de «max» letras de texto a la vista (sin contar scripts ni estilos)? */
+  function hayTexto(doc, max) {
+    if (!doc.body) return false;
+    const w = doc.createTreeWalker(doc.body, 4 /* NodeFilter.SHOW_TEXT */);
+    let n = 0;
+    for (let t = w.nextNode(); t; t = w.nextNode()) {
+      if (/^(SCRIPT|STYLE|NOSCRIPT|TEMPLATE)$/.test(t.parentNode && t.parentNode.nodeName)) continue;
+      n += t.nodeValue.trim().length;
+      if (n > max) return true;
+    }
+    return false;
+  }
+
+  /**
+   * ¿Es la pantalla de verificación del navegador que Amazon pone a veces delante de la página (Akamai,
+   * «bm-verify»)? Es una página casi en blanco que hace una prueba con JavaScript y luego recarga. En una
+   * pestaña el navegador la pasa solo; en una ficha descargada en segundo plano no se pasa (ni se intenta).
+   */
+  function esVerificacion(doc) {
+    if (!doc || hayTexto(doc, 300)) return false;
+    if (doc.querySelector('meta[http-equiv="refresh" i][content*="bm-verify"]')) return true;
+    return [...doc.querySelectorAll('script')].some((s) => /\/_sec\/verify\?provider=interstitial|triggerInterstitialChallenge/.test(s.textContent || ''));
+  }
+
+  /** ¿Es la página de «comprueba que no eres un robot» (o la de verificación)? Devuelve el motivo o null. */
   function detectarRobot(doc) {
     if (!doc) return null;
     if (doc.querySelector('form[action*="validateCaptcha"], form[action*="/errors/validateCaptcha"], input#captchacharacters')) {
@@ -27,6 +51,7 @@
     }
     const cuerpo = txt(doc.body).slice(0, 4000);
     if (casa(cuerpo, T().robot)) return 'Amazon pide comprobar que eres una persona';
+    if (esVerificacion(doc)) return 'Amazon ha puesto su pantalla de verificación («¿eres una persona?») en vez de la página';
     return null;
   }
 
@@ -343,6 +368,7 @@
 
     const isbn13 = detalle(mapa, T().isbn13);
     const idioma = detalle(mapa, T().idioma);
+    const entrega = leerEntrega(doc);
     return {
       ok: true,
       tienda,
@@ -364,9 +390,26 @@
       nota,
       tamanoArchivoMB,
       bsr,
+      entrega,
       faltan,
       leido: new Date().toISOString(),
     };
+  }
+
+  /**
+   * Dirección de entrega que enseña Amazon (de ella depende si el precio lleva el IVA español):
+   * cabecera «Entrega en Madrid 28013» / «Enviar a Estados Unidos» o la línea de entrega de la compra.
+   * Devuelve { texto, zona } (zona: ver L.zonaDeEntrega) o null si no se ve.
+   */
+  function leerEntrega(doc) {
+    // Primero la 2.ª línea de la cabecera (con sesión: «Barcelona 08028»; la 1.ª, «Enviar a <nombre>»,
+    // no hace falta guardarla), luego la 1.ª (sin sesión: «Entrega en Madrid 28013») y la de la compra.
+    for (const s of ['#glow-ingress-line2', '#glow-ingress-line1', '#contextualIngressPtLabel_deliveryShortLine']) {
+      const texto = L.limpiar(txt(doc.querySelector(s)).replace(/^(entrega en|enviar a|entregar en|deliver to|delivering to)\s*/i, '').replace(/^(actualizar ubicaci[oó]n|update location)$/i, ''));
+      const zona = L.zonaDeEntrega(texto);
+      if (zona) return { texto, zona };
+    }
+    return null;
   }
 
   /**
@@ -450,5 +493,5 @@
     return { tipo, items };
   }
 
-  L.lector = { detectarRobot, asinDeUrl, tipoPagina, detalles, leerBsr, leerPrecio, leerFicha, leerLista, precioDeTexto, numeroResenas, esLibro, esListaDeLibros };
+  L.lector = { detectarRobot, esVerificacion, leerEntrega, asinDeUrl, tipoPagina, detalles, leerBsr, leerPrecio, leerFicha, leerLista, precioDeTexto, numeroResenas, esLibro, esListaDeLibros };
 })((globalThis.LUPA = globalThis.LUPA || {}));

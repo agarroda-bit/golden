@@ -94,6 +94,19 @@
     return { ok: true, coste, detalle, fijo, porPagina, paginasCobradas: pags };
   }
 
+  /**
+   * IVA que lleva el precio de la ficha. Amazon.es enseña el 4 % español si entrega en la península o
+   * Baleares (o si no se sabe dónde), nada si entrega en Canarias, Ceuta, Melilla o fuera de la UE, y el
+   * IVA del país si entrega en otro país de la UE (ahí se quita el 4 % y se avisa).
+   */
+  function ivaDe(ficha, tienda) {
+    if (!tienda.iva) return { iva: 0, aviso: null };
+    const e = ficha.entrega;
+    if (e && e.zona === 'sin-iva') return { iva: 0, aviso: `Amazon enseña el precio para entregar en «${e.texto}», ya sin IVA: no se le quita` };
+    if (e && e.zona === 'ue') return { iva: tienda.iva, aviso: `Amazon enseña el precio para entregar en «${e.texto}», con el IVA de allí y no el ${L.porcentaje(tienda.iva)} español: la regalía puede variar unos céntimos` };
+    return { iva: tienda.iva, aviso: null };
+  }
+
   /** Ajustes de la regalía por defecto (se pueden cambiar en Opciones). */
   L.REGALIA_DEFECTO = { umbral60: 9.99, tasaAlta: 0.6, tasaBaja: 0.5 };
 
@@ -124,10 +137,12 @@
     const tinta = ficha.tinta || 'negra';
     const c = costeImpresion({ encuadernacion, tinta, paginas: ficha.paginas, tamano, moneda: tienda.moneda });
     if (!c.ok) return c;
-    const precioSinIva = L.redondear(precio / (1 + tienda.iva), 4);
+    const { iva, aviso: avisoIva } = ivaDe(ficha, tienda);
+    const precioSinIva = L.redondear(precio / (1 + iva), 4);
     const tasa = precioSinIva + 1e-9 >= r.umbral60 ? r.tasaAlta : r.tasaBaja;
     const regalia = L.redondear(tasa * precioSinIva - c.coste, 4);
     const avisos = [];
+    if (avisoIva) avisos.push(avisoIva);
     if (avisoTamano) avisos.push(avisoTamano);
     if (!ficha.tinta) avisos.push('supone tinta negra (cámbialo si el libro es a color)');
     if (Number.isFinite(ficha.precioCatalogo) && Number.isFinite(ficha.precio) && ficha.precioCatalogo !== ficha.precio) {
@@ -139,7 +154,7 @@
     }
     const umbral = L.dinero(r.umbral60, tienda.moneda);
     const porQue = tasa === r.tasaAlta ? `Paga el ${L.porcentaje(tasa)} porque el precio${tienda.iva ? ' sin IVA' : ''} llega a ${umbral}.` : `Paga el ${L.porcentaje(tasa)} porque el precio${tienda.iva ? ' sin IVA' : ''} no llega a ${umbral}.`;
-    const nota = tienda.iva ? `Precio sin el ${L.porcentaje(tienda.iva)} de IVA: ${L.dinero(precioSinIva, tienda.moneda)}. ${porQue}` : porQue;
+    const nota = iva ? `Precio sin el ${L.porcentaje(iva)} de IVA: ${L.dinero(precioSinIva, tienda.moneda)}. ${porQue}` : porQue;
     return {
       ok: true,
       tipo: 'impreso',
@@ -164,9 +179,10 @@
     if (!tienda) return L.error('tienda desconocida');
     const precio = Number.isFinite(ficha.precioCatalogo) ? ficha.precioCatalogo : ficha.precio;
     if (!Number.isFinite(precio) || precio <= 0) return L.error('no se ha podido leer el precio Kindle');
-    const precioSinIva = L.redondear(precio / (1 + tienda.iva), 4);
+    const { iva, aviso: avisoIva } = ivaDe(ficha, tienda);
+    const precioSinIva = L.redondear(precio / (1 + iva), 4);
     const [min, max] = tienda.kindle70;
-    const avisos = [];
+    const avisos = avisoIva ? [avisoIva] : [];
     if (precio >= min && precio <= max) {
       let entrega = 0;
       if (Number.isFinite(ficha.tamanoArchivoMB)) entrega = L.redondear(ficha.tamanoArchivoMB * tienda.entregaMB, 4);
@@ -182,7 +198,7 @@
         precioSinIva,
         coste: entrega,
         explicacion: `70 % × ${L.dinero(precioSinIva, tienda.moneda)}${entrega ? ` − ${L.dinero(entrega, tienda.moneda)} de entrega` : ''}`,
-        nota: `${tienda.iva ? `Precio sin el ${L.porcentaje(tienda.iva)} de IVA: ${L.dinero(precioSinIva, tienda.moneda)}. ` : ''}El 70 % se paga entre ${L.dinero(min, tienda.moneda)} y ${L.dinero(max, tienda.moneda)}.`,
+        nota: `${iva ? `Precio sin el ${L.porcentaje(iva)} de IVA: ${L.dinero(precioSinIva, tienda.moneda)}. ` : ''}El 70 % se paga entre ${L.dinero(min, tienda.moneda)} y ${L.dinero(max, tienda.moneda)}.`,
         avisos,
       };
     }

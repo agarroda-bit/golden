@@ -31,7 +31,7 @@
 
   /** Datos de la ficha que se guardan con el libro (los últimos que se vieron). */
   function fichaGuardada(ficha) {
-    const campos = ['tienda', 'asin', 'url', 'titulo', 'autor', 'formato', 'precio', 'precioCatalogo', 'moneda', 'paginas', 'medidas', 'fechaPublicacion', 'editorial', 'idioma', 'isbn13', 'resenas', 'nota', 'tamanoArchivoMB', 'bsr', 'faltan', 'leido'];
+    const campos = ['tienda', 'asin', 'url', 'titulo', 'autor', 'formato', 'precio', 'precioCatalogo', 'moneda', 'paginas', 'medidas', 'fechaPublicacion', 'editorial', 'idioma', 'isbn13', 'resenas', 'nota', 'tamanoArchivoMB', 'bsr', 'entrega', 'faltan', 'leido'];
     const f = {};
     for (const k of campos) if (ficha[k] !== undefined) f[k] = ficha[k];
     return f;

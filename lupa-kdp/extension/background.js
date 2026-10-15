@@ -283,10 +283,24 @@ function pintarAviso(activo) {
   }
 }
 
-async function bloqueo(m) {
-  pintarAviso(true);
-  await chrome.storage.local.set({ ultimoBloqueo: { fecha: new Date().toISOString(), url: (m && m.url) || null } });
-  return { ok: true };
+function bloqueo(m) {
+  return enCola(async () => {
+    pintarAviso(true);
+    await chrome.storage.local.set({ ultimoBloqueo: { fecha: new Date().toISOString(), url: (m && m.url) || null } });
+    return { ok: true };
+  });
+}
+
+/** Quita el «!» del icono, pero solo cuando ya han pasado «minutos» desde la última comprobación de robot. */
+function limpiarAviso(minutos = 0) {
+  return enCola(async () => {
+    const { ultimoBloqueo } = await chrome.storage.local.get('ultimoBloqueo');
+    if (!ultimoBloqueo) return { ok: true, limpio: true };
+    if (Date.now() - new Date(ultimoBloqueo.fecha).getTime() < minutos * 60000) return { ok: true, limpio: false };
+    pintarAviso(false);
+    await chrome.storage.local.remove('ultimoBloqueo');
+    return { ok: true, limpio: true };
+  });
 }
 
 // ============================================================ mensajes
@@ -314,11 +328,8 @@ const MANEJADORES = {
   bandeja: async () => ({ ok: true, ideas: await bandeja() }),
   fuentes: () => fuentes(),
   bloqueo: (m) => bloqueo(m),
-  limpiarAviso: async () => {
-    pintarAviso(false);
-    await chrome.storage.local.remove('ultimoBloqueo');
-    return { ok: true };
-  },
+  estadoBloqueo: async () => ({ ok: true, ultimoBloqueo: (await chrome.storage.local.get('ultimoBloqueo')).ultimoBloqueo || null }),
+  limpiarAviso: (m) => limpiarAviso(Number.isFinite(m && m.minutos) ? m.minutos : 0),
   abrirOpciones: async () => {
     await chrome.runtime.openOptionsPage();
     return { ok: true };

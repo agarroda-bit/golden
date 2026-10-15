@@ -91,3 +91,37 @@ test('aviso cuando la editorial no es de KDP', () => {
   const otra = R.regaliaImpreso({ tienda: 'amazon.es', formato: 'Tapa blanda', precio: 17, paginas: 224, medidas: '15.24 x 1.4 x 22.86 cm', editorial: 'Ediciones Temas de Hoy' });
   assert.ok(otra.avisos.some((x) => /editorial «Ediciones Temas de Hoy»: no parece de KDP/.test(x)));
 });
+
+test('IVA según la dirección de entrega de Amazon.es (5,99 € en Madrid = 5,76 € entregando en Estados Unidos)', () => {
+  assert.equal(L.zonaDeEntrega('Madrid 28013'), 'espana');
+  assert.equal(L.zonaDeEntrega('Barcelona 08028'), 'espana');
+  assert.equal(L.zonaDeEntrega('Palma 07001'), 'espana');
+  assert.equal(L.zonaDeEntrega('España'), 'espana');
+  assert.equal(L.zonaDeEntrega('Estados Unidos'), 'sin-iva');
+  assert.equal(L.zonaDeEntrega('Reino Unido'), 'sin-iva');
+  assert.equal(L.zonaDeEntrega('Las Palmas de Gran Canaria 35001'), 'sin-iva');
+  assert.equal(L.zonaDeEntrega('Santa Cruz de Tenerife 38001'), 'sin-iva');
+  assert.equal(L.zonaDeEntrega('Melilla 52001'), 'sin-iva');
+  assert.equal(L.zonaDeEntrega('Francia'), 'ue');
+  assert.equal(L.zonaDeEntrega('Portugal'), 'ue');
+  assert.equal(L.zonaDeEntrega('Actualizar ubicación'), null);
+  assert.equal(L.zonaDeEntrega(''), null);
+  const libro = { tienda: 'amazon.es', formato: 'Tapa blanda', paginas: 114, medidas: '15.24 x 0.66 x 22.86 cm' };
+  const madrid = R.regaliaImpreso({ ...libro, precio: 5.99, entrega: { texto: 'Madrid 28013', zona: 'espana' } });
+  const eeuu = R.regaliaImpreso({ ...libro, precio: 5.76, entrega: { texto: 'Estados Unidos', zona: 'sin-iva' } });
+  const sinSaber = R.regaliaImpreso({ ...libro, precio: 5.99 });
+  cerca(madrid.precioSinIva, 5.7596, 0.0001);
+  assert.equal(eeuu.precioSinIva, 5.76);
+  cerca(eeuu.regalia, madrid.regalia, 0.001);
+  cerca(sinSaber.regalia, madrid.regalia, 0.0001);
+  assert.match(eeuu.avisos.join(' '), /para entregar en «Estados Unidos», ya sin IVA/);
+  assert.match(eeuu.nota, /^Paga el 50 %/);
+  assert.equal(madrid.avisos.some((a) => /entregar en/.test(a)), false);
+  const francia = R.regaliaImpreso({ ...libro, precio: 6.07, entrega: { texto: 'Francia', zona: 'ue' } });
+  cerca(francia.precioSinIva, 6.07 / 1.04, 0.0001);
+  assert.match(francia.avisos.join(' '), /«Francia», con el IVA de allí y no el 4 % español/);
+  // Kindle: lo mismo.
+  const k = R.regaliaKindle({ tienda: 'amazon.es', formato: 'Versión Kindle', precio: 4.8, tamanoArchivoMB: 1, entrega: { texto: 'Estados Unidos', zona: 'sin-iva' } });
+  assert.equal(k.precioSinIva, 4.8);
+  assert.match(k.avisos.join(' '), /ya sin IVA/);
+});

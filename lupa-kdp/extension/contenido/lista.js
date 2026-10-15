@@ -193,6 +193,16 @@
       return;
     }
     estado.analizando = true;
+    // Después de una comprobación de robot, media hora sin analizar páginas: no volver a molestar a Amazon.
+    const b = await L.ui.pedir({ tipo: 'estadoBloqueo' });
+    const desde = b && b.ok && b.ultimoBloqueo ? new Date(b.ultimoBloqueo.fecha).getTime() : NaN;
+    if (Date.now() - desde < L.MINUTOS_TRAS_BLOQUEO * 60000) {
+      estado.analizando = false;
+      estado.espera = { desde, hasta: desde + L.MINUTOS_TRAS_BLOQUEO * 60000 };
+      pintarBarra();
+      return;
+    }
+    estado.espera = null;
     estado.parar = false;
     estado.terminado = false;
     // Los libros de esta página en el orden en que salen, sin los ya leídos.
@@ -289,8 +299,11 @@
     const tipoTxt = estado.tipo === 'mas-vendidos' ? 'en esta lista de «Los más vendidos»' : 'en esta búsqueda';
     let estadoTxt = '';
     let progreso = 0;
+    const hora = (t) => new Date(t).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
     if (estado.bloqueado) {
       estadoTxt = `<div class="aviso-caja" data-alerta>Amazon ha pedido comprobar que eres una persona. Lupa se ha parado y no pedirá más fichas en esta página. Resuélvelo tú en una pestaña de Amazon y espera un buen rato antes de volver a analizar.</div>`;
+    } else if (estado.espera && Date.now() < estado.espera.hasta) {
+      estadoTxt = `<div class="aviso-caja" data-alerta>Amazon pidió comprobar que eras una persona a las ${hora(estado.espera.desde)}. Para no volver a molestarle, «Analizar página» no funciona hasta las ${hora(estado.espera.hasta)}. «Ver ventas» libro a libro sí.</div>`;
     } else if (estado.analizando) {
       progreso = estado.totalAnalisis ? estado.hechosAnalisis / estado.totalAnalisis : 0;
       estadoTxt = `<div class="pequena" data-progreso-texto>Leyendo ${Math.min(estado.hechosAnalisis + 1, estado.totalAnalisis)} de ${estado.totalAnalisis}${estado.siguienteEn ? ` · siguiente ficha en ${estado.siguienteEn} s` : ''} · ${pedidas} de ${L.LISTAS.maxPorPagina} fichas pedidas a Amazon</div>`;

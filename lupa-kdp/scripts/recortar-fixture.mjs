@@ -25,6 +25,9 @@ const recortado = await pagina.evaluate((tipo) => {
   const comentarios = [];
   for (let c = it.nextNode(); c; c = it.nextNode()) comentarios.push(c);
   comentarios.forEach((c) => c.remove());
+  // La dirección de entrega de la cabecera sí la lee Lupa (de ella depende el IVA del precio): se salva.
+  const entrega = document.querySelector('#nav-global-location-slot');
+  if (entrega) document.body.prepend(entrega);
   // Menús, pie, carruseles, anuncios y bloques que Lupa no lee.
   quitar('#navbar, #nav-belt, #nav-main, #nav-subnav, #navFooter, #nav-flyout-anchor, #rhf, #navbar-main, header#navbar, #skiplink, #a-page > .a-section.a-spacing-none.a-padding-none');
   quitar('.a-carousel-container, [data-a-carousel-options], .a-carousel-viewport');
@@ -46,6 +49,8 @@ const recortado = await pagina.evaluate((tipo) => {
     if (/\/sspa\/click/.test(h)) a.setAttribute('href', h.replace(/(\/sspa\/click\?).*$/, '$1ie=UTF8'));
     else a.setAttribute('href', h.replace(/\/ref=.*$/, '').replace(/[?&](dib|dib_tag|qid|sr|keywords|crid|sprefix|content-id|pd_rd_\w+|pf_rd_\w+|psc)=[^&]*/g, ''));
   }
+  // Códigos de sesión de un solo uso (anti-CSRF y parecidos): fuera, no hacen falta para leer.
+  document.querySelectorAll('input[type="hidden"]').forEach((i) => { if (/token|csrf|session/i.test(`${i.id} ${i.name}`)) i.setAttribute('value', ''); });
   // Imágenes: fuera las fotos, se quedan los contenedores.
   document.querySelectorAll('img').forEach((img) => { img.removeAttribute('src'); img.removeAttribute('srcset'); img.removeAttribute('data-a-dynamic-image'); img.removeAttribute('data-old-hires'); });
   // Atributos pesados que no sirven para leer.

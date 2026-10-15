@@ -83,6 +83,8 @@
     }
     fichaActual = ficha;
     await cargarContexto();
+    // Amazon vuelve a enseñar fichas: si hubo una comprobación de robot hace más de media hora, fuera el «!».
+    L.ui.pedir({ tipo: 'limpiarAviso', minutos: L.MINUTOS_TRAS_BLOQUEO });
     const r = await L.ui.pedir({ tipo: 'guardarLectura', ficha, origen: 'ficha' });
     entradaActual = r && r.ok ? r.entrada : null;
     pintarFicha(true);
@@ -111,8 +113,9 @@
   async function arrancar() {
     const tipo = L.lector.tipoPagina(document, location.href);
     if (tipo === 'robot') {
-      // Amazon pide comprobar que es una persona: Lupa no hace nada en esta página.
-      L.ui.pedir({ tipo: 'bloqueo', url: location.href });
+      // Amazon pide comprobar que es una persona: Lupa no hace nada en esta página y lo avisa. La pantalla
+      // de verificación del navegador no se avisa: el navegador la pasa solo y Amazon recarga la página.
+      if (!L.lector.esVerificacion(document)) L.ui.pedir({ tipo: 'bloqueo', url: location.href });
       return;
     }
     L.ui.cargarFuentes();

@@ -30,6 +30,9 @@
   /** Número al azar entre min y max. */
   L.aleatorio = (min, max) => min + Math.random() * (max - min);
 
+  /** Tras una comprobación de robot de Amazon, «Analizar página» espera esto antes de volver a funcionar. */
+  L.MINUTOS_TRAS_BLOQUEO = 30;
+
   /** Entero con separadores de miles en cualquier idioma: «nº 1.234», «#1,234», «1 234» → 1234. */
   L.entero = (texto) => {
     if (texto == null) return null;
