@@ -89,7 +89,7 @@
 .tarjeta .resultado.error { color: var(--bad); border-color: rgba(240,138,128,.5); }
 
 /* ---------- listas: barra de «Analizar página» */
-.barra { position: fixed; right: 16px; bottom: 16px; z-index: 2147483000; width: 380px; max-height: calc(100vh - 32px); overflow: auto;
+.barra { position: fixed; right: 16px; bottom: 16px; z-index: 2147483000; width: 420px; max-height: calc(100vh - 32px); overflow: auto;
   background: var(--bg); border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 22px 60px rgba(0,0,0,.55); }
 .barra .cuerpo { gap: 10px; }
 .progreso { height: 6px; border-radius: 6px; background: var(--line); overflow: hidden; }

@@ -376,7 +376,7 @@
       for (const el of doc.querySelectorAll('[data-component-type="s-search-result"][data-asin]')) {
         const asin = (el.getAttribute('data-asin') || '').toUpperCase();
         const h2 = el.querySelector('h2');
-        const titulo = h2 ? L.limpiar(h2.getAttribute('aria-label') || txt(h2)) : null;
+        const titulo = h2 ? L.limpiar(h2.getAttribute('aria-label') || txt(h2)).replace(/^(anuncio patrocinado|sponsored ad)\s*[-–:]\s*/i, '') : null;
         const patrocinado = el.classList.contains('AdHolder') || !!el.querySelector('a[href*="/sspa/click"]');
         anadir(el, asin, { titulo, patrocinado, puesto: null });
       }

@@ -102,3 +102,18 @@ export async function idPestana(sw, page) {
 export function conBsr(html, bsr) {
   return html.replace(/nº [\d.]+ en (Libros|Tienda Kindle) \(/, (_m, cat) => `nº ${bsr.toLocaleString('es-ES')} en ${cat} (`);
 }
+
+/**
+ * Ficha sintética para cualquier ASIN (para los simulacros de listas): la de la sopa de letras con
+ * otro ASIN, otro título y otro BSR.
+ */
+export function fichaPara(asin, bsr, titulo = `Libro de prueba ${asin}`) {
+  return conBsr(leerFixture('ficha-sintetica-sopa.html'), bsr)
+    .replaceAll('B0DZ2439GN', asin)
+    .replace(/<span id="productTitle"[^>]*>[^<]*<\/span>/, `<span id="productTitle" class="a-size-extra-large">${titulo}</span>`);
+}
+
+/** Peticiones de fichas (/dp/ASIN) que ha hecho la página, en orden. */
+export function fichasPedidas(registro) {
+  return registro.filter((r) => /\/dp\/[A-Z0-9]{10}/.test(r.url) && r.tipo === 'fetch').map((r) => ({ asin: r.url.match(/\/dp\/([A-Z0-9]{10})/)[1], hora: r.hora }));
+}

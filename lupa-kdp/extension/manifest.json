@@ -45,8 +45,10 @@
         "lib/lector.js",
         "lib/historial.js",
         "lib/biblioteca.js",
+        "lib/exportar.js",
         "contenido/ui.js",
         "contenido/panel.js",
+        "contenido/lista.js",
         "contenido/amazon.js"
       ],
       "run_at": "document_idle"
