@@ -29,7 +29,8 @@
   ],
   "host_permissions": [
     "https://www.amazon.es/*",
-    "https://www.amazon.com/*"
+    "https://www.amazon.com/*",
+    "https://*.frame.claudeusercontent.com/*"
   ],
   "content_scripts": [
     {
@@ -51,6 +52,16 @@
         "contenido/lista.js",
         "contenido/amazon.js"
       ],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://*.frame.claudeusercontent.com/*"
+      ],
+      "js": [
+        "contenido/biblioteca.js"
+      ],
+      "all_frames": true,
       "run_at": "document_idle"
     }
   ]

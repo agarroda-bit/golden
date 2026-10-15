@@ -194,7 +194,9 @@ function ideaPendiente(sender) {
     const lista = await bandeja();
     const ahora = Date.now();
     // Una idea «entregando» desde hace más de 2 minutos se da por no entregada y vuelve a la cola.
-    const item = lista.find((x) => x.estado === 'pendiente' || (x.estado === 'entregando' && ahora - new Date(x.desde || 0).getTime() > 120000));
+    // Solo ideas recientes (24 h) o reintentadas desde Opciones: una idea vieja no entra sola por sorpresa.
+    const reciente = (x) => ahora - new Date(x.reintento || x.creada || 0).getTime() < 24 * 3600000;
+    const item = lista.find((x) => reciente(x) && (x.estado === 'pendiente' || (x.estado === 'entregando' && ahora - new Date(x.desde || 0).getTime() > 120000)));
     if (!item) return { ok: true, item: null };
     item.estado = 'entregando';
     item.desde = new Date().toISOString();
@@ -237,6 +239,7 @@ function reintentarIdea(id) {
     const item = lista.find((x) => x.id === id);
     if (!item) return { ok: false, error: 'Esa idea ya no está en la bandeja.' };
     item.estado = 'pendiente';
+    item.reintento = new Date().toISOString();
     await chrome.storage.local.set({ biblioteca: lista });
     const { ajustes } = await contexto();
     await chrome.tabs.create({ url: (ajustes && ajustes.urlBiblioteca) || L.BIBLIOTECA.url, active: true });

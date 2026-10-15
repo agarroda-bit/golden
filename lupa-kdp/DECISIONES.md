@@ -65,3 +65,54 @@ Cualquiera de estas cosas se puede cambiar.
 
 18. **El service worker no hace nada por su cuenta**: no hay alarmas ni temporizadores. Solo contesta a lo
     que pide la pestaña de Amazon que Rodri tiene abierta o la página de Opciones.
+
+## Búsquedas y «Los más vendidos»
+
+19. **Las fichas se leen en segundo plano desde la propia pestaña de Amazon** (una petición normal con la
+    sesión de Rodri, como si abriera la ficha) en vez de abrir pestañas: no llena el navegador de pestañas
+    ni ejecuta los scripts de Amazon, y la ficha que llega es la misma.
+20. **Ritmo fijo: de una en una, 4 a 6 s al azar entre ficha y ficha y como mucho 30 fichas pedidas a
+    Amazon por página.** No se puede cambiar desde Opciones (solo las pruebas automáticas acortan la pausa
+    con una marca interna). Las fichas que salen del historial no cuentan ni esperan.
+21. **Una ficha leída hace menos de 60 minutos sale del historial** y no se vuelve a pedir (Amazon actualiza
+    el BSR más o menos cada hora).
+22. **Solo los libros de la página abierta, en su orden**: nunca la página siguiente ni otras listas. Los
+    patrocinados también, porque están en la página; el CSV dice cuáles son.
+23. **«Ver ventas» libro a libro pasa por la misma cola y la misma pausa**, aunque se pulsen muchos seguidos.
+24. **Si Amazon pide comprobar que eres una persona, se para todo en esa página**, lo dice en rojo y pone
+    «!» en el icono. No lo intenta saltar.
+25. **Resumen de la página ordenado por ventas al día, con fila de TOTAL** (ventas y regalía al mes de los
+    libros leídos) y CSV de la página.
+
+## Calibración
+
+26. **Informe de KDP en .xlsx (lector propio, sin librerías) o .csv.** Las columnas se reconocen por su
+    nombre en castellano o en inglés; si no, se eligen a mano en casillas amarillas. Fechas de Excel,
+    día/mes o mes/día (se deduce de la columna) e informes por días o por meses.
+27. **Fuera las unidades gratis y los préstamos** (no mueven el BSR de pago) y las de otras tiendas.
+28. **Cada día con BSR de un libro de Rodri es un punto de datos**; un día dentro de las fechas del informe
+    sin fila de ventas cuenta como 0, pero solo en libros que salen en el informe. Los libros se enlazan por
+    ASIN, ISBN-13 e ISBN-10 (KDP nombra las tapas blandas por su ISBN).
+29. **El BSR de cada día es la mediana de sus lecturas**; en informes mensuales, la media geométrica de los
+    días con BSR (hacen falta al menos 3 días ese mes).
+30. **Ajuste por máxima verosimilitud de Poisson**, no con una recta en logaritmos: con pocas ventas hay
+    muchos días con 0 y una regresión con logaritmos no los puede usar. Mínimos: 5 puntos, 3 con ventas y
+    un BSR que al menos se duplique; con menos de 30 puntos se avisa de que es orientativa. Se enseñan el nº
+    de puntos, los días con ventas, el R² y la gráfica con la curva de EE. UU. al lado.
+
+## Biblioteca
+
+31. **La idea entra por el propio formulario de la Biblioteca Buen Rato**, sin tocar la Biblioteca: Lupa
+    abre `claude.ai/artifact/F242UTzquSffkufNJvGgnL`, rellena «¿qué libro se te ocurre?» (título, formato,
+    páginas, precio, BSR, ventas estimadas, regalía y el enlace a la ficha), «¿para quién es?» y «¿qué juegos
+    lleva?» (deducidos del título), «¿cuándo lo hago?» = «Cuando le toque» y «¿de quién es la idea?» =
+    «Lupa KDP», y pulsa «Mandar a la fábrica». La Biblioteca la guarda en su nube con su propio código y
+    su Claude la revisa como cualquier otra idea.
+32. **Copia de seguridad en el portapapeles**: si la idea no entra (Biblioteca sin sesión, cambios en la
+    página), el panel lo dice con el motivo y la idea se puede pegar a mano. En Opciones está la bandeja con
+    el estado de cada idea y «Reintentar». Solo entran solas las ideas de las últimas 24 horas.
+33. **Permiso solo para `*.frame.claudeusercontent.com`**, donde claude.ai pinta las páginas de Claude. El
+    script no hace nada salvo en el marco que tiene el formulario de la Biblioteca, y solo cuando la propia
+    página ya ha conectado con su nube: claude.ai abre antes un marco escondido de «calentamiento» en el
+    mismo dominio, y ahí Lupa no se queda con ninguna idea.
+34. **Sin permiso «tabs» ni acceso a todas las webs**: solo Amazon.es, Amazon.com y ese marco.

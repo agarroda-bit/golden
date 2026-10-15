@@ -1,0 +1,52 @@
+<!doctype html>
+<!-- Biblioteca Buen Rato SIMULADA para los simulacros de «Mandar a la Biblioteca».
+     Réplica mínima de su formulario «Tus ideas de libro» (mismos ids, mismas opciones y el mismo
+     objeto guardado: {texto, publico, formato, prisa, autor, estado:'nueva', fecha}) con una nube de
+     mentira. No lleva ningún dato de la Biblioteca de verdad.
+     ?solo-lectura=1 → no conecta (como al verla sin sesión); ?falla=1 → la nube rechaza la idea. -->
+<html lang="es"><head><meta charset="utf-8"><title>Biblioteca Buen Rato</title></head>
+<body>
+<div class="note" id="dbstate">Conectando con la nube del artefacto…</div>
+<section class="bloque" id="ideas">
+  <h2>Tus ideas de libro<span class="cnt" id="cntIdeas"></span></h2>
+  <form id="fIdea" class="fidea" autocomplete="off">
+    <label>TÚ: ¿qué libro se te ocurre?<textarea id="iTexto" required></textarea></label>
+    <label>TÚ: ¿para quién es?<select id="iPublico"><option>Lo que veas mejor</option><option>Mayores</option><option>Adultos</option><option>Adolescentes</option><option>Niños</option></select></label>
+    <label>TÚ: ¿qué juegos lleva?<select id="iFormato"><option>Lo que veas mejor</option><option>Mezcla de pasatiempos</option><option>Solo sopas de letras</option><option>Solo sudokus</option><option>Solo laberintos</option><option>Cuaderno para rellenar</option></select></label>
+    <label>TÚ: ¿cuándo lo hago?<select id="iPrisa"><option value="ya">Lo antes posible</option><option value="normal">Cuando le toque</option></select></label>
+    <label>TÚ: ¿de quién es la idea?<input id="iAutor"></label>
+    <div class="botonera"><button class="btn oro" type="submit">Mandar a la fábrica</button><button class="btn hielo" type="button" id="bInspira">Inspírame: 3 ideas de Claude</button></div>
+  </form>
+  <div class="ideas" id="listaIdeas"></div>
+</section>
+<div class="toast" id="toast" role="status"></div>
+<script>
+  const q = new URLSearchParams(location.search);
+  const IDEAS = {};
+  window.__ideas = IDEAS;
+  let db = null;
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+  function toast(t) { const el = document.getElementById('toast'); el.textContent = t; }
+  function render() {
+    const L = Object.entries(IDEAS).map(([id, d]) => ({ id, ...d })).sort((a, b) => (b.fecha || '').localeCompare(a.fecha || ''));
+    document.getElementById('cntIdeas').textContent = L.length ? L.length + (L.length === 1 ? ' idea' : ' ideas') : '';
+    document.getElementById('listaIdeas').innerHTML = L.map((d) => `<div class="idea"><div><div class="t">${esc(d.texto)}</div><div class="s">${esc(d.publico)} · ${esc(d.formato)} · ${d.prisa === 'ya' ? 'lo antes posible' : 'cuando le toque'} · idea de ${esc(d.autor)}</div></div></div>`).join('');
+  }
+  document.getElementById('fIdea').addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    const t = document.getElementById('iTexto').value.trim();
+    if (!t) return;
+    if (!db) { toast('Sin conexión: ábrela en claude.ai para mandar ideas'); return; }
+    const id = 'idea-' + new Date().toISOString().replace(/[^0-9]/g, '').slice(0, 14) + '-' + Math.random().toString(36).slice(2, 6);
+    const d = { texto: t, publico: document.getElementById('iPublico').value, formato: document.getElementById('iFormato').value, prisa: document.getElementById('iPrisa').value, autor: document.getElementById('iAutor').value.trim(), estado: 'nueva', fecha: new Date().toISOString() };
+    IDEAS[id] = d; render();
+    try { await db.set(id, d); toast('Idea mandada a la fábrica'); document.getElementById('iTexto').value = ''; }
+    catch (e) { delete IDEAS[id]; render(); toast('No se pudo guardar la idea'); }
+  });
+  setTimeout(() => {
+    if (q.get('solo-lectura') === '1') { document.getElementById('dbstate').textContent = 'Solo lectura en esta vista'; return; }
+    db = { set: (id, d) => new Promise((ok, mal) => setTimeout(() => (q.get('falla') === '1' ? mal(new Error('x')) : ok()), 300)) };
+    document.getElementById('dbstate').textContent = 'Tus marcas se guardan en la nube del artefacto';
+  }, 800);
+</script>
+</body></html>

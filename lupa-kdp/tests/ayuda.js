@@ -23,7 +23,7 @@ export function leerFixture(nombre) {
 }
 
 /** Chromium con Lupa KDP cargada. «ventana»: true para verlo. */
-export async function abrirConExtension({ ventana = false, viewport = { width: 1400, height: 900 }, args = [], perfil: perfilDado = null } = {}) {
+export async function abrirConExtension({ ventana = false, viewport = { width: 1400, height: 900 }, args = [], perfil: perfilDado = null, conRed = false } = {}) {
   const perfil = perfilDado || fs.mkdtempSync(path.join(os.tmpdir(), 'lupa-pruebas-'));
   const contexto = await chromium.launchPersistentContext(perfil, {
     ...opcionesNavegador(),
@@ -33,6 +33,9 @@ export async function abrirConExtension({ ventana = false, viewport = { width: 1
     timezoneId: 'Europe/Madrid',
     viewport,
     acceptDownloads: true,
+    // Simulacros sin internet: todo lo que no sirve la prueba va a un proxy muerto (las pestañas que
+    // abre la extensión por su cuenta se escapan del enrutado de Playwright en su primera carga).
+    ...(conRed ? {} : { proxy: { server: 'http://127.0.0.1:9' } }),
   });
   let [sw] = contexto.serviceWorkers();
   if (!sw) sw = await contexto.waitForEvent('serviceworker', { timeout: 30_000 });
@@ -116,4 +119,13 @@ export function fichaPara(asin, bsr, titulo = `Libro de prueba ${asin}`) {
 /** Peticiones de fichas (/dp/ASIN) que ha hecho la página, en orden. */
 export function fichasPedidas(registro) {
   return registro.filter((r) => /\/dp\/[A-Z0-9]{10}/.test(r.url) && r.tipo === 'fetch').map((r) => ({ asin: r.url.match(/\/dp\/([A-Z0-9]{10})/)[1], hora: r.hora }));
+}
+
+/** Sirve la Biblioteca simulada en claude.ai y en su marco de claudeusercontent.com. */
+export async function servirBiblioteca(contexto, { consulta = '', marcoPrevio = false } = {}) {
+  // «marcoPrevio»: un marco escondido en el mismo dominio donde el código de la página no puede correr
+  // (como el de «calentamiento» de claude.ai). Lupa no debe quedarse ahí con la idea.
+  const previo = marcoPrevio ? '<iframe id="previo" hidden sandbox="allow-same-origin" src="https://71858caa-e256-4fbe-bb82-fe46a9da9349.frame.claudeusercontent.com/_previo"></iframe>' : '';
+  await contexto.route(/^https:\/\/claude\.ai\/artifact\//, (ruta) => ruta.fulfill({ status: 200, contentType: 'text/html; charset=utf-8', body: leerFixture('biblioteca-marco.html').replace('__QUERY__', consulta).replace('<!--PREVIO-->', previo) }));
+  await contexto.route(/^https:\/\/[\w-]+\.frame\.claudeusercontent\.com\//, (ruta) => ruta.fulfill({ status: 200, contentType: 'text/html; charset=utf-8', body: leerFixture('biblioteca-simulada.html') }));
 }
