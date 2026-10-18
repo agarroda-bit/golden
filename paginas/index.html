@@ -270,6 +270,44 @@
     .proy:active, .fila:active, .mini:active, .dtile:active, .rk:active { transform: scale(.98); }
   }
   @keyframes sube { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  /* ---------- imprescindibles GOLDEN OCLOCK (19/10/2026) ---------- */
+  .imp { margin-top: 16px; position: relative; border-radius: 26px; padding: 2px; overflow: hidden; background: #2A2110; isolation: isolate; }
+  .imp::before { content: ""; position: absolute; left: 50%; top: 50%; width: 200%; aspect-ratio: 1; transform: translate(-50%, -50%); z-index: -1;
+    background: conic-gradient(from 0deg, transparent 0 60%, #7A5A14 68%, #F7D27A 76%, #E9B949 80%, transparent 90%); }
+  @media (prefers-reduced-motion: no-preference) { .imp::before { animation: gira-imp 8s linear infinite; } }
+  @keyframes gira-imp { to { transform: translate(-50%, -50%) rotate(360deg); } }
+  .imp-in { position: relative; border-radius: 24px; padding: 16px 14px 14px;
+    background: radial-gradient(130% 80% at 100% 0%, rgba(233,185,73,.20), transparent 55%), linear-gradient(170deg, #17130A, #0B0E14 55%); }
+  .imp-cab { display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; }
+  .imp-cab .k { font-size: 11px; font-weight: 600; letter-spacing: .18em; text-transform: uppercase; color: #A9D8F5; }
+  .imp-cab h2 { margin: 3px 0 0; font-family: var(--tit); font-weight: 700; font-size: clamp(28px, 8vw, 40px); line-height: 1; letter-spacing: .02em; text-transform: uppercase; color: #FFFFFF; }
+  .imp-cab h2 span { color: #E9B949; }
+  .imp-reloj { font-family: var(--tit); font-size: 13px; color: #F7D27A; background: rgba(0,0,0,.45); border: 1px solid rgba(233,185,73,.35); border-radius: 999px; padding: 4px 10px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .imp-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 14px; }
+  @media (min-width: 640px) { .imp-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+  .itile { position: relative; display: flex; flex-direction: column; justify-content: space-between; gap: 12px; min-height: 116px; padding: 12px; border-radius: 16px;
+    text-decoration: none; color: #EEF2F7; cursor: pointer; text-align: left; overflow: hidden; border: 1px solid #323C4C; min-width: 0; }
+  .itile.ancha { grid-column: span 2; min-height: 96px; flex-direction: row; align-items: center; justify-content: flex-start; gap: 14px; }
+  .itile .ic { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; flex: none; overflow: hidden; }
+  .itile .ic svg { width: 22px; height: 22px; }
+  .itile .ic img { width: 100%; height: 100%; display: block; }
+  .itile.ancha .ic { width: 58px; height: 58px; border-radius: 16px; }
+  .itile.ancha .ic svg { width: 30px; height: 30px; }
+  .itile .tx { min-width: 0; padding-right: 4px; }
+  .itile .n { font-family: var(--tit); font-weight: 600; font-size: 18px; line-height: 1.05; letter-spacing: .03em; text-transform: uppercase; color: #FFFFFF; }
+  .itile.ancha .n { font-size: 24px; }
+  .itile .d { font-size: 12px; line-height: 1.3; color: #B7C0CE; margin-top: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .itile .esq { position: absolute; top: 10px; right: 10px; display: flex; gap: 4px; }
+  .itile .bd { font-size: 10px; font-weight: 700; letter-spacing: .05em; padding: 3px 8px; border-radius: 999px; white-space: nowrap; }
+  .itile .bd.rojo { background: #FF6B6B; color: #1A0606; }
+  .itile .bd.ambar { background: #E9B949; color: #1A1204; }
+  .itile .bd.uso { background: rgba(0,0,0,.45); color: #A9D8F5; }
+  @media (prefers-reduced-motion: no-preference) {
+    .itile.alerta { animation: latido 2.4s ease-in-out infinite; }
+    .itile { transition: transform .12s ease; } .itile:active { transform: scale(.98); }
+  }
+  @keyframes latido { 0%, 100% { box-shadow: 0 0 0 0 rgba(255,107,107,0); } 50% { box-shadow: 0 0 0 4px rgba(255,107,107,.30); } }
+  .itile:focus-visible { outline: 2px solid #E9B949; outline-offset: 2px; }
 </style>
 </head>
 <body>
@@ -506,6 +544,33 @@
         (x.fecha ? '<span class="af">Actualizado ' + esc(x.fecha) + '</span>' : '') + '</button>';
     }).join('') + '</div>';
   }
+  function relojTxt() {
+    var d = new Date(), ds = ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb'];
+    return ds[d.getDay()] + ' ' + ('0' + d.getDate()).slice(-2) + '/' + ('0' + (d.getMonth() + 1)).slice(-2) + ' · ' + ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2);
+  }
+  // Lo imprescindible de GOLDEN OCLOCK: siempre arriba del todo, en el orden de paginas.json → «imprescindibles»
+  function bloqueImprescindibles() {
+    var L = (D && D.imprescindibles) || []; if (!L.length) return '';
+    var h = '<section class="imp" aria-label="Imprescindibles de GOLDEN OCLOCK"><div class="imp-in">' +
+      '<div class="imp-cab"><div><div class="k">Control del negocio</div><h2>GOLDEN <span>OCLOCK</span></h2></div>' +
+      '<span class="imp-reloj" id="imp-reloj">' + relojTxt() + '</span></div><div class="imp-grid">';
+    L.forEach(function (x) {
+      var c = x.color || '#E9B949', interna = /^\.\.\//.test(x.url || '');
+      var av = ((D && D.avisos) || []).filter(function (a) { return a.url && a.url === x.url; });
+      var rojos = av.filter(function (a) { return a.nivel === 'rojo'; }).length, v = veces(x.url);
+      var bd = av.length ? '<span class="bd ' + (rojos ? 'rojo' : 'ambar') + '">' + av.length + (av.length === 1 ? ' AVISO' : ' AVISOS') + '</span>'
+             : (v ? '<span class="bd uso">×' + v + '</span>' : '');
+      var ic = x.img ? '<img src="' + esc(x.img) + '" alt="">' : svg(x.icono || 'hoja');
+      var dentro = '<div class="ic" style="background:' + suave(c, .20) + ';color:' + c + '">' + ic + '</div>' +
+        '<div class="tx"><div class="n">' + esc(x.titulo) + '</div>' + (x.sub ? '<div class="d">' + esc(x.sub) + '</div>' : '') + '</div>' +
+        (bd ? '<div class="esq">' + bd + '</div>' : '');
+      var cls = 'itile' + (x.ancha ? ' ancha' : '') + (rojos ? ' alerta' : '');
+      var st = 'background:linear-gradient(150deg,' + suave(c, .26) + ',' + suave(c, .05) + ' 62%),#0F131B;border-color:' + suave(c, .42);
+      h += interna ? '<a class="' + cls + '" href="' + esc(x.url) + '" data-instalar data-imp style="' + st + '">' + dentro + '</a>'
+                   : '<div class="' + cls + '" role="button" tabindex="0" data-url="' + esc(x.url) + '" style="' + st + '">' + dentro + '</div>';
+    });
+    return h + '</div></div></section>';
+  }
   function hero() {
     var tot = totalAperturas(), activas = TODAS.filter(function (p) { return !p.viejo; }).length;
     return '<section class="hero">' +
@@ -588,8 +653,8 @@
   }
   function carrusel(t, ps, nota) { if (!ps.length) return ''; return titulo(t, nota) + '<div class="carr">' + ps.map(mini).join('') + '</div>'; }
   function inicio() {
-    var h = hero();
-    h += titulo('Apps') + '<div class="apps">' +
+    var h = bloqueImprescindibles() + hero();
+    if (!(D.imprescindibles && D.imprescindibles.length)) h += titulo('Apps') + '<div class="apps">' +
       '<a class="app" href="../app/" data-instalar><img src="../iconos/icono_app_180.png" alt=""><div><div class="n">GOLDEN</div><div class="d">La APP</div></div></a>' +
       '<a class="app" href="../reparto/" data-instalar><img src="../iconos/icono_reparto_180.png" alt=""><div><div class="n">Reparto</div><div class="d">Entregas</div></div></a></div>';
     h += bloqueDestacadas();
@@ -779,6 +844,7 @@
     var t = ev.target.closest ? ev.target.closest('[data-fav],[data-copiar],[data-proy],[data-volver],[data-instalar],[data-mover],[data-editar],[data-orden],[data-sorpresa],[data-sugerir],[data-otra],[data-dia],[data-url]') : null;
     if (!t) { if (ev.target.id === 'velo') $('velo').hidden = true; return; }
     if (t.hasAttribute('data-instalar')) {
+      if (t.hasAttribute('data-imp')) apuntar(t.getAttribute('href'));
       var instalada = window.navigator.standalone === true || (window.matchMedia && matchMedia('(display-mode: standalone)').matches);
       if (esIOS && instalada) { ev.preventDefault(); location.href = 'x-safari-' + new URL(t.getAttribute('href'), location.href).toString(); }
       return;
@@ -843,6 +909,7 @@
     try { history.replaceState(VISTA, '', location.hash || '#'); } catch (e) {}
     pintar(true);
     if (recienDesbloqueado) chispas();
+    setInterval(function () { var r = $('imp-reloj'); if (r) r.textContent = relojTxt(); }, 15000);
   }
 
   if (window.__LZ_PRUEBA) { abrir(window.__LZ_PRUEBA, true); return; }
