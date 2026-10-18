@@ -18,6 +18,13 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Rubik:wght@400;500;600;700&display=swap">
 <style>
+  .avisos { display:grid; gap:10px; margin:16px 0 4px; }
+  .aviso { display:grid; gap:4px; padding:14px 16px; border-radius:14px; background:rgba(255,107,107,.10); border:1.5px solid var(--rojo); color:#FFFFFF; text-align:left; cursor:pointer; font:inherit; width:100%; }
+  .aviso.ojo { background:rgba(233,185,73,.10); border-color:var(--oro); }
+  .aviso .at { font-family:var(--tit); font-weight:600; letter-spacing:.06em; font-size:15px; color:var(--rojo); }
+  .aviso.ojo .at { color:var(--oro); }
+  .aviso .ax { font-size:14px; line-height:1.45; color:#FFFFFF; }
+  .aviso .af { font-size:12px; color:#9FB0C8; }
   :root {
     color-scheme: dark;
     --bg:#07090D; --bg2:#0C1017; --card:#11161F; --card2:#171E2A; --line:#232B38; --line2:#323C4C;
@@ -490,11 +497,20 @@
 
   /* ---------- vistas ---------- */
   function saludo() { var h = new Date().getHours(); return h < 6 ? 'Trasnochando' : h < 13 ? 'Buenos días' : h < 21 ? 'Buenas tardes' : 'Buenas noches'; }
+  function avisos() {
+    var a = (D && D.avisos) || [];
+    if (!a.length) return '';
+    return '<div class="avisos">' + a.map(function (x) {
+      return '<button class="aviso' + (x.nivel === 'ojo' ? ' ojo' : '') + '" type="button"' + (x.url ? ' data-url="' + esc(x.url) + '"' : '') + '>' +
+        '<span class="at">' + esc(x.titulo || '') + '</span><span class="ax">' + esc(x.texto || '') + '</span>' +
+        (x.fecha ? '<span class="af">Actualizado ' + esc(x.fecha) + '</span>' : '') + '</button>';
+    }).join('') + '</div>';
+  }
   function hero() {
     var tot = totalAperturas(), activas = TODAS.filter(function (p) { return !p.viejo; }).length;
     return '<section class="hero">' +
       '<div class="hola">' + saludo() + ', Rodri</div>' +
-      '<h1>Tu centro<br>de <span>mando</span></h1>' +
+      '<h1>Tu centro<br>de <span>mando</span></h1>' + avisos() +
       '<div class="maquina" id="maquina" aria-live="off"><span id="maq-t"></span><span class="cursor"></span></div>' +
       '<div class="cifras">' +
         '<div class="cifra oro"><b data-cuenta="' + activas + '">0</b><span>páginas</span></div>' +
