@@ -1,0 +1,14 @@
+{
+  "name": "Intensivo antes de Asia",
+  "short_name": "Intensivo",
+  "lang": "es",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#121B27",
+  "theme_color": "#121B27",
+  "icons": [
+    {"src": "../iconos/icono_intensivo_192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "../iconos/icono_intensivo_512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
+  ]
+}
