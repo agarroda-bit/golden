@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Intensivo</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Intensivo">
+<meta name="application-name" content="Intensivo">
+<meta name="theme-color" content="#121B27">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="../iconos/icono_intensivo_180.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../iconos/favicon_intensivo.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=JetBrains+Mono:wght@700&display=swap">
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:#121B27;color:#E9EEF4;font-family:"Barlow Condensed","Arial Narrow",sans-serif}
+  body{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:22px;padding:max(24px,env(safe-area-inset-top)) 20px max(24px,env(safe-area-inset-bottom));text-align:center}
+  .k{font-family:"JetBrains Mono",monospace;font-size:12px;letter-spacing:.14em;color:#8D9AAB;text-transform:uppercase}
+  .flaps{display:flex;gap:6px}
+  .f{width:64px;height:90px;border-radius:8px;background:#1C2735;color:#F6C445;font-size:72px;font-weight:800;display:grid;place-items:center;position:relative}
+  .f::after{content:"";position:absolute;left:0;right:0;top:50%;height:3px;background:#121B27}
+  h1{margin:0;font-size:44px;font-weight:800;line-height:1}
+  h1 span{color:#F6C445}
+  a.go{display:block;width:100%;max-width:340px;padding:18px;border-radius:12px;background:#F2B705;color:#141414;text-decoration:none;font-size:26px;font-weight:800;letter-spacing:.04em;text-transform:uppercase}
+  p{margin:0;color:#8D9AAB;font-size:16px;font-family:-apple-system,BlinkMacSystemFont,sans-serif;max-width:320px}
+</style>
+</head>
+<body>
+  <div class="k">GOLDEN OCLOCK · BCN → HKT</div>
+  <div class="flaps" id="fl"><div class="f">0</div><div class="f">0</div></div>
+  <div class="k" id="cap">días para el embarque</div>
+  <h1>Intensivo <span>antes de Asia</span></h1>
+  <a class="go" id="go" href="https://claude.ai/artifact/HJfMoW3rkVSkSx6VUJY1rG">Abrir mi día</a>
+  <p>Se abre en Claude. Si te pide entrar, inicia sesión una vez en Safari.</p>
+<script>
+  var hoy=new Date(new Date().toLocaleString("en-US",{timeZone:"Europe/Madrid"}));hoy.setHours(12,0,0,0);
+  var n=Math.max(0,Math.round((new Date("2026-11-04T12:00:00")-hoy)/864e5));
+  var s=String(n).padStart(2,"0"),fs=document.querySelectorAll(".f");fs[0].textContent=s[0];fs[1].textContent=s[1];
+  if(n===0)document.getElementById("cap").textContent="hoy vuelas";
+</script>
+</body>
+</html>
