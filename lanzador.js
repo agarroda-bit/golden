@@ -41,6 +41,7 @@
     if (!u.searchParams.get('k')) return { ok: false, error: 'Al enlace le falta la clave (la parte k=…). Copia el enlace completo, no el de sin clave.' };
     var aviso = '';
     var P = C.param || 'v';
+    if (P !== 'vista' && u.searchParams.has('vista')) u.searchParams.delete('vista'); // 19/10: el enlace de la APP sirve para VENDER (v=vender, sin vista=app)
     if (C.vista && u.searchParams.get(P) !== C.vista) { u.searchParams.set(P, C.vista); aviso = 'He añadido ' + P + '=' + C.vista + ' al enlace.'; }
     if (C.prefijo && u.pathname.indexOf('/macros/s/' + C.prefijo) !== 0) aviso += (aviso ? ' ' : '') + 'Ojo: este enlace no parece el de ' + C.titulo + ' (esperaba uno que empieza por ' + C.prefijo + '…). Si es el bueno, adelante.';
     return { ok: true, url: u.toString(), aviso: aviso };
@@ -150,6 +151,8 @@
 
   document.addEventListener('DOMContentLoaded', function () {
     var enlace = leer(K_ENLACE);
+    // 19/10: VENDER usa la misma clave que la APP. Si en este móvil ya está la de la APP (mismo navegador), se aprovecha sin pegar nada.
+    if (!enlace && C.id === 'vender') { var deApp = validar(leer('lz_app_enlace')); if (deApp.ok) { enlace = deApp.url; escribir(K_ENLACE, enlace); } }
     if (enlace) { var r = validar(enlace); if (r.ok && r.url !== enlace) { enlace = r.url; escribir(K_ENLACE, enlace); } }
     if (!enlace || location.hash === '#ajustes') ajustes(); else arrancar(enlace);
   });
