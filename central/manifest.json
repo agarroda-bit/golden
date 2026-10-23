@@ -1,0 +1,14 @@
+{
+  "name": "GOLDEN OCLOCK · Central",
+  "short_name": "Central",
+  "lang": "es",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#06142E",
+  "theme_color": "#06142E",
+  "icons": [
+    { "src": "../iconos/icono_app_192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "../iconos/icono_app_512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
