@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GOLDEN OCLOCK · Central</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Central">
+<meta name="theme-color" content="#06142E">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="../iconos/icono_app_180.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../iconos/favicon_app.png">
+<style>
+/* Tablero de salidas de Correos: amarillo y azul (Regla 5: paleta del tema). Sin librerías, sin fuentes externas: carga al momento. */
+:root{
+  --fondo:#06142E; --panel:#0B2149; --panel2:#0F2B5C; --linea:#1D3D78; --texto:#F3F6FC; --suave:#9FB2D6;
+  --amarillo:#FFCD00; --amarillo2:#FFE36B; --rojo:#FF4D5E; --rojo2:#3A0E19; --verde:#38D996; --verde2:#0C3326; --gris:#6B7A99;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, "Roboto Mono", monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--fondo);color:var(--texto);font-family:var(--sans);-webkit-text-size-adjust:100%}
+body{padding:env(safe-area-inset-top) 0 calc(24px + env(safe-area-inset-bottom))}
+a{color:var(--amarillo2)}
+.cab{position:sticky;top:0;z-index:5;background:linear-gradient(180deg,#06142E 70%,rgba(6,20,46,.85));padding:12px 16px 0;border-bottom:1px solid var(--linea)}
+.fila1{display:flex;align-items:center;gap:10px}
+.logo{width:34px;height:34px;border-radius:8px;background:var(--amarillo);display:grid;place-items:center;color:#06142E;font-weight:900;font-family:var(--mono);font-size:14px;flex:none}
+.tit{flex:1;min-width:0}
+.tit b{display:block;font-size:15px;letter-spacing:.12em}
+.tit span{display:block;font-size:12px;color:var(--suave);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ico{appearance:none;border:1px solid var(--linea);background:var(--panel);color:var(--texto);border-radius:10px;width:40px;height:40px;font-size:18px;cursor:pointer;flex:none}
+.ico.gira{animation:gira 1s linear infinite}
+@keyframes gira{to{transform:rotate(360deg)}}
+.pestanas{display:flex;gap:4px;overflow-x:auto;margin-top:12px;scrollbar-width:none}
+.pestanas::-webkit-scrollbar{display:none}
+.pes{appearance:none;border:0;background:transparent;color:var(--suave);padding:10px 12px;font-weight:800;font-size:13px;letter-spacing:.08em;border-bottom:3px solid transparent;white-space:nowrap;cursor:pointer}
+.pes.on{color:var(--amarillo);border-bottom-color:var(--amarillo)}
+main{padding:14px 16px;max-width:860px;margin:0 auto}
+.aviso{border-radius:12px;padding:10px 12px;font-size:13px;margin-bottom:12px;line-height:1.4}
+.aviso.am{background:#3B3000;border:1px solid #6B5800;color:var(--amarillo2)}
+.aviso.ro{background:var(--rojo2);border:1px solid #6E1E2C;color:#FFC2C9}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.chip{font-size:12px;border-radius:999px;padding:4px 10px;background:var(--panel);border:1px solid var(--linea);color:var(--suave)}
+.chip b{color:var(--texto)}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.kpi{background:var(--panel);border:1px solid var(--linea);border-radius:12px;padding:10px}
+.kpi small{display:block;font-size:11px;color:var(--suave);letter-spacing:.06em;text-transform:uppercase}
+.kpi b{display:block;font-family:var(--mono);font-size:22px;margin-top:2px;color:var(--amarillo)}
+.kpi.rojo b{color:var(--rojo)}
+/* el tablero */
+.tablero{border:1px solid var(--linea);border-radius:14px;overflow:hidden;background:#04102A}
+.tcab{display:grid;grid-template-columns:34px 1fr 98px;gap:8px;padding:8px 10px;background:var(--amarillo);color:#06142E;font:800 11px var(--mono);letter-spacing:.1em}
+.vuelo{border-top:1px solid var(--linea)}
+.vuelo>button{all:unset;display:grid;grid-template-columns:34px 1fr 98px;gap:8px;padding:10px;width:100%;box-sizing:border-box;cursor:pointer;align-items:center}
+.vuelo.est>button{background:linear-gradient(90deg,rgba(255,77,94,.20),transparent 70%)}
+.vuelo.cerrado{opacity:.45}
+.num{font:800 15px var(--mono);color:var(--amarillo);text-align:center}
+.que{min-width:0}
+.nom{font-weight:800;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.seg{font:12px var(--mono);color:var(--suave);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.tag{font:700 10px var(--mono);letter-spacing:.06em;padding:2px 6px;border-radius:4px;background:var(--panel2);color:var(--suave);text-transform:uppercase}
+.tag.est{background:var(--rojo);color:#fff}
+.tag.ofi{background:var(--amarillo);color:#06142E}
+.tag.dev{background:var(--gris);color:#fff}
+.tag.paso{background:#1E3F86;color:#fff}
+.tag.ok{background:var(--verde2);color:var(--verde)}
+.tag.err{background:var(--rojo2);color:#FFB3BC}
+.reloj{text-align:right}
+.reloj b{display:block;font:800 16px var(--mono);letter-spacing:.02em}
+.reloj b.rojo{color:var(--rojo)}
+.reloj span{display:block;font-size:11px;color:var(--suave)}
+.reloj .eur{font:700 13px var(--mono);color:var(--texto)}
+.flip{animation:flip .5s ease both}
+@keyframes flip{from{transform:rotateX(90deg);opacity:0}to{transform:none;opacity:1}}
+.det{display:none;padding:0 10px 14px 52px;font-size:13px;line-height:1.5;color:var(--suave)}
+.vuelo.abierto .det{display:block}
+.det b{color:var(--texto)}
+.det .lin{margin:3px 0}
+.copiar{display:flex;gap:8px;align-items:center;margin:10px 0;background:var(--panel);border:1px dashed var(--linea);border-radius:10px;padding:8px 10px}
+.copiar code{flex:1;font:12px var(--mono);color:var(--texto);word-break:break-word}
+.btn{appearance:none;border:0;border-radius:10px;padding:10px 12px;font-weight:800;font-size:13px;cursor:pointer;font-family:var(--sans)}
+.btn.sec{background:var(--panel2);color:var(--texto);border:1px solid var(--linea)}
+.btn.tu{background:var(--amarillo);color:#06142E}
+.btn.tu.peligro{background:#FFE9A8;color:#7A1020}
+.tu-caja{background:#FFF5C2;border-radius:12px;padding:10px;margin-top:10px;color:#2B2200}
+.tu-caja label{display:block;font-size:11px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px}
+.tu-caja .fila{display:flex;gap:6px;flex-wrap:wrap}
+.tu-caja input{flex:1;min-width:160px;border:1px solid #D8C46A;border-radius:8px;padding:10px;font-size:14px;background:#FFFBE6;color:#2B2200}
+.acciones{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.msg{font-size:12px;margin-top:6px;min-height:16px}
+.msg.ok{color:var(--verde)} .msg.no{color:var(--rojo)}
+.vacio{padding:26px 12px;text-align:center;color:var(--suave)}
+h3{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--amarillo);margin:20px 0 8px}
+.lista{border:1px solid var(--linea);border-radius:12px;overflow:hidden}
+.li{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-top:1px solid var(--linea);font-size:13px}
+.li:first-child{border-top:0}
+.luz{width:12px;height:12px;border-radius:50%;flex:none;margin-top:3px;background:var(--gris)}
+.luz.OK{background:var(--verde);box-shadow:0 0 10px var(--verde)}
+.luz.ERROR,.luz.ATRASADO{background:var(--rojo);box-shadow:0 0 10px var(--rojo);animation:late 1.2s ease-in-out infinite}
+@keyframes late{50%{opacity:.35}}
+.li small{display:block;color:var(--suave);margin-top:2px;line-height:1.35}
+.li .der{margin-left:auto;font:700 13px var(--mono);white-space:nowrap}
+table{width:100%;border-collapse:collapse;font-size:13px}
+td,th{padding:8px 10px;border-top:1px solid var(--linea);text-align:left}
+th{font-size:11px;color:var(--suave);letter-spacing:.06em;text-transform:uppercase;border-top:0}
+td.n{font-family:var(--mono);text-align:right}
+tr.total td{font-weight:900;color:var(--amarillo)}
+.hueco{border:2px dashed var(--linea);border-radius:14px;padding:16px;color:var(--suave);font-size:13px;line-height:1.5}
+.ajustes{max-width:520px;margin:0 auto}
+.ajustes textarea{width:100%;min-height:90px;border-radius:12px;border:1px solid var(--linea);background:#04102A;color:var(--texto);padding:12px;font:14px var(--mono)}
+.pie{font-size:11px;color:var(--gris);text-align:center;margin-top:22px}
+@media (min-width:640px){ .tcab,.vuelo>button{grid-template-columns:40px 1fr 140px} .det{padding-left:58px} .kpis{grid-template-columns:repeat(4,1fr)} }
+</style>
+</head>
+<body>
+<div class="cab">
+  <div class="fila1">
+    <div class="logo">GO</div>
+    <div class="tit"><b>GOLDEN OCLOCK · CENTRAL</b><span id="estado">Cargando…</span></div>
+    <button class="ico" id="b-recargar" title="Actualizar" aria-label="Actualizar">↻</button>
+    <button class="ico" id="b-ajustes" title="Ajustes" aria-label="Ajustes">⚙</button>
+  </div>
+  <nav class="pestanas" id="pestanas"></nav>
+</div>
+<main id="main"></main>
+
+<script>
+(function () {
+  'use strict';
+  // La app de Google (la misma de la APP). La clave se pega UNA vez y vive solo en este móvil (como en las demás páginas).
+  var BASE = 'https://script.google.com/macros/s/AKfycbwOLqVhaEyF0_Q8HulkLjmeTECJQIsxuA3yK0MDHE63S3H_031GVNy0ZHiSHKRiiBLj/exec';
+  var K_CLAVE = 'central_clave', K_DATOS = 'central_datos_v1', K_PES = 'central_pestana';
+  // Pestañas: las dos primeras son de esta página; el resto, huecos para ir metiendo las demás páginas (vault: Fichas/Proyectos/Página central).
+  var PESTANAS = [
+    { id: 'rec', t: 'RECUPERADOR' },
+    { id: 'neg', t: 'ESTADO DEL NEGOCIO', soloRodri: true },
+    { id: 'mas', t: '+ MÁS', soloRodri: true }
+  ];
+  var MAS = [   // próximas pestañas (por orden de integración); hoy se abren en su sitio de siempre
+    { t: 'La APP (hoy, envíos, stock, cobros)', u: '../app/' },
+    { t: 'VENDER', u: '../vender/' },
+    { t: 'Cobros de Correos', u: 'https://claude.ai/artifact/NXj4XpGdt5g2Z81vNWgQP5' },
+    { t: 'Stock', u: 'https://claude.ai/artifact/FHaLwQVrJsan8dz7Rwfmj5' },
+    { t: 'Clientes en espera', u: 'https://claude.ai/artifact/2U9a9Fu5V5Uzf5WdshRz3i' },
+    { t: 'Publicidad', u: 'https://claude.ai/artifact/6hdmFQEPBNFg8DaRrqFVUP' },
+    { t: 'Todas las páginas', u: '../paginas/' }
+  ];
+  var S = { d: null, pes: 'rec', abierto: {}, cargando: false };
+  function $(id) { return document.getElementById(id); }
+  function leer(k) { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } }
+  function guardar(k, v) { try { if (v) localStorage.setItem(k, v); else localStorage.removeItem(k); } catch (e) {} }
+  function h(t) { return String(t == null ? '' : t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+  function eur(n) { return n == null || isNaN(n) ? '¿precio?' : Number(n).toLocaleString('es-ES', { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 }) + ' €'; }
+  var DEMO = /[?&]demo=1/.test(location.search) || window.CENTRAL_DEMO === true;
+
+  // ---------- datos
+  function url(params) {
+    var u = new URL(BASE); u.searchParams.set('v', 'central'); u.searchParams.set('k', leer(K_CLAVE));
+    Object.keys(params).forEach(function (k) { u.searchParams.set(k, params[k]); }); return u.toString();
+  }
+  function pedir(params) {
+    if (DEMO) return Promise.resolve(params.f === 'datos' ? { ok: true, d: demo() } : { ok: true, texto: 'Apuntado (demo: no se guarda nada).' });
+    return fetch(url(params), { method: 'GET', redirect: 'follow' }).then(function (r) { return r.text(); }).then(function (t) {
+      try { return JSON.parse(t); } catch (e) {
+        if (/No autorizado/.test(t)) return { ok: false, error: 'No autorizado.' };
+        return { ok: false, error: 'La app de Google todavía no tiene la versión nueva (falta publicarla): Rodri tiene que decir «sí, sube».' };
+      }
+    });
+  }
+  function cargar(forzar) {
+    if (!leer(K_CLAVE) && !DEMO) { ajustes(); return; }
+    S.cargando = true; $('b-recargar').classList.add('gira');
+    pedir(forzar ? { f: 'datos', forzar: '1' } : { f: 'datos' }).then(function (r) {
+      S.cargando = false; $('b-recargar').classList.remove('gira');
+      if (!r.ok) { $('estado').textContent = r.error; if (/No autorizado/.test(r.error)) { guardar(K_DATOS, ''); } if (!S.d) pintar(); else aviso(r.error); return; }
+      S.d = r.d; if (!DEMO) guardar(K_DATOS, JSON.stringify(r.d)); pintar(true);
+    }).catch(function (e) { S.cargando = false; $('b-recargar').classList.remove('gira'); $('estado').textContent = 'Sin conexión: ' + (S.d ? 'datos de las ' + S.d.generado.slice(11) : 'sin datos'); });
+  }
+  function aviso(t) { var m = $('main'), d = document.createElement('div'); d.className = 'aviso ro'; d.textContent = t; m.insertBefore(d, m.firstChild); }
+
+  // ---------- pintar
+  function pestanas() {
+    var rol = S.d && S.d.rol;
+    $('pestanas').innerHTML = PESTANAS.filter(function (p) { return !(p.soloRodri && rol === 'COMPA'); }).map(function (p) {
+      return '<button class="pes' + (S.pes === p.id ? ' on' : '') + '" data-p="' + p.id + '">' + h(p.t) + '</button>'; }).join('');
+  }
+  function pintar(nuevo) {
+    pestanas();
+    var d = S.d;
+    if (!d) { $('main').innerHTML = '<div class="vacio">Todavía no hay datos.</div>'; return; }
+    var edad = Math.round((Date.now() - d.generadoMs) / 60000);
+    $('estado').textContent = 'Datos de las ' + d.generado.slice(11) + ' del ' + d.generado.slice(0, 5) + (edad > 150 ? ' · hace ' + Math.round(edad / 60) + ' h' : '') + (d.viaje ? ' · ✈️ modo viaje' : '');
+    if (S.pes === 'neg' && d.rol !== 'COMPA') return pintarNegocio();
+    if (S.pes === 'mas' && d.rol !== 'COMPA') return pintarMas();
+    pintarRecuperador(nuevo);
+  }
+  function horas(x) {
+    if (x.lim == null) return null;
+    return (x.lim - Date.now()) / 3600000;
+  }
+  function cuenta(x) {
+    var hh = horas(x);
+    if (hh == null) return { t: x.t === 'DEVOLUCION' ? 'VUELVE' : '—', rojo: x.t === 'DEVOLUCION' };
+    if (hh <= 0) return { t: 'VENCIDO', rojo: true };
+    if (hh < 48) { var s = Math.floor(hh * 3600), H = Math.floor(s / 3600), M = Math.floor(s % 3600 / 60), Se = s % 60;
+      return { t: H + ':' + String(M).padStart(2, '0') + ':' + String(Se).padStart(2, '0'), rojo: true }; }
+    return { t: Math.floor(hh / 24) + ' d ' + Math.floor(hh % 24) + ' h', rojo: false };
+  }
+  var TAG = { ESTACIONADO: 'est', DIRECCION: 'est', OFICINA: 'ofi', AUSENTE: '', DEVOLUCION: 'dev' };
+  function estadoMsg(x) {
+    if (x.cerrado) return '<span class="tag ok">' + (x.cerrado === 'recogido' ? 'RECOGIDO' : 'PERDIDO') + '</span>';
+    if (x.resp) return '<span class="tag ok">RESPONDIÓ</span>';
+    if (!x.msg) return '';
+    var e = String(x.msg.estado || '').toLowerCase(), cls = /^error/.test(e) ? 'err' : /^(enviado|respondido)/.test(e) ? 'ok' : '';
+    var txt = /^enviado/.test(e) ? (/mano/i.test(x.msg.paso) ? 'ESCRITO A MANO' : 'ENVIADO POR COWORK') : /^respondido/.test(e) ? 'RESPONDIDO' : /^error/.test(e) ? 'ERROR COWORK' : /^no enviado/.test(e) ? 'NO SE ENVIÓ' : 'MENSAJE PENDIENTE';
+    return '<span class="tag ' + cls + '">' + txt + '</span>';
+  }
+  function pintarRecuperador(nuevo) {
+    var d = S.d, l = d.casos || [], abiertos = l.filter(function (x) { return !x.cerrado; });
+    var est = abiertos.filter(function (x) { return x.t === 'ESTACIONADO'; }).length, jue = abiertos.reduce(function (s, x) { return s + (x.p || 0); }, 0);
+    var ll = abiertos.filter(function (x) { return x.paso === 'LLAMAR' && !(x.ll && x.ll.dijo); }).length;
+    var H = [];
+    if (d.error) H.push('<div class="aviso ro">' + h(d.error) + '</div>');
+    if (d.prueba) H.push('<div class="aviso am">Modo prueba: Cowork manda los mensajes a tu número, no a los clientes. Cámbialo en la hoja AJUSTES cuando estén bien.</div>');
+    (d.ajustesErrores || []).filter(function (e) { return /ERROR/.test(e); }).forEach(function (e) { H.push('<div class="aviso ro">' + h(e) + '</div>'); });
+    H.push('<div class="kpis"><div class="kpi' + (est ? ' rojo' : '') + '"><small>Estacionados</small><b>' + est + '</b></div><div class="kpi"><small>A rescatar</small><b>' + abiertos.length + '</b></div>' +
+      '<div class="kpi"><small>En juego</small><b>' + eur(jue) + '</b></div><div class="kpi' + (ll ? ' rojo' : '') + '"><small>Llamar</small><b>' + ll + '</b></div></div>');
+    H.push('<div class="chips"><span class="chip">Guardia: <b>' + h(d.guardia === 'COMPAÑERO' ? d.companero : 'Rodri') + '</b></span><span class="chip">Correos: <b>' + h(d.foto) + '</b></span>' + (d.viaje ? '<span class="chip">✈️ <b>modo viaje</b></span>' : '') + '</div>');
+    if (!l.length) H.push('<div class="tablero"><div class="vacio">Nada que rescatar ahora mismo ✔︎</div></div>');
+    else {
+      H.push('<div class="tablero"><div class="tcab"><span>#</span><span>CLIENTE · SEGUIMIENTO · FILA</span><span style="text-align:right">QUEDA</span></div>');
+      l.forEach(function (x, i) {
+        var c = cuenta(x), ab = S.abierto[x.seg];
+        H.push('<div class="vuelo' + (x.t === 'ESTACIONADO' ? ' est' : '') + (x.cerrado ? ' cerrado' : '') + (ab ? ' abierto' : '') + '" data-seg="' + h(x.seg) + '">' +
+          '<button type="button" data-abrir="' + h(x.seg) + '"' + (nuevo ? ' class="flip" style="animation-delay:' + Math.min(i * 40, 600) + 'ms"' : '') + '>' +
+          '<span class="num">' + x.o + '</span><span class="que"><span class="nom">' + h(x.n) + '</span><span class="seg">' + h(x.seg) + ' · fila ' + x.f + '</span>' +
+          '<span class="tags"><span class="tag ' + (TAG[x.t] || '') + '">' + h(x.s) + '</span><span class="tag paso">' + h(x.paso) + '</span>' + estadoMsg(x) + (x.fa ? '<span class="tag err">YA FALLÓ ' + x.fa + '</span>' : '') + '</span></span>' +
+          '<span class="reloj"><b class="cd' + (c.rojo ? ' rojo' : '') + '" data-cd="' + h(x.seg) + '">' + c.t + '</b><span class="eur">' + h(x.pt) + '</span><span>' + h(x.lt) + '</span></span></button>' +
+          '<div class="det">' + detalle(x) + '</div></div>');
+      });
+      H.push('</div>');
+    }
+    if (d.prob) H.push('<h3>Por qué este orden</h3><div class="lista"><div class="li"><span>Puntos = € en juego (precio + ida y vuelta) × probabilidad de perderlo × urgencia. Estacionados siempre arriba (48 h); en devolución, al final.<small>' +
+      d.prob.tipos.map(function (t) { return h(t.t) + ': ' + h(t.txt); }).join('<br>') + '<br>Cliente que ya falló: ' + h(d.prob.reinc) + '</small></span></div></div>');
+    H.push('<div class="pie">GOLDEN OCLOCK · Central · los datos se regeneran solos cada 2 h (o con ↻)</div>');
+    $('main').innerHTML = H.join('');
+  }
+  function detalle(x) {
+    var tel = String(x.tel || '').replace(/\D/g, ''), t9 = tel.slice(-9), movil = /^[67]\d{8}$/.test(t9);
+    var copia = (x.tel || 'SIN TELÉFONO') + ' · ' + x.n + ' · ' + (x.m || '¿modelo?') + ' · ' + x.pt;
+    var L = ['<div class="lin"><b>' + h(x.m || '¿modelo?') + '</b> · ' + h(x.pt) + (x.ofi ? ' · ' + h(x.ofi) : '') + '</div>',
+      '<div class="lin">Correos: ' + h(x.ult) + '</div>',
+      '<div class="lin">Plazo: <b>' + h(x.lt) + '</b> — ' + h(x.regla) + '</div>',
+      '<div class="lin">Paso: <b>' + h(x.paso) + '</b>' + (x.pm ? ' · ' + h(x.pm) : '') + (x.msg && x.msg.a ? ' · mensaje ' + h(x.msg.estado) + ' a las ' + h(String(x.msg.a).slice(11)) : '') + (x.msg && x.msg.resp ? ' · respuesta: «' + h(x.msg.resp) + '»' : '') + '</div>',
+      x.ll && x.ll.dijo ? '<div class="lin">Llamada: «' + h(x.ll.dijo) + '»</div>' : '',
+      x.calc ? '<div class="lin">Puntos: <b>' + (x.pts == null ? 'SIN DATOS' : x.pts) + '</b> = ' + h(x.calc) + ' · ' + h(x.pr) + '</div>' : '',
+      '<div class="copiar"><code>' + h(copia) + '</code><button class="btn sec" data-copiar="' + h(copia) + '">Copiar</button></div>',
+      '<div class="acciones">' + (movil ? '<a class="btn sec" href="tel:+34' + t9 + '">📞 Llamar</a><a class="btn sec" href="https://wa.me/34' + t9 + '" target="_blank" rel="noopener">💬 WhatsApp</a>' : '<span class="tag err">TELÉFONO RARO</span>') + '</div>'];
+    if (!x.cerrado && x.t !== 'DEVOLUCION') L.push('<div class="tu-caja"><label>Tú: lo que has hecho</label><div class="acciones"><button class="btn tu" data-marcar="escrito" data-seg="' + h(x.seg) + '">✔ Ya le he escrito</button>' +
+      '<button class="btn tu" data-marcar="recogido" data-seg="' + h(x.seg) + '">📦 Lo ha recogido</button><button class="btn tu peligro" data-marcar="perdido" data-seg="' + h(x.seg) + '">✖ Dar por perdido</button></div>' +
+      '<label style="margin-top:10px">Llamado: ¿qué ha dicho?</label><div class="fila"><input type="text" maxlength="300" placeholder="Ej.: pasa el sábado por la mañana" id="in-' + h(x.seg) + '" value="' + h(x.ll && x.ll.dijo ? x.ll.dijo.replace(/ \(.*\)$/, '') : '') + '">' +
+      '<button class="btn tu" data-marcar="llamado" data-seg="' + h(x.seg) + '">Guardar</button></div><div class="msg" id="m-' + h(x.seg) + '"></div></div>');
+    return L.join('');
+  }
+  function pintarNegocio() {
+    var n = S.d.negocio || {}, H = [];
+    H.push('<h3>Automatizaciones</h3>');
+    if (n.salud && n.salud.error) H.push('<div class="aviso ro">' + h(n.salud.error) + '</div>');
+    else {
+      var l = (n.salud || []).slice().sort(function (a, b) { var o = { ERROR: 0, ATRASADO: 1, 'SIN SEÑAL': 2, AVISO: 1, 'SIN DATOS': 2, OK: 3 }; return (o[a.e] == null ? 2 : o[a.e]) - (o[b.e] == null ? 2 : o[b.e]); });
+      var mal = l.filter(function (x) { return x.e === 'ERROR' || x.e === 'ATRASADO' || x.e === 'AVISO'; }).length;
+      H.push('<div class="chips"><span class="chip">En verde: <b>' + l.filter(function (x) { return x.e === 'OK'; }).length + '</b></span><span class="chip">En rojo: <b>' + mal + '</b></span><span class="chip">Sin señal todavía: <b>' + l.filter(function (x) { return /SIN/.test(x.e); }).length + '</b></span></div>');
+      H.push('<div class="lista">' + l.map(function (x) { return '<div class="li"><span class="luz ' + h(x.e) + '"></span><span>' + h(x.n) + '<small>' + h(x.tipo) + ' · ' + h(x.e) + ' · ' + h(x.d) + (x.e !== 'OK' ? '<br>🔧 ' + h(x.a) : '') + '</small></span></div>'; }).join('') + '</div>');
+    }
+    H.push('<h3>Cobros de la semana</h3>');
+    var c = n.cobros || {};
+    if (c.error) H.push('<div class="aviso ro">' + h(c.error) + '</div>');
+    else H.push('<div class="lista"><div class="li"><span>Semana del ' + h(c.desde) + ' al ' + h(c.hasta) + '<small>' + h(c.tr) + ' TR · ' + h(c.nota) + '</small></span><span class="der">' + h(c.totalTxt) + '</span></div>' +
+      (c.dias || []).map(function (x) { return '<div class="li"><span>' + h(x.d) + '</span><span class="der">' + h(x.e) + '</span></div>'; }).join('') + '</div>');
+    var cf = S.d.cifras;
+    H.push('<h3>Rescates por semana</h3>');
+    if (!cf) H.push('<div class="aviso am">SIN DATOS todavía: la hoja RESCATES se llena cuando se cierran los primeros envíos.</div>');
+    else H.push('<div class="lista"><table><tr><th>Semana</th><th>Salvados</th><th>Devueltos</th><th>€ salvados</th><th>€ perdidos</th></tr>' +
+      cf.semanas.concat([cf.total]).filter(function (r, i, a) { return i < a.length - 1 ? r[0] !== 'TOTAL' : true; }).map(function (r) { return '<tr' + (r[0] === 'TOTAL' ? ' class="total"' : '') + '><td>' + h(r[0]) + '</td><td class="n">' + h(r[1]) + '</td><td class="n">' + h(r[2]) + '</td><td class="n">' + h(r[4]) + '</td><td class="n">' + h(r[5]) + '</td></tr>'; }).join('') + '</table></div>');
+    H.push('<h3>Cola del publicador de redes</h3>');
+    var p = n.publicador || {};
+    if (p.error) H.push('<div class="aviso am">' + h(p.error) + '</div>');
+    else H.push('<div class="chips">' + (p.estados || []).map(function (x) { return '<span class="chip">' + h(x.e) + ': <b>' + x.n + '</b></span>'; }).join('') + '</div><div class="lista">' +
+      (p.proximos || []).map(function (x) { return '<div class="li"><span>' + h(x.m || 'sin modelo') + '<small>' + h(x.e) + ' · ' + h(x.r) + '</small></span><span class="der">' + h(x.f) + ' ' + h(x.h) + '</span></div>'; }).join('') + '</div>');
+    $('main').innerHTML = H.join('');
+  }
+  function pintarMas() {
+    $('main').innerHTML = '<h3>Próximas pestañas</h3><div class="hueco">Aquí irán entrando tus otras páginas, una a una, para no tener que abrir mil sitios. Mientras tanto, se abren desde aquí:</div><div class="lista" style="margin-top:10px">' +
+      MAS.map(function (x, i) { return '<div class="li"><span class="num" style="width:24px">' + (i + 1) + '</span><span><a href="' + h(x.u) + '">' + h(x.t) + '</a></span></div>'; }).join('') + '</div>';
+  }
+  function ajustes() {
+    pestanas();
+    $('estado').textContent = 'Ajustes';
+    $('main').innerHTML = '<div class="ajustes"><h3>Conectar esta página</h3><div class="lista"><div class="li"><span>Pega <b>la clave</b> (la misma de la APP; el compañero, la suya) o el enlace de la APP con la clave. Se guarda solo en este móvil.</span></div></div>' +
+      '<textarea id="t-clave" placeholder="clave o enlace…"></textarea><div class="acciones"><button class="btn tu" id="b-guardar">Guardar y abrir</button>' + (leer(K_CLAVE) ? '<button class="btn sec" id="b-borrar">Borrar de este móvil</button>' : '') + '</div><div class="msg" id="m-aj"></div></div>';
+  }
+  function marcar(btn) {
+    var seg = btn.getAttribute('data-seg'), que = btn.getAttribute('data-marcar'), m = $('m-' + seg), p = { f: 'marcar', seg: seg, que: que };
+    if (que === 'llamado') { p.texto = ($('in-' + seg).value || '').trim(); if (!p.texto) { m.className = 'msg no'; m.textContent = 'Escribe qué ha dicho.'; return; } }
+    if (que === 'perdido' && !confirm('¿Dar este envío por perdido?')) return;
+    btn.disabled = true; m.className = 'msg'; m.textContent = 'Guardando…';
+    pedir(p).then(function (r) {
+      btn.disabled = false; m.className = 'msg ' + (r.ok ? 'ok' : 'no'); m.textContent = r.ok ? r.texto : r.error;
+      if (r.ok) { var x = (S.d.casos || []).filter(function (z) { return z.seg === seg; })[0]; if (x) {
+        if (que === 'escrito') x.msg = { paso: 'A MANO', estado: 'enviado', a: '', resp: '' };
+        if (que === 'llamado') x.ll = { dijo: p.texto };
+        if (que === 'recogido' || que === 'perdido') x.cerrado = que;
+        if (!DEMO) guardar(K_DATOS, JSON.stringify(S.d));
+        setTimeout(function () { pintar(); var mm = $('m-' + seg); if (mm) { mm.className = 'msg ok'; mm.textContent = r.texto; } }, 400); } }
+    }).catch(function () { btn.disabled = false; m.className = 'msg no'; m.textContent = 'Sin conexión: no se ha guardado.'; });
+  }
+
+  // ---------- eventos
+  document.addEventListener('click', function (ev) {
+    var t = ev.target.closest('[data-p],[data-abrir],[data-copiar],[data-marcar],#b-guardar,#b-borrar');
+    if (!t) return;
+    if (t.hasAttribute('data-p')) { S.pes = t.getAttribute('data-p'); guardar(K_PES, S.pes); window.scrollTo(0, 0); pintar(); return; }
+    if (t.hasAttribute('data-abrir')) { var s = t.getAttribute('data-abrir'); S.abierto[s] = !S.abierto[s]; t.parentNode.classList.toggle('abierto'); return; }
+    if (t.hasAttribute('data-copiar')) { var txt = t.getAttribute('data-copiar'); (navigator.clipboard ? navigator.clipboard.writeText(txt) : Promise.reject()).then(function () { t.textContent = '¡Copiado!'; setTimeout(function () { t.textContent = 'Copiar'; }, 1500); }).catch(function () { prompt('Copia esto:', txt); }); return; }
+    if (t.hasAttribute('data-marcar')) { marcar(t); return; }
+    if (t.id === 'b-guardar') {
+      var v = $('t-clave').value.trim(), m = v.match(/[?&]k=([^&\s]+)/), k = m ? decodeURIComponent(m[1]) : v;
+      if (!/^[A-Za-z0-9_-]{20,}$/.test(k)) { $('m-aj').className = 'msg no'; $('m-aj').textContent = 'Eso no parece la clave. Copia el valor entero, sin espacios.'; return; }
+      guardar(K_CLAVE, k); guardar(K_DATOS, ''); S.d = null; S.pes = 'rec'; cargar(false); return;
+    }
+    if (t.id === 'b-borrar') { guardar(K_CLAVE, ''); guardar(K_DATOS, ''); S.d = null; ajustes(); }
+  });
+  $('b-recargar').onclick = function () { if (!S.cargando) cargar(true); };
+  $('b-ajustes').onclick = function () { ajustes(); };
+  // la cuenta atrás se mueve sola (sin repintar todo)
+  setInterval(function () {
+    if (!S.d || S.pes !== 'rec') return;
+    (S.d.casos || []).forEach(function (x) { var el = document.querySelector('[data-cd="' + x.seg + '"]'); if (el) { var c = cuenta(x); el.textContent = c.t; } });
+  }, 1000);
+
+  // ---------- arranque: pinta al momento lo guardado y luego pide lo nuevo
+  S.pes = leer(K_PES) || 'rec';
+  try { var g = leer(K_DATOS); if (g && !DEMO) S.d = JSON.parse(g); } catch (e) {}
+  if (S.d) pintar(true); else $('main').innerHTML = '<div class="vacio">Cargando…</div>';
+  cargar(false);
+  if ('serviceWorker' in navigator === false) {}
+
+  // ---------- demo (?demo=1): datos INVENTADOS, para probar la página sin la app de Google
+  function demo() {
+    var ahora = Date.now(), H = 3600000;
+    return { v: 1, rol: 'RODRI', generado: new Date(ahora - 20 * 60000).toLocaleString('es-ES', { hour12: false }).replace(',', '').replace(/(\d+)\/(\d+)\/(\d+)/, function (x, d, m, y) { return ('0' + d).slice(-2) + '/' + ('0' + m).slice(-2) + '/' + y; }).slice(0, 16), generadoMs: ahora - 20 * 60000,
+      foto: '23/10/2026 09:50', viaje: false, guardia: 'RODRI', companero: 'Aissa', prueba: true, ajustesErrores: [],
+      casos: [
+        { o: 1, t: 'ESTACIONADO', s: 'ESTACIONADO', seg: 'PK8P2C0200090030143330T', n: 'Marta Ensayo Simulada', f: 3801, p: 850, pt: '850,00 €', tel: '611 222 003', m: 'patek nautilus azul', lim: ahora + 29 * H, lt: '24/10 a las 14:00', paso: 'AVISO 1', pm: 'detectado', pts: 111, calc: '867,84 € × 8 % × urgencia 1,6', pr: 'global 8 %', fa: 0, ult: 'Estacionado · 2026-10-23 09:00', ofi: '', regla: '48 h para modificar la entrega', msg: { paso: 'AVISO 1', estado: 'enviado', a: '23/10/2026 10:04', resp: '' }, ll: null, resp: '' },
+        { o: 2, t: 'OFICINA', s: 'EN OFICINA', seg: 'PK8P2C0200090020143330T', n: 'Luis Demo Inventado', f: 3790, p: 420, pt: '420,00 €', tel: '611 222 002', m: 'daytona panda + caja', lim: ahora + 40 * H, lt: '25/10', paso: 'ÚLTIMO AVISO', pm: 'quedan 40 h', pts: 177, calc: '437,84 € × 34,5 % × urgencia 1,17', pr: '34 % (38 de 110, línea base)', fa: 0, ult: 'A disposición del destinatario · 2026-10-10', ofi: 'Correos (MADRID UR 6)', regla: '14 días naturales', msg: { paso: 'ÚLTIMO AVISO', estado: 'pendiente', a: '', resp: '' }, ll: null, resp: '' },
+        { o: 3, t: 'OFICINA', s: 'EN OFICINA', seg: 'PK8P2C0200090060143330T', n: 'Hugo Reincidente Prueba', f: 3795, p: 220, pt: '220,00 €', tel: '611 222 006', m: 'gmt pepsi', lim: ahora + 162 * H, lt: '29/10', paso: 'LLAMAR', pm: 'tras el 2.º aviso no ha respondido', pts: 24, calc: '237,84 € × 34,5 % × urgencia 0,3', pr: '34 %', fa: 1, ult: 'A disposición · 2026-10-15', ofi: 'Correos', regla: '14 días naturales', msg: null, ll: null, resp: '' },
+        { o: 4, t: 'DIRECCION', s: 'DIRECCIÓN INCORRECTA', seg: 'PK8P2C0200090050143330T', n: 'Sara Muestra Test', f: 3798, p: 150, pt: '150,00 €', tel: '611 222 005', m: 'cartier santos', lim: ahora + 57 * H, lt: '25/10 a las 19:00', paso: 'AVISO 1', pm: '', pts: 11, calc: '167,84 € × 8 % × urgencia 0,84', pr: 'global 8 %', fa: 0, ult: 'Intento de entrega. Dirección incorrecta', ofi: '', regla: '48 h (por confirmar)', msg: { paso: 'AVISO 1', estado: 'respondido', a: '23/10/2026 10:06', resp: 'Es Calle Mayor 3, 2.º B' }, ll: null, resp: 'respondió' },
+        { o: 5, t: 'DEVOLUCION', s: 'EN DEVOLUCIÓN', seg: 'PK8P2C0200090040143330T', n: 'Pablo Maqueta Falso', f: 3797, p: 190, pt: '190,00 €', tel: '611 222 004', m: 'ap azul', lim: null, lt: '—', paso: 'REGISTRO', pm: '', pts: null, calc: 'en devolución', pr: '', fa: 0, ult: 'CRM: FALLIDO', ofi: '', regla: 'ya vuelve: mira si se puede parar', msg: null, ll: null, resp: '' }
+      ],
+      prob: { fuente: 'demo', tipos: [{ t: 'EN OFICINA', txt: '34 % (38 de 110, línea base del 17/10)' }, { t: 'ESTACIONADO', txt: 'global 8 % — sin dato propio' }], reinc: 'SIN DATOS (falta el histórico)' },
+      cifras: { semanas: [['13/10/2026 – 19/10/2026', '3', '1', '75 %', '540,00 €', '207,84 €', '']], total: ['TOTAL', '3', '1', '75 %', '540,00 €', '207,84 €', ''] },
+      negocio: { salud: [{ n: 'Estados (cada 10 min)', e: 'OK', d: 'última buena 23/10 09:50', a: '', tipo: 'APPS SCRIPT' }, { n: 'Parte diario (Cowork)', e: 'ATRASADO', d: 'última señal 21/10 00:52', a: 'Abre la app de Claude en el Mac…', tipo: 'COWORK' }, { n: 'Mac encendido (latido)', e: 'SIN SEÑAL', d: 'todavía no ha escrito su señal', a: '', tipo: 'MAC' }],
+        cobros: { desde: '23/10/2026', hasta: '29/10/2026', total: 1240, totalTxt: '1.240,00 €', tr: 6, dias: [{ d: 'viernes 23/10/2026', e: '640,00 €' }, { d: 'lunes 26/10/2026', e: '600,00 €' }], nota: 'La cuenta 3 va a mano.' },
+        publicador: { error: 'SIN DATOS: falta el ID de la hoja del publicador en AJUSTES' } } };
+  }
+})();
+</script>
+</body>
+</html>
