@@ -45,7 +45,7 @@ main{padding:14px 16px;max-width:860px;margin:0 auto}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
 .chip{font-size:12px;border-radius:999px;padding:4px 10px;background:var(--panel);border:1px solid var(--linea);color:var(--suave)}
 .chip b{color:var(--texto)}
-.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px}
 .kpi{background:var(--panel);border:1px solid var(--linea);border-radius:12px;padding:10px}
 .kpi small{display:block;font-size:11px;color:var(--suave);letter-spacing:.06em;text-transform:uppercase}
 .kpi b{display:block;font-family:var(--mono);font-size:22px;margin-top:2px;color:var(--amarillo)}
@@ -58,10 +58,10 @@ main{padding:14px 16px;max-width:860px;margin:0 auto}
 .vuelo.est>button{background:linear-gradient(90deg,rgba(255,77,94,.20),transparent 70%)}
 .vuelo.cerrado{opacity:.45}
 .num{font:800 15px var(--mono);color:var(--amarillo);text-align:center}
-.que{min-width:0}
-.nom{font-weight:800;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.seg{font:12px var(--mono);color:var(--suave);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.que{min-width:0;display:block;overflow:hidden}
+.nom{display:block;font-weight:800;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.seg{display:block;font:11px var(--mono);color:var(--suave);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tags{display:flex;min-width:0;flex-wrap:wrap;gap:4px;margin-top:4px}
 .tag{font:700 10px var(--mono);letter-spacing:.06em;padding:2px 6px;border-radius:4px;background:var(--panel2);color:var(--suave);text-transform:uppercase}
 .tag.est{background:var(--rojo);color:#fff}
 .tag.ofi{background:var(--amarillo);color:#06142E}
@@ -69,8 +69,8 @@ main{padding:14px 16px;max-width:860px;margin:0 auto}
 .tag.paso{background:#1E3F86;color:#fff}
 .tag.ok{background:var(--verde2);color:var(--verde)}
 .tag.err{background:var(--rojo2);color:#FFB3BC}
-.reloj{text-align:right}
-.reloj b{display:block;font:800 16px var(--mono);letter-spacing:.02em}
+.reloj{text-align:right;display:block;min-width:0}
+.reloj b{display:block;font:800 15px var(--mono);letter-spacing:.02em}
 .reloj b.rojo{color:var(--rojo)}
 .reloj span{display:block;font-size:11px;color:var(--suave)}
 .reloj .eur{font:700 13px var(--mono);color:var(--texto)}
