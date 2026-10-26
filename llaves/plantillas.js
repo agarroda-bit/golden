@@ -102,3 +102,77 @@ export function plantilla(id, { p, caso = {}, legal, municipio }) {
 <div class="nota">Borrador orientativo generado por LLAVES el ${hoy()}. No es asesoramiento jurídico. ${legal?.vulnerables ? 'Si hay menores, personas mayores o una familia vulnerable, los plazos y requisitos cambian: consulta con el abogado y con Servicios Sociales.' : ''}</div>`, 'PARA REVISAR POR ABOGADO — NO FIRMAR SIN SU REVISIÓN'),
   };
 }
+
+// Enlaces de la ficha y del dossier: solo se construyen con las coordenadas y la referencia; no se lee ninguna de esas webs.
+export function enlacesPiso(p) {
+  const c = p.catastro || {};
+  const e = [];
+  if (p.lat && p.lon) {
+    e.push({ id: 'maps', nombre: 'Google Maps', url: `https://www.google.com/maps/search/?api=1&query=${p.lat},${p.lon}` });
+    e.push({ id: 'street', nombre: 'Street View', url: `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${p.lat},${p.lon}` });
+  }
+  if (c.url) e.push({ id: 'catastro', nombre: 'Catastro', url: c.url });
+  e.push({ id: 'registro', nombre: 'Pedir la nota simple (Registradores)', url: 'https://sede.registradores.org/', nota: c.rc ? `con la referencia catastral ${c.rc}` : c.parcela ? `con la finca ${c.parcela} y la dirección` : 'con la dirección' });
+  return e;
+}
+
+const pct = (x) => (x == null || isNaN(x) ? '—' : Math.round(x * 100) + ' %');
+const fechaLarga = (iso) => (iso ? new Date(iso + 'T12:00:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }) : '—');
+
+// Dossier de una página para el abogado.
+export function dossier({ p, caso = {}, legal, municipio, tipoNombre }) {
+  const c = p.catastro || {}, v = p.valor || {}, e = p.calc?.escenarios?.[1];
+  const dir = c.exacta ? `${c.direccion}${c.escalera ? ', esc. ' + c.escalera : ''}${c.planta ? ', planta ' + c.planta : ''}${c.puerta ? ', puerta ' + c.puerta : ''}` : p.direccion;
+  const fila = (a, b) => `<tr><td class="k">${h(a)}</td><td>${b}</td></tr>`;
+  const ofertaPct = e && p.calc?.valor ? e.oferta / p.calc.valor : null;
+  const viviendas = '<span class="hueco">[cuántas viviendas tengo ya a mi nombre]</span>';
+  const preguntas = [
+    `<b>Límite del 70 % (RDL 29/2026, art. 1, vigente desde el 08/10/2026).</b> Mi oferta máxima (${eur(e?.oferta)}) es el ${pct(ofertaPct)} del valor libre estimado (${eur(p.calc?.valor)}). Comprando a mi nombre como particular, ¿me afecta el límite? ¿Y si comprara con una sociedad?`,
+    `<b>Vía del art. 250.1.4º LEC (recuperar una vivienda ocupada).</b> Si compro el piso ya ocupado, ¿puedo usar esta vía como nuevo propietario, o hay que ir por precario u otro juicio? ¿Cómo cuenta el plazo de 1 año del art. 439.1 LEC?`,
+    `<b>ITP sobre el valor de referencia.</b> El ITP (10 %) se paga sobre el precio o el valor de referencia del Catastro si es mayor. ¿Cuál es el valor de referencia de esta vivienda (ref. ${h(c.rc || c.parcela || '—')}) y se puede discutir por estar ocupada?`,
+    `<b>Vulnerabilidad.</b> ${p.vulnerable || caso.vulnerable ? 'Este caso está marcado VULNERABLE. ' : ''}Si en la vivienda hay un hogar vulnerable, ¿qué plazos y suspensiones aplican (RDL 29/2026, art. 2; LEC 441.5-7)? Tengo ${viviendas}: ¿cambia algo?`,
+  ];
+  const extra = { proindiviso: 'Se vende solo una parte del piso: ¿cómo se pide la división de la cosa común y cuánto tarda?', inquiokupa: '¿Hay contrato de alquiler en vigor? Si compro, ¿me subrogo en él y en sus prórrogas?', sin_posesion: 'El banco ya se adjudicó el piso: ¿puedo seguir yo su lanzamiento en la ejecución (sucesión procesal) o empiezo de cero?', alquiler_social: 'Hay obligación de alquiler social (Ley 24/2015): ¿qué obligaciones paso a tener yo?', nuda_propiedad: 'Hay usufructuario: ¿cómo se valora y qué derechos tiene?', credito: 'Se compra el crédito o el remate: ¿riesgo de retracto del art. 1535 CC?', desconocido: 'La fuente no dice qué situación es: ¿qué hay que pedir al vendedor por escrito?' }[p.tipo];
+  if (extra) preguntas.push(`<b>Por el tipo (${h(tipoNombre)}).</b> ${h(extra)}`);
+  // En corto: solo hasta los dos puntos o el primer paréntesis, para que quepa en una página
+  const antes = (legal?.antesDeOfertar || []).map((i) => `<li>☐ ${h(i.texto.split(/[:(]/)[0].replace(/\.$/, '').trim())}</li>`).join('');
+  const comps = v.comparables || {};
+  const links = enlacesPiso(p).map((x) => `${h(x.nombre)}: ${h(x.url)}${x.nota ? ' (' + h(x.nota) + ')' : ''}`).join('<br>');
+  const html = `<!doctype html><html><head><meta charset="utf-8"><title>Dossier para el abogado</title>
+<style>@page{size:A4;margin:1cm}body{font-family:Arial,Helvetica,sans-serif;font-size:8.5pt;line-height:1.25;color:#111;max-width:19cm;margin:0 auto}
+h1{font-size:12pt;margin:0 0 2pt}h2{font-size:9.5pt;margin:6pt 0 2pt;border-bottom:1px solid #999;color:#111}
+table{border-collapse:collapse;width:100%}td{padding:1pt 4pt;vertical-align:top;color:#111}td.k{color:#555;width:30%}td.n{text-align:right;white-space:nowrap}
+.dos{display:flex;gap:10pt}.dos>div{flex:1}ol,ul{margin:2pt 0 2pt 14pt;padding:0}li{margin:1pt 0}.hueco{background:#fff3a8;color:#111}.pie{font-size:7.5pt;color:#555;margin-top:6pt}
+tr.total td{font-weight:bold;border-top:1px solid #111;color:#111}</style></head><body>
+<h1>Dossier para el abogado · ${h(dir)}, ${h(municipio)}</h1>
+<div style="color:#555">Preparado por LLAVES el ${fechaLarga(new Date().toISOString().slice(0, 10))} · Ref. catastral ${h(c.rc || (c.parcela ? 'finca ' + c.parcela : '—'))} · ${h(tipoNombre)}</div>
+<div class="dos"><div>
+<h2>Vivienda y Catastro</h2><table>
+${fila('Dirección del anuncio', h(p.direccion))}
+${fila('Catastro', h(`${c.direccion || '—'}${c.planta ? ' · pl. ' + c.planta : ''}${c.puerta ? ' · pta. ' + c.puerta : ''}`))}
+${fila('Superficie · año · uso', h(`${c.m2 ? c.m2 + ' m² construidos' : c.m2Rango ? c.m2Rango.join('–') + ' m² (finca)' : '—'}${p.m2Anuncio ? ' (anuncio: ' + Math.round(p.m2Anuncio) + ' m²)' : ''} · ${c.anyo || '—'} · ${c.uso || '—'}`))}
+${fila('Situación según la fuente', h(p.situacionFuente || '—'))}
+${fila('Anuncio', (p.enlaces || []).map((x) => h(`${x.fuente}: ${x.url}`)).join('<br>') || '—')}
+${fila('Precio pedido', `${eur(p.precio)}${p.bajada ? ' · ' + h(`bajó ${eur(p.bajada.euros)} (−${pct(p.bajada.pct)})`) : ''}${p.diasEnVenta != null ? ' · ' + p.diasEnVenta + ' días en venta' : ''}`)}
+</table>
+<h2>Valor libre estimado: ${eur(v.valor)}</h2><table>
+${fila('Cálculo', h(`${v.m2 ? Math.round(v.m2) : '—'} m² (${v.origenM2 || ''}) × ${v.eurM2 || '—'} €/m² · ${v.metodo || ''}`))}
+${fila('Comparables', h(`${comps.n || 0} pisos libres (${v.criterio || ''})${comps.n ? `: mediana ${comps.mediana} €/m², mitad central ${comps.p25}–${comps.p75} €/m²` : ''}`))}
+${fila('Confianza del valor', h(v.confianza ? `${v.confianza.nivel}: ${v.confianza.motivo}` : '—'))}
+${fila('Dato oficial', h(v.oficial ? `${v.oficial.eurM2} €/m² (Ministerio de Vivienda, ${v.oficial.periodo})` : '—'))}
+</table>
+${(comps.muestra || []).length ? `<table>${comps.muestra.slice(0, 4).map((x) => `<tr><td>${h(x.direccion || x.fuente)} <span style="color:#555">(${h(x.fuente)})</span></td><td class="n">${Math.round(x.m2)} m²</td><td class="n">${eur(x.precio)}</td><td class="n">${x.eurM2} €/m²</td></tr>`).join('')}</table>` : ''}
+</div><div>
+<h2>Calculadora · escenario normal (${e?.meses ?? '—'} meses)</h2><table>
+${(e?.filas || []).map((f) => `<tr class="${f.total ? 'total' : ''}"><td>${h(f.concepto)}</td><td class="n">${f.importe < 0 ? '−' : ''}${eur(Math.abs(f.importe))}</td></tr>`).join('')}
+<tr><td>Si se paga lo que piden: coste total ${eur(e?.costePedido)}</td><td class="n">${eur(e?.margenPedido)} (${pct(e?.margenPedidoPct)})</td></tr>
+<tr><td>Rentabilidad al año (a la oferta · al precio pedido)</td><td class="n">${pct(e?.rentAnual)} · ${pct(e?.rentAnualPedido)}</td></tr>
+</table>
+<h2>Antes de ofertar</h2><ul style="list-style:none;margin-left:0">${antes}</ul>
+</div></div>
+<h2>Preguntas para el abogado</h2><ol>${preguntas.map((q) => `<li>${q}</li>`).join('')}</ol>
+<h2>Enlaces</h2><div>${links}</div>
+<div class="pie">Datos públicos de la vivienda (anuncio, Catastro sin titular, Ministerio de Vivienda). Sin datos personales de los ocupantes. Cifras orientativas, no son asesoramiento jurídico ni fiscal. Normas: RDL 29/2026 (BOE-A-2026-20823), LEC arts. 250.1.4º, 439 y 441, ATC (ITP).</div>
+</body></html>`;
+  return { archivo: `dossier-abogado-${(c.rc || p.id).replace(/[^A-Za-z0-9]/g, '').slice(0, 20)}.doc`, html };
+}
