@@ -53,6 +53,34 @@ export async function fincasCercanas(lat, lon) {
 }
 
 const sinAcentos = (s) => String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
+// Calle y número → finca, con el callejero público del Catastro (no depende del mapa).
+// municipio: nombre del Catastro («L'HOSPITALET DE LLOBREGAT», «EL PRAT DE LLOBREGAT»…)
+export function palabrasCalle(calle = '') {
+  return sinAcentos(calle).replace(/['’`´]/g, ' ').replace(/\b(CARRER|CALLE|C|CL|AVINGUDA|AVENIDA|AV|AVDA|PLACA|PLAZA|PL|PZ|PZA|PASSEIG|PASEO|PG|PS|RAMBLA|RBLA|RONDA|TRAVESSERA|PASSATGE|PASAJE|PTGE|CAMI|CAMINO|CTRA|CARRETERA|GRAN|VIA|DE|DEL|DELS|LA|LES|LOS|LAS|EL|ELS|D|L|I|Y)\b/g, ' ').split(/[^A-Z0-9]+/).filter((w) => w.length > 1);
+}
+export async function fincaPorCallejero(municipio, calle, numero) {
+  const palabras = palabrasCalle(calle);
+  if (!palabras.length || !numero) return null;
+  const clave = [...palabras].sort((a, b) => b.length - a.length)[0];
+  const q = (o) => new URLSearchParams({ Provincia: 'BARCELONA', Municipio: municipio, ...o }).toString();
+  const j = await pedir(`${OVC}/COVCCallejero.svc/json/ObtenerCallejero?${q({ NomVia: clave })}`);
+  const calles = lista(j.consulta_callejeroResult?.callejero?.calle).map((c) => c.dir);
+  const buena = calles.find((d) => palabras.every((w) => sinAcentos(d.nv).includes(w))) || (calles.length === 1 ? calles[0] : null);
+  if (!buena) return null;
+  const n = await pedir(`${OVC}/COVCCallejero.svc/json/ObtenerNumerero?${q({ TipoVia: buena.tv, NomVia: buena.nv, Numero: String(Number(numero)) })}`);
+  const nums = lista(n.consulta_numereroResult?.nump).filter((x) => String(Number(x.num?.pnp)) === String(Number(numero)));
+  const x = nums.find((y) => !String(y.num?.plp || '').trim()) || nums[0];
+  if (!x) return null;
+  const parcela = x.pc.pc1 + x.pc.pc2;
+  let lat = null, lon = null;
+  try {
+    const c = await pedir(`${OVC}/COVCCoordenadas.svc/json/Consulta_CPMRC?Provincia=BARCELONA&Municipio=&SRS=EPSG:4326&RefCat=${parcela}`);
+    const g = lista(c.Consulta_CPMRCResult?.coordenadas?.coord)[0]?.geo;
+    if (g) { lat = Number(g.ycen); lon = Number(g.xcen); }
+  } catch {}
+  return { parcela, direccion: `${buena.tv} ${buena.nv} ${x.num.pnp}${String(x.num.plp || '').trim()}`, lat, lon, exacta: true, via: 'callejero' };
+}
+
 // Desde una dirección del mapa (que puede ser el centro de la calle) hasta la finca del número pedido.
 // puntos: el punto del mapa y, si la calle es larga, otros puntos de la calle (esquinas de su recuadro).
 export async function fincaPorPortal(puntos, numero, calle = '') {
