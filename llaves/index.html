@@ -125,6 +125,26 @@ main{padding:12px 16px 40px;max-width:1500px;margin:0 auto}
 .eti.bajada{background:#0F3A2A;color:#7FE3B4}
 .venta{font-size:12.5px;color:var(--suave);margin-top:5px}
 .hoy{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px;padding:8px 10px;border-radius:12px;background:linear-gradient(90deg,rgba(217,164,65,.16),rgba(217,164,65,.02));border:1px solid rgba(217,164,65,.35)}
+.atrasado{color:#FF8B8E}
+.buscador{position:relative;flex:1;min-width:120px;max-width:420px}
+.buscador input{width:100%;background:var(--panel);border:1px solid var(--linea);border-radius:999px;padding:8px 14px;font-size:15px}
+#resultados{position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:50;background:var(--panel);border:1px solid var(--linea);border-radius:12px;box-shadow:var(--sombra);max-height:60vh;overflow:auto}
+#resultados button{display:block;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid var(--linea);padding:9px 12px;cursor:pointer}
+#resultados button:hover{background:var(--panel2)}#resultados span{display:block;color:var(--suave);font-size:12.5px}
+.galeria{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px}
+.galeria img{height:150px;width:auto;max-width:85%;border-radius:10px;scroll-snap-align:start;cursor:zoom-in;background:var(--panel2);flex:none;object-fit:cover}
+.visor{position:fixed;inset:0;z-index:5000;background:rgba(0,0,0,.92);display:flex;align-items:center;justify-content:center}
+.visor img{max-width:94vw;max-height:84vh;border-radius:8px}
+.visor button{position:absolute;background:rgba(255,255,255,.12);border:0;color:#fff;font-size:30px;width:48px;height:48px;border-radius:50%;cursor:pointer}
+.visor .cerrar{top:calc(14px + env(safe-area-inset-top));right:14px;font-size:22px}.visor .ant{left:10px}.visor .sig{right:10px}
+.visor .pie-visor{position:absolute;bottom:calc(16px + env(safe-area-inset-bottom));color:#ddd;font-size:14px}
+details.gastos{border:1px solid var(--linea);border-radius:10px;padding:8px 10px}details.gastos summary{cursor:pointer;font-weight:700}
+table.cartera tr.detalle td{padding-top:0;border-bottom:1px solid var(--linea)}table.cartera tr.detalle summary{cursor:pointer;color:var(--suave);font-size:12.5px}
+.tres{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.tres label{font-size:12px;color:var(--suave)}.tres input{margin-top:3px}
+.dijo{font-weight:400;color:var(--tenue);font-size:11px;margin-left:4px}
+.chips-pide{display:flex;flex-wrap:wrap;gap:6px}
+.form.contacto{background:rgba(255,255,255,.02);border:1px solid var(--linea);border-radius:12px;padding:10px}
+#formcodigo input[type=email],#formcodigo input#codigoOtp{letter-spacing:normal;font-size:17px}
 .hoy-tit{font-family:var(--titulo);font-weight:800;color:var(--laton2);margin-right:4px}
 .vacio{padding:30px;text-align:center;color:var(--suave);background:var(--panel);border-radius:var(--r);border:1px dashed var(--linea)}
 
@@ -231,6 +251,11 @@ nav.pestanas .cuenta.parados{background:var(--rojo);color:#fff}
   .filtros{gap:6px}.filtros select{flex:1 1 45%}
   .tarjeta{grid-template-columns:78px minmax(0,1fr)}.tarjeta .foto{width:78px;height:78px}
   .cab .actualizado{display:none}
+  .cab .fila{flex-wrap:wrap}.buscador{order:3;flex-basis:100%;max-width:none;margin-top:6px}
+  table.cartera,table.cartera tbody,table.cartera tr,table.cartera td{display:block;width:100%}table.cartera tr:first-child{display:none}
+  table.cartera tr[data-id],table.cartera tr.total{border:1px solid var(--linea);border-radius:12px;padding:8px 10px;margin-top:10px}table.cartera tr.total{border-color:var(--laton)}
+  table.cartera td{border:0;padding:3px 0;text-align:left!important;display:flex;justify-content:space-between;gap:10px}table.cartera td[data-l]::before{content:attr(data-l);color:var(--tenue);font-size:12px;font-weight:600}table.cartera td[data-l='Caso']{display:block}table.cartera td[data-l='Caso']::before,table.cartera td[data-l='']::before{content:none}table.cartera td.vacia{display:none}table.cartera tr.total td{border-top:0}
+  table.cartera tr.detalle{border:0;margin:0}table.cartera tr.detalle td{display:block}
   dl.datos{grid-template-columns:1fr}dl.datos dt{margin-top:6px}
   .dos{grid-template-columns:1fr}
 }
@@ -261,14 +286,18 @@ nav.pestanas .cuenta.parados{background:var(--rojo);color:#fff}
     <div class="fila">
       <div class="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 15 16 5l12 10" fill="none" stroke="#C8553D" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="19" r="5" fill="none" stroke="#F3C969" stroke-width="3"/><path d="M16 21h11M24 21v4M20 21v3" stroke="#F3C969" stroke-width="3" stroke-linecap="round"/></svg>LLAVES</div>
       <div id="llavero" title="Pisos nuevos desde tu última visita"></div>
-      <div class="actualizado" id="actualizado"></div>
+      <div class="buscador"><input id="buscar" type="search" placeholder="Buscar calle, referencia, caso…" aria-label="Buscar" autocomplete="off"><div id="resultados" class="oculto" role="listbox"></div></div>
+      <div class="actualizado"><span id="actualizado"></span><br><span id="quien"></span></div>
     </div>
     <nav class="pestanas" id="pestanas">
       <button data-v="radar" class="activa">Radar</button>
+      <button data-v="hoy" class="oculto">Hoy toca <span class="cuenta" id="cuentaHoy">0</span></button>
       <button data-v="tablero">Seguimiento <span class="cuenta" id="cuentaCasos">0</span><span class="cuenta parados oculto" id="cuentaParados"></span></button>
       <button data-v="mano">A mano</button>
       <button data-v="guia">Guía legal</button>
       <button data-v="fuentes">Fuentes</button>
+      <button data-v="cartera">Cartera</button>
+      <button data-v="equipo" class="oculto">Equipo</button>
       <button data-v="ajustes">Ajustes</button>
     </nav>
   </header>
@@ -278,6 +307,7 @@ nav.pestanas .cuenta.parados{background:var(--rojo);color:#fff}
 <div id="ficha" class="oculto"><div class="hoja" id="hoja"></div></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="../comun/boveda.js"></script>
 <script type="module" src="app.js"></script>
 </body>
 </html>
