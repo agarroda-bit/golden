@@ -1,14 +1,18 @@
 /* Lanzador GOLDEN OCLOCK — abre una app de Apps Script con icono y nombre propios.
-   El enlace (con su clave) se pega UNA vez y se guarda solo en este móvil.
-   Nunca se guarda en el servidor ni en este archivo. */
+   El enlace (con su clave) se pega UNA vez y se guarda solo en este móvil, DENTRO DE LA BÓVEDA (cifrado con el PIN).
+   Nunca se guarda en el servidor ni en este archivo. Desde el 26/10/2026 ya no queda en claro en el móvil. */
 (function () {
   'use strict';
   var C = window.LZ; // configuración de cada app (en su index.html)
   var K_ENLACE = 'lz_' + C.id + '_enlace';
   var K_MODO = 'lz_' + C.id + '_modo';
 
-  function leer(k) { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } }
-  function escribir(k, v) { try { if (v) localStorage.setItem(k, v); else localStorage.removeItem(k); return true; } catch (e) { return false; } }
+  function leerLS(k) { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } }
+  function escribirLS(k, v) { try { if (v) localStorage.setItem(k, v); else localStorage.removeItem(k); return true; } catch (e) { return false; } }
+  // El enlace con la clave va en la bóveda (abierta con el PIN); el modo de apertura puede quedarse en claro.
+  var B = null, SECRETO = 'enlace_' + C.id;
+  function leer(k) { if (k === K_ENLACE) return B ? (B.leer(SECRETO) || '') : ''; return leerLS(k); }
+  function escribir(k, v) { if (k === K_ENLACE) { if (!B) return false; B.guardar(SECRETO, v || null); return true; } return escribirLS(k, v); }
 
   var ua = navigator.userAgent || '';
   var esIOS = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
@@ -134,10 +138,12 @@
     $('btn-guardar').onclick = function () {
       var r = comprobar();
       if (!r) { if (!$('campo').value.trim()) msg('Pega primero el enlace.', 'no'); return; }
-      if (!escribir(K_ENLACE, r.url)) { msg('Este navegador no deja guardar (¿modo privado?). Ábrelo desde el icono de la pantalla de inicio.', 'no'); return; }
-      a.style.display = 'none';
-      if (location.hash) history.replaceState(null, '', location.pathname);
-      arrancar(r.url);
+      conBoveda().then(function () {
+        if (!B || !escribir(K_ENLACE, r.url)) { msg('Sin el PIN no se guarda la clave en este móvil.', 'no'); return; }
+        a.style.display = 'none';
+        if (location.hash) history.replaceState(null, '', location.pathname);
+        arrancar(r.url);
+      });
     };
     $('btn-abrir').style.display = enlace ? 'inline-block' : 'none';
     $('btn-abrir').onclick = function () {
@@ -149,11 +155,25 @@
     $('btn-borrar').onclick = function () { escribir(K_ENLACE, ''); ajustes(); msg('Enlace borrado de este móvil.', 'ok'); };
   }
 
+  // Abre la bóveda (o la crea con el PIN). Lo que hubiera en claro de versiones anteriores se mete dentro y se borra.
+  function conBoveda() {
+    if (B) return Promise.resolve(B);
+    if (!window.Boveda) return Promise.resolve(null);
+    var migrar = {}; var enClaro = leerLS(K_ENLACE); if (enClaro) migrar[SECRETO] = enClaro;
+    return Boveda.abrir({ titulo: C.titulo, migrar: migrar }).then(function (b) {
+      if (b) { B = b; escribirLS(K_ENLACE, ''); }
+      return B;
+    });
+  }
   document.addEventListener('DOMContentLoaded', function () {
-    var enlace = leer(K_ENLACE);
-    // 19/10: VENDER usa la misma clave que la APP. Si en este móvil ya está la de la APP (mismo navegador), se aprovecha sin pegar nada.
-    if (!enlace && C.id === 'vender') { var deApp = validar(leer('lz_app_enlace')); if (deApp.ok) { enlace = deApp.url; escribir(K_ENLACE, enlace); } }
-    if (enlace) { var r = validar(enlace); if (r.ok && r.url !== enlace) { enlace = r.url; escribir(K_ENLACE, enlace); } }
-    if (!enlace || location.hash === '#ajustes') ajustes(); else arrancar(enlace);
+    var hayAlgo = (window.Boveda && Boveda.existe()) || leerLS(K_ENLACE) || /#alta=/.test(location.hash);
+    if (!hayAlgo) { ajustes(); return; } // primera vez en este móvil: se pega la clave y luego se elige el PIN
+    conBoveda().then(function () {
+      var enlace = leer(K_ENLACE);
+      // 19/10: VENDER usa la misma clave que la APP. Si en la bóveda ya está la de la APP, se aprovecha sin pegar nada.
+      if (!enlace && C.id === 'vender' && B) { var deApp = validar(B.leer('enlace_app') || ''); if (deApp.ok) { enlace = deApp.url; escribir(K_ENLACE, enlace); } }
+      if (enlace) { var r = validar(enlace); if (r.ok && r.url !== enlace) { enlace = r.url; escribir(K_ENLACE, enlace); } }
+      if (!enlace || location.hash === '#ajustes') ajustes(); else arrancar(enlace);
+    });
   });
 })();
