@@ -1,12 +1,26 @@
-// LLAVES · web privada. Los datos llegan cifrados (AES-256) y se abren con el código de «Páginas».
-// El seguimiento, los ajustes de la calculadora y los pisos «a mano» se guardan en este móvil u ordenador.
+// LLAVES · web privada.
+// Modo NUBE (v3, con config.js): equipo con roles en Supabase; entrada por correo la primera vez y después PIN;
+//   el seguimiento, las cifras de la calculadora y los pisos «a mano» son compartidos.
+// Modo LOCAL (sin config.js): los datos llegan cifrados en datos.enc.json y todo se guarda en este aparato.
 import { TIPOS, AJUSTES_INICIALES, calcular, semaforo, valorLibre, eur, redondear } from './calculo.js';
 import { porReferencia, fincaPorPortal, fincaPorCallejero, normPlanta, normPuerta } from './catastro.js';
 import { plantilla, PLANTILLAS, dossier, enlacesPiso } from './plantillas.js';
+import CONFIG from './config.js';
+import * as CONTACTO from './contacto.js';
+import { analizarPegado } from './portales.js';
 
 const K = { cod: 'lz_paginas_codigo', visita: 'llaves_ultima_visita', vistos: 'llaves_vistos', casos: 'llaves_casos', aj: 'llaves_ajustes', ajp: 'llaves_ajustes_piso', mano: 'llaves_manuales', filtros: 'llaves_filtros', check: 'llaves_check' };
-const leer = (k, d) => { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch { return d; } };
-const guardar = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} };
+// En modo nube, estas claves viven en el servidor (compartidas con el equipo); aquí se leen de una copia en memoria.
+const COMPARTIDAS = new Set([K.casos, K.ajp, K.check, K.mano, K.aj]);
+let NB = null;          // módulo nube.js cuando el modo nube está activo
+let MI = null;          // { user_id, email, rol }
+const ST = {};          // copia en memoria de lo compartido
+const leerLocal = (k, d) => { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch { return d; } };
+const leer = (k, d) => (NB && COMPARTIDAS.has(k) ? structuredClone(ST[k] ?? d) : leerLocal(k, d));
+const guardar = (k, v) => {
+  if (NB && COMPARTIDAS.has(k)) { const antes = ST[k]; ST[k] = structuredClone(v); sincronizar(k, antes, v); return; }
+  try { localStorage.setItem(k, JSON.stringify(v)); } catch {}
+};
 const leerTexto = (k) => { try { return localStorage.getItem(k); } catch { return null; } };
 const h = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const $ = (s, el = document) => el.querySelector(s);
@@ -57,7 +71,6 @@ async function abrir(codigo, animar = true) {
     if (animar) { $('#errorcodigo').textContent = e?.name === 'OperationError' ? 'Ese código no abre esta puerta.' : 'No se pudieron cargar los datos: ' + (e.message || e); $('#cerradura').classList.add('temblor'); setTimeout(() => $('#cerradura').classList.remove('temblor'), 450); }
     return false;
   }
-  try { localStorage.setItem(K.cod, codigo); } catch {}
   const llave = $('#llave'), puerta = $('#puerta');
   llave.classList.add('dentro');
   await new Promise((r) => setTimeout(r, 650));
@@ -69,9 +82,170 @@ async function abrir(codigo, animar = true) {
   setTimeout(() => $('#cerradura').remove(), 1100);
   return true;
 }
-$('#formcodigo').addEventListener('submit', (e) => { e.preventDefault(); abrir($('#codigo').value.trim()); });
-const guardado = leerTexto(K.cod);
-if (guardado) abrir(guardado, false).then((ok) => { if (!ok) $('#codigo').focus(); });
+if (CONFIG?.nube) iniciarNube();
+else {
+  // Modo local: el código largo vive en la bóveda del aparato (se abre con el PIN). Si aún estaba en claro, se mete dentro.
+  $('#formcodigo').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const cod = $('#codigo').value.trim();
+    if (await abrir(cod) && window.Boveda) { const b = await Boveda.abrir({ titulo: 'Elige tu PIN para no volver a escribir el código' }); if (b) await b.guardar('codigo_largo', cod); }
+  });
+  (async () => {
+    const enClaro = leerTexto(K.cod);
+    if (window.Boveda && (Boveda.existe() || enClaro)) {
+      const b = await Boveda.abrir({ titulo: 'LLAVES', migrar: enClaro ? { codigo_largo: enClaro } : null });
+      if (b) { try { localStorage.removeItem(K.cod); } catch {} const cod = b.leer('codigo_largo'); if (cod && await abrir(cod, false)) return; }
+    } else if (enClaro && await abrir(enClaro, false)) return;
+    $('#codigo').focus();
+  })();
+}
+
+/* ---------------- Modo nube: entrar (correo la 1.ª vez, luego PIN), cargar y sincronizar ---------------- */
+const ROLES = { dueno: 'Dueño', negociador: 'Negociador', captador: 'Captador', lectura: 'Solo lectura' };
+const puede = {
+  seguir: () => !NB || MI.rol !== 'lectura',
+  mano: () => !NB || MI.rol !== 'lectura',
+  equipo: () => NB && MI.rol === 'dueno',
+  ajustesEquipo: () => !NB || MI.rol === 'dueno',
+  tocarCaso: (c) => !NB || MI.rol === 'dueno' || (MI.rol === 'negociador' && c?.responsable === MI.user_id),
+  contacto: (c) => NB && (MI.rol === 'dueno' || (MI.rol === 'negociador' && c?.responsable === MI.user_id)),
+};
+
+function pasoEntrada(html) {
+  $('#formcodigo').innerHTML = `<div class="marca">LLAVES</div>${html}<div id="errorcodigo"></div>`;
+  $('#formcodigo').onsubmit = (e) => e.preventDefault();
+}
+const errEntrada = (t) => { const e = $('#errorcodigo'); if (e) e.textContent = t; };
+
+function pedirCorreo(aviso = '') {
+  return new Promise((resolver) => {
+    pasoEntrada(`<div class="sub">${aviso ? h(aviso) : 'La primera vez en este aparato entras con tu correo. Después, con tu PIN.'}</div>
+      <input id="correo" type="email" inputmode="email" autocomplete="email" placeholder="Tu correo" aria-label="Correo">
+      <button type="submit" id="bCorreo">Enviarme el acceso</button>`);
+    $('#correo').focus();
+    $('#formcodigo').onsubmit = async (e) => {
+      e.preventDefault();
+      const email = $('#correo').value.trim();
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return errEntrada('Escribe un correo válido.');
+      $('#bCorreo').disabled = true; errEntrada('');
+      try { await NB.enviarAcceso(email); } catch (er) { $('#bCorreo').disabled = false; return errEntrada(er.message); }
+      pasoEntrada(`<div class="sub">Te hemos mandado un correo a <b>${h(email)}</b>. Abre el enlace en este aparato o escribe aquí el código que trae.</div>
+        <input id="codigoOtp" inputmode="numeric" autocomplete="one-time-code" maxlength="10" placeholder="Código del correo" aria-label="Código del correo">
+        <button type="submit" id="bCodigo">Entrar</button><button type="button" class="boton" id="bOtro" style="background:none;color:var(--suave)">Usar otro correo</button>`);
+      $('#bOtro').onclick = () => resolver(pedirCorreo());
+      $('#formcodigo').onsubmit = async (ev) => {
+        ev.preventDefault();
+        try { await NB.verificarCodigo(email, $('#codigoOtp').value); resolver(true); } catch (er) { errEntrada(er.message); }
+      };
+    };
+  });
+}
+
+async function iniciarNube() {
+  NB = await import('./nube.js');
+  NB.conectar(CONFIG.nube);
+  $('#cerradura .sub')?.remove?.();
+  pasoEntrada('<div class="sub">Abriendo…</div>');
+  // ¿Viene de un enlace del correo? supabase-js lo recoge solo de la barra
+  const deEnlace = /access_token=|error_description=/.test(location.hash);
+  let bloqueada = false;
+  if (window.Boveda?.existe()) {
+    const b = await Boveda.abrir({ titulo: 'LLAVES', alBloquear: () => { bloqueada = true; } });
+    if (b) await NB.usarBoveda(b);
+  }
+  let s = await NB.sesion();
+  if (deEnlace) history.replaceState(null, '', location.pathname + '#radar');
+  if (!s) {
+    await pedirCorreo(bloqueada ? '5 PIN fallados: por seguridad, entra otra vez con tu correo.' : '');
+    s = await NB.sesion();
+  }
+  if (!NB.hayBoveda()) {
+    pasoEntrada('<div class="sub">Elige un PIN de 4 cifras para abrir LLAVES en este aparato.</div>');
+    const b = await Boveda.abrir({ titulo: 'Tu PIN para LLAVES' });
+    if (!b) { pasoEntrada('<div class="sub">Sin PIN no se guarda la sesión. Recarga para intentarlo otra vez.</div>'); return; }
+    await NB.usarBoveda(b);
+  }
+  try { MI = await NB.entrar(); } catch (e) {
+    await NB.salir();
+    pasoEntrada(`<div class="sub">${h(e.message)}. Pide al dueño que te invite.</div><button type="button" id="bReint">Probar con otro correo</button>`);
+    $('#bReint').onclick = () => location.reload();
+    return;
+  }
+  let sinConexion = null;
+  try { D = await cargarNube(); NB.guardarCache({ D, ST, cuando: new Date().toISOString() }); }
+  catch (e) {
+    const c = NB.leerCache();
+    if (!c) { pasoEntrada(`<div class="sub">No se pudieron cargar los datos: ${h(e.message)}</div><button type="button" onclick="location.reload()">Reintentar</button>`); return; }
+    D = c.D; Object.assign(ST, c.ST); sinConexion = c.cuando;
+  }
+  D.sinConexion = sinConexion;
+  $('#formcodigo').style.opacity = '0'; $('#puerta').classList.add('abierta');
+  arrancar();
+  setTimeout(() => $('#cerradura')?.remove(), 900);
+}
+
+const filaACaso = (r) => ({ seguido: true, _id: r.id, etapa: r.etapa, fechas: r.fechas || {}, notas: r.notas || [], siguiente: r.proxima_accion || '', proximaFecha: r.proxima_fecha || '', responsable: r.responsable, creadoPor: r.creado_por, vulnerable: r.vulnerable, precioCompra: r.precio_compra, gastos: r.gastos || [], ingreso: r.ingreso, cerrado: r.cerrado, piso: r.piso });
+const casoAFila = (c) => ({ etapa: c.etapa, fechas: c.fechas || {}, notas: c.notas || [], proxima_accion: c.siguiente || null, proxima_fecha: c.proximaFecha || null, vulnerable: !!c.vulnerable, precio_compra: c.precioCompra ?? null, gastos: c.gastos || [], ingreso: c.ingreso ?? null, cerrado: c.cerrado || null, ...(MI.rol === 'dueno' ? { responsable: c.responsable || null } : {}) });
+
+async function cargarNube() {
+  const [radar, filas] = await Promise.all([NB.cargarRadar(), NB.cargarCasos()]);
+  ST[K.casos] = {}; ST[K.ajp] = { ...leerLocal('llaves_ajp_local', {}) }; ST[K.check] = { ...leerLocal('llaves_check_local', {}) };
+  for (const r of filas) { ST[K.casos][r.piso_id] = filaACaso(r); if (r.ajustes && Object.keys(r.ajustes).length) ST[K.ajp][r.piso_id] = r.ajustes; if (r.revisado && Object.keys(r.revisado).length) ST[K.check][r.piso_id] = r.revisado; }
+  ST[K.mano] = radar.mano || [];
+  ST[K.aj] = radar.ajustesEquipo || {};
+  if (MI.rol === 'dueno') { try { EQUIPO = await NB.miembros(); } catch {} }
+  // Casos de pisos que ya no están en el radar: se pintan con la foto guardada en el caso
+  const ids = new Set([...(radar.pisos || []).map((p) => p.id), ...ST[K.mano].map((p) => p.id)]);
+  for (const r of filas) if (!ids.has(r.piso_id) && r.piso) radar.pisos.push({ ...r.piso, retirado: r.piso.retirado || 'sin anuncio' });
+  return radar;
+}
+let EQUIPO = [];
+const nombreMiembro = (id) => { const m = EQUIPO.find((x) => x.user_id === id); return m ? (m.nombre || m.email) : id === MI?.user_id ? 'tú' : '—'; };
+
+// Lleva al servidor lo que cambió. Si falla, se avisa y se recargan los casos del servidor.
+const pisoCorto = (id) => { const p = PISOS.find((x) => x.id === id) || RETIRADOS.find((x) => x.id === id) || (D.pisos || []).find((x) => x.id === id); if (!p) return null; const { calc, ...resto } = p; return { ...resto, valor: p.valor ? { ...p.valor, comparables: { ...(p.valor.comparables || {}), muestra: [] } } : null }; };
+async function sincronizar(k, antes = {}, ahora = {}) {
+  try {
+    if (k === K.casos) {
+      for (const id of new Set([...Object.keys(antes || {}), ...Object.keys(ahora || {})])) {
+        const a = antes?.[id], b = ahora?.[id];
+        if (JSON.stringify(a) === JSON.stringify(b)) continue;
+        if (b?.seguido && !b._id) {
+          const fila = await NB.crearCaso({ piso_id: id, piso: pisoCorto(id), ...casoAFila(b), ajustes: ST[K.ajp][id] || {}, revisado: ST[K.check][id] || {},
+            responsable: MI.rol === 'negociador' ? MI.user_id : MI.rol === 'dueno' ? (b.responsable || null) : null, creado_por: MI.user_id });
+          ST[K.casos][id] = filaACaso(fila);
+        } else if (b?._id && !b.seguido) {
+          if (MI.rol !== 'dueno') throw new Error('Solo el dueño quita casos del seguimiento');
+          await NB.borrarCaso(b._id); delete ST[K.casos][id];
+        } else if (b?._id) {
+          ST[K.casos][id] = filaACaso(await NB.guardarCaso(b._id, casoAFila(b)));
+        }
+      }
+    } else if (k === K.ajp || k === K.check) {
+      const col = k === K.ajp ? 'ajustes' : 'revisado';
+      const local = leerLocal(k === K.ajp ? 'llaves_ajp_local' : 'llaves_check_local', {});
+      for (const id of new Set([...Object.keys(antes || {}), ...Object.keys(ahora || {})])) {
+        if (JSON.stringify(antes?.[id]) === JSON.stringify(ahora?.[id])) continue;
+        const caso = ST[K.casos][id];
+        if (caso?._id && puede.tocarCaso(caso)) await NB.guardarCaso(caso._id, { [col]: ahora?.[id] || {} });
+        else { if (ahora?.[id]) local[id] = ahora[id]; else delete local[id]; }
+      }
+      try { localStorage.setItem(k === K.ajp ? 'llaves_ajp_local' : 'llaves_check_local', JSON.stringify(local)); } catch {}
+    } else if (k === K.mano) {
+      const porId = (l) => Object.fromEntries((l || []).map((x) => [x.id, x]));
+      const A = porId(antes), B = porId(ahora);
+      for (const id of Object.keys(B)) if (JSON.stringify(A[id]) !== JSON.stringify(B[id])) await NB.guardarMano(B[id]);
+      for (const id of Object.keys(A)) if (!B[id]) await NB.borrarMano(id);
+    } else if (k === K.aj) {
+      if (MI.rol !== 'dueno') throw new Error('Solo el dueño cambia los valores del equipo');
+      await NB.guardarAjustesEquipo(ahora);
+    }
+    NB.guardarCache({ D, ST, cuando: new Date().toISOString() });
+  } catch (e) {
+    toast('No se guardó en el servidor: ' + e.message);
+    try { await cargarNube().then((r) => { D = r; }); prepararPisos(); pintarCabecera(); if (VISTA === 'tablero') vistaTablero(); } catch {}
+  }
+}
 
 /* ---------------- Preparar datos ---------------- */
 function ajustesGlobales() { return { ...AJUSTES_INICIALES, ...leer(K.aj, {}) }; }
@@ -108,7 +282,14 @@ function arrancar() {
   guardar(K.vistos, PISOS.map((p) => p.id));
   try { localStorage.setItem(K.visita, new Date().toISOString()); } catch {}
   pintarCabecera(ultima);
+  if (NB) {
+    const ocultar = { lectura: ['tablero', 'mano', 'hoy', 'equipo', 'cartera'], captador: ['equipo', 'hoy', 'cartera'], negociador: ['equipo'], dueno: [] }[MI.rol] || [];
+    document.querySelectorAll('#pestanas button').forEach((b) => { if (['hoy', 'equipo'].includes(b.dataset.v)) b.classList.remove('oculto'); if (ocultar.includes(b.dataset.v)) b.remove(); });
+    $('#quien').innerHTML = `${h(MI.email)} · <b>${h(ROLES[MI.rol])}</b>`;
+    if (D.sinConexion) toast('Sin conexión: datos guardados del ' + fecha(D.sinConexion));
+  }
   document.querySelectorAll('#pestanas button').forEach((b) => b.addEventListener('click', () => ir(b.dataset.v)));
+  iniciarBusqueda();
   ir(location.hash.slice(1) || 'radar');
   window.addEventListener('hashchange', () => { const v = location.hash.slice(1); if (v && v !== VISTA) ir(v); });
 }
@@ -124,6 +305,7 @@ function pintarCabecera(ultima) {
   const horas = act ? Math.round((Date.now() - act) / 36e5) : null;
   $('#actualizado').innerHTML = act ? `Recogida: ${act.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })} ${act.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}${horas > 30 ? '<br><b style="color:var(--ambar)">hace más de un día</b>' : ''}` : '';
   $('#cuentaCasos').textContent = Object.values(leer(K.casos, {})).filter((c) => c.seguido).length;
+  const nh = hoyToca().length, ch = $('#cuentaHoy'); if (ch) { ch.textContent = nh; ch.classList.toggle('parados', nh > 0); }
   const np = parados(); const cp = $('#cuentaParados'); cp.textContent = np ? `${np} parado${np === 1 ? '' : 's'}` : ''; cp.classList.toggle('oculto', !np);
 }
 
@@ -131,7 +313,8 @@ function ir(v) {
   VISTA = v; if (location.hash.slice(1) !== v) history.replaceState(null, '', '#' + v);
   document.querySelectorAll('#pestanas button').forEach((b) => b.classList.toggle('activa', b.dataset.v === v));
   if (MAPA && v !== 'radar') { MAPA.remove(); MAPA = null; }
-  ({ radar: vistaRadar, tablero: vistaTablero, mano: vistaMano, guia: vistaGuia, fuentes: vistaFuentes, ajustes: vistaAjustes }[v] || vistaRadar)();
+  if (!document.querySelector(`#pestanas button[data-v="${v}"]`)) v = 'radar';
+  ({ radar: vistaRadar, tablero: vistaTablero, mano: vistaMano, guia: vistaGuia, fuentes: vistaFuentes, ajustes: vistaAjustes, hoy: vistaHoy, equipo: vistaEquipo, cartera: vistaCartera }[v] || vistaRadar)();
   window.scrollTo({ top: 0 });
 }
 
@@ -305,7 +488,7 @@ function pintarFicha(p) {
   const casos = leer(K.casos, {}); const caso = casos[p.id];
   $('#hoja').innerHTML = `
     <div class="top"><button id="cerrar">← Volver</button><h2>${h(c.exacta ? c.direccion : p.direccion)}</h2>
-      <button id="seguir" class="${caso?.seguido ? '' : 'boton oro'}">${caso?.seguido ? '✓ En seguimiento' : '+ Seguir'}</button></div>
+      ${puede.seguir() ? `<button id="seguir" class="${caso?.seguido ? '' : 'boton oro'}">${caso?.seguido ? '✓ En seguimiento' : '+ Seguir'}</button>` : ''}</div>
     <div class="cuerpo">
       <div class="semaforo-grande ${p.sem}"><div class="luz ${p.sem}"></div><div>${p.sem}: ${h(p.mot)}</div></div>
       ${p.vulnerable ? `<div class="aviso vul"><b>VULNERABLE.</b> ${h(p.motivoVulnerable || '')} ${h(D.legal?.vulnerables?.llano || 'Cuando viven menores, personas mayores o una familia vulnerable, los plazos de un desalojo cambian y los juzgados piden informe de Servicios Sociales.')} <b>Recomendación: pasar por Servicios Sociales del municipio y hablarlo con el abogado antes de ofertar.</b></div>` : ''}
@@ -320,6 +503,7 @@ function pintarFicha(p) {
         <div class="dato"><span>Si pagas lo que piden</span><b class="margen ${p.mg > 0 ? 'pos' : 'neg'}">${eur(p.mg)}</b><span>${pct(p.mgPct)} sobre lo invertido (normal)</span></div>
       </div>
 
+      ${galeria(p)}
       <section class="bloque"><h3>🏠 La vivienda</h3>
         <dl class="datos">
           <dt>Dirección del anuncio</dt><dd>${h(p.direccion)}</dd>
@@ -384,7 +568,12 @@ function pintarFicha(p) {
       </section>
     </div>`;
   $('#cerrar').onclick = () => history.back();
-  $('#seguir').onclick = () => { seguir(p.id, !leer(K.casos, {})[p.id]?.seguido); pintarFicha(p); pintarCabecera(); };
+  if ($('#seguir')) $('#seguir').onclick = () => {
+    const ya = leer(K.casos, {})[p.id]?.seguido;
+    if (ya && NB && MI.rol !== 'dueno') return toast('Solo el dueño quita un caso del seguimiento');
+    if (ya && NB && !confirm('¿Quitar este caso del seguimiento para todo el equipo?')) return;
+    seguir(p.id, !ya); pintarFicha(p); pintarCabecera();
+  };
   $('[data-tipo-cambiar]').onclick = () => {
     const opciones = Object.entries(TIPOS).map(([k, t], i) => `${i + 1}. ${t.nombre}`).join('\n');
     const r = prompt('¿Qué tipo es? Escribe el número:\n' + opciones);
@@ -394,6 +583,7 @@ function pintarFicha(p) {
   document.querySelectorAll('[data-plantilla]').forEach((b) => b.onclick = () => descargarPlantilla(b.dataset.plantilla, p));
   $('#dossier').onclick = () => descargarPlantilla('dossier', p);
   pintarChecklist(p); pintarCalc(p); pintarSeguimiento(p);
+  document.querySelectorAll('.galeria img').forEach((im, i) => im.onclick = () => visor(fotosDe(p), i));
 }
 
 function pintarChecklist(p) {
@@ -469,27 +659,46 @@ function moverCaso(id, etapa) {
 }
 function pintarSeguimiento(p) {
   const c = leer(K.casos, {})[p.id];
-  if (!c?.seguido) { $('#seg').innerHTML = '<p style="color:var(--suave);margin:0">Pulsa «+ Seguir» arriba para llevar este caso en el tablero.</p>'; return; }
+  if (!c?.seguido) { $('#seg').innerHTML = `<p style="color:var(--suave);margin:0">${puede.seguir() ? 'Pulsa «+ Seguir» arriba para llevar este caso en el tablero.' : 'Tu acceso es de solo lectura: no ves los casos.'}</p>`; return; }
+  if (NB && !puede.tocarCaso(c)) {
+    $('#seg').innerHTML = `<p style="margin:0">En <b>${h(c.etapa)}</b> desde el ${fecha(c.fechas?.[c.etapa])}. Responsable: ${h(c.responsable ? nombreMiembro(c.responsable) : 'sin asignar')}.</p><p style="color:var(--suave)">Solo el dueño o el negociador del caso lo pueden mover.</p>`;
+    return;
+  }
   $('#seg').innerHTML = `
     <div class="form">
       <div><label>Columna</label><select id="segEtapa">${ETAPAS.map((e) => `<option ${c.etapa === e ? 'selected' : ''}>${e}</option>`).join('')}</select></div>
-      <div><label>Lo siguiente que hay que hacer</label><input id="segSig" value="${h(c.siguiente || '')}"></div>
-      <div><label>Contacto (solo lo que den voluntariamente, p. ej. un teléfono; nada de nombres ni situación personal)</label><input id="segCont" value="${h(c.contacto || '')}" autocomplete="off"></div>
+      <div class="dos"><div><label>Próxima acción</label><input id="segSig" value="${h(c.siguiente || '')}"></div><div><label>Para cuándo</label><input id="segFecha" type="date" value="${h(c.proximaFecha || '')}"></div></div>
+      ${NB && MI.rol === 'dueno' ? `<div><label>Responsable (negociador)</label><select id="segResp"><option value="">Sin asignar</option>${EQUIPO.filter((m) => m.activo && ['dueno', 'negociador'].includes(m.rol)).map((m) => `<option value="${m.user_id}" ${c.responsable === m.user_id ? 'selected' : ''}>${h(m.nombre || m.email)} · ${h(ROLES[m.rol])}</option>`).join('')}</select></div>` : NB ? `<p style="margin:0;color:var(--suave)">Responsable: ${h(c.responsable ? nombreMiembro(c.responsable) : 'sin asignar')}</p>` : ''}
+      ${NB ? '' : `<div><label>Contacto (solo lo que den voluntariamente, p. ej. un teléfono; nada de nombres ni situación personal)</label><input id="segCont" value="${h(c.contacto || '')}" autocomplete="off"></div>`}
       <label style="display:flex;gap:8px;align-items:center;color:var(--texto)"><input type="checkbox" id="segVul" ${c.vulnerable ? 'checked' : ''} style="width:20px;height:20px;accent-color:var(--rojo)"> Marcar VULNERABLE (hay menores, mayores o una familia vulnerable)</label>
+      <details class="gastos" ${c.precioCompra || (c.gastos || []).length ? 'open' : ''}><summary>💶 Dinero real del caso (compra, gastos e ingreso)</summary>
+        <div class="dos"><div><label>Precio de compra (€)</label><input id="segCompra" type="number" inputmode="numeric" value="${h(c.precioCompra ?? '')}"></div><div><label>Ingreso: venta o alquiler (€)</label><input id="segIngreso" type="number" inputmode="numeric" value="${h(c.ingreso ?? '')}"></div></div>
+        <table class="t">${(c.gastos || []).map((g, i) => `<tr><td class="num">${fecha(g.fecha)}</td><td>${h(CONCEPTOS[g.concepto] || g.concepto)}${g.nota ? ' · ' + h(g.nota) : ''}</td><td class="n">${eur(g.importe)}</td><td><button class="boton" data-quitar-gasto="${i}">✕</button></td></tr>`).join('') || '<tr><td class="fuente">Sin gastos apuntados.</td></tr>'}</table>
+        <div class="tres" style="margin-top:6px"><select id="gConcepto">${Object.entries(CONCEPTOS).map(([k, t]) => `<option value="${k}">${h(t)}</option>`).join('')}</select><input id="gImporte" type="number" inputmode="decimal" placeholder="Importe €"><button class="boton" id="gAnadir" type="button">Añadir gasto</button></div>
+      </details>
       <div><label>Añadir nota</label><textarea id="segNota" rows="2" placeholder="Qué ha pasado hoy…"></textarea></div>
       <div class="botones"><button class="boton oro" id="segGuardar">Guardar</button></div>
     </div>
     <div class="tabla-scroll" style="margin-top:10px"><table class="t"><tr><th>Fecha</th><th>Qué</th></tr>
       ${ETAPAS.filter((e) => c.fechas?.[e]).map((e) => `<tr><td class="num">${fecha(c.fechas[e])}</td><td>→ ${h(e)}</td></tr>`).join('')}
-      ${(c.notas || []).slice().reverse().map((n) => `<tr><td class="num">${fecha(n.fecha)}</td><td>${h(n.texto)}</td></tr>`).join('')}
-    </table></div>`;
+      ${(c.notas || []).slice().reverse().map((n) => `<tr><td class="num">${fecha(n.fecha)}</td><td>${h(n.texto)}${n.quien ? ` <small style="color:var(--tenue)">· ${h(n.quien)}</small>` : ''}</td></tr>`).join('')}
+    </table></div>
+    ${NB ? '<div id="docs"></div><div id="contacto"></div>' : ''}`;
+  if (NB) { pintarDocumentos(p, c); CONTACTO.pintar({ p, c, $, h, NB, MI, puede, toast, fecha, D }); }
+  const cambiarGastos = (f2) => { const casos = leer(K.casos, {}); casos[p.id].gastos = f2(casos[p.id].gastos || []); guardar(K.casos, casos); pintarSeguimiento(p); };
+  $('#gAnadir').onclick = () => { const imp = Number($('#gImporte').value); if (!imp) return toast('Pon el importe'); cambiarGastos((g) => [...g, { fecha: hoyISO(), concepto: $('#gConcepto').value, importe: imp }]); toast('Gasto apuntado'); };
+  document.querySelectorAll('[data-quitar-gasto]').forEach((b) => b.onclick = () => cambiarGastos((g) => g.filter((_, i) => i !== Number(b.dataset.quitarGasto))));
   $('#segGuardar').onclick = () => {
     const casos = leer(K.casos, {}); const x = casos[p.id];
     const nueva = $('#segEtapa').value;
     if (nueva !== x.etapa) { x.etapa = nueva; x.fechas = { ...(x.fechas || {}), [nueva]: hoyISO() }; x.siguiente = SIGUIENTE[nueva]; } else x.siguiente = $('#segSig').value.trim();
-    x.contacto = $('#segCont').value.trim();
+    x.proximaFecha = $('#segFecha').value || '';
+    if ($('#segResp')) x.responsable = $('#segResp').value || null;
+    x.precioCompra = $('#segCompra').value ? Number($('#segCompra').value) : null;
+    x.ingreso = $('#segIngreso').value ? Number($('#segIngreso').value) : null;
+    if ($('#segCont')) x.contacto = $('#segCont').value.trim();
     x.vulnerable = $('#segVul').checked;
-    const nota = $('#segNota').value.trim(); if (nota) x.notas = [...(x.notas || []), { fecha: hoyISO(), texto: nota }];
+    const nota = $('#segNota').value.trim(); if (nota) x.notas = [...(x.notas || []), { fecha: hoyISO(), texto: nota, ...(NB ? { quien: MI.email } : {}) }];
     guardar(K.casos, casos); recalcular(p); pintarFicha(p); pintarCabecera(); toast('Guardado');
   };
 }
@@ -499,10 +708,10 @@ function vistaTablero() {
   const lista = Object.entries(casos).filter(([, c]) => c.seguido).map(([id, c]) => ({ c, p: PISOS.find((x) => x.id === id) || D.pisos.find((x) => x.id === id) })).filter((x) => x.p);
   $('#vista').innerHTML = `
     ${parados() ? `<div class="aviso error" id="avisoParados"><b>${parados()} caso${parados() === 1 ? '' : 's'} parado${parados() === 1 ? '' : 's'}</b>: más de ${DIAS_PARADO} días en la misma columna. Míralos y apunta el siguiente paso.</div>` : ''}
-    <p style="color:var(--suave);margin:4px 0 10px">${lista.length ? 'Arrastra cada caso a su columna (en el móvil: ábrelo y cambia la columna). El tablero se guarda en este dispositivo; haz copia en Ajustes.' : 'Aún no sigues ningún piso. Abre una ficha en el Radar y pulsa «+ Seguir».'}</p>
+    <p style="color:var(--suave);margin:4px 0 10px">${lista.length ? (NB ? 'Arrastra cada caso a su columna (en el móvil: ábrelo y cambia la columna). El tablero es compartido con tu equipo.' : 'Arrastra cada caso a su columna (en el móvil: ábrelo y cambia la columna). El tablero se guarda en este dispositivo; haz copia en Ajustes.') : 'Aún no sigues ningún piso. Abre una ficha en el Radar y pulsa «+ Seguir».'}</p>
     <div class="filtros" id="saltos">${ETAPAS.map((e, i) => { const n = lista.filter((x) => x.c.etapa === e).length; return `<button class="chip ${n ? 'on' : ''}" data-salto="${i}">${i + 1}. ${h(e)} · ${n}</button>`; }).join('')}</div>
     <div class="tablero">${ETAPAS.map((e) => `<div class="columna" data-etapa="${h(e)}"><h3><span>${h(e)}</span><span>${lista.filter((x) => x.c.etapa === e).length}</span></h3>
-      ${lista.filter((x) => x.c.etapa === e).map(({ c, p }) => { const pr = p.sem ? p : recalcular({ ...p }); const dias = diasEnColumna(c); const parado = dias > DIAS_PARADO; return `<div class="caso ${pr.sem} ${parado ? 'parado' : ''}" draggable="true" data-id="${h(p.id)}">${parado ? `<div class="parado-eti">parado ${dias} días</div>` : ''}<b>${h(p.catastro?.direccion || p.direccion)}</b>${h(nombreMun(p.municipio))} · ${eur(p.precio)} → máx. ${eur(pr.ofMax)}${c.vulnerable || pr.vulnerable ? ' · <span style="color:#FFB3B5">VULNERABLE</span>' : ''}<div class="sig">→ ${h(c.siguiente || '')}</div><div class="dias">${dias != null ? `${dias} día${dias === 1 ? '' : 's'} en esta columna` : ''}${p.retirado ? ' · el anuncio ya no está' : ''}</div></div>`; }).join('')}
+      ${lista.filter((x) => x.c.etapa === e).map(({ c, p }) => { const pr = p.sem ? p : recalcular({ ...p }); const dias = diasEnColumna(c); const parado = dias > DIAS_PARADO; return `<div class="caso ${pr.sem} ${parado ? 'parado' : ''}" draggable="true" data-id="${h(p.id)}">${parado ? `<div class="parado-eti">parado ${dias} días</div>` : ''}<b>${h(p.catastro?.direccion || p.direccion)}</b>${h(nombreMun(p.municipio))} · ${eur(p.precio)} → máx. ${eur(pr.ofMax)}${c.vulnerable || pr.vulnerable ? ' · <span style="color:#FFB3B5">VULNERABLE</span>' : ''}<div class="sig">→ ${h(c.siguiente || '')}${c.proximaFecha ? ` <b class="${c.proximaFecha < hoyISO() ? 'atrasado' : ''}">(${ddmm(c.proximaFecha)})</b>` : ''}</div>${NB ? `<div class="dias">👤 ${h(c.responsable ? nombreMiembro(c.responsable) : 'sin asignar')}</div>` : ''}<div class="dias">${dias != null ? `${dias} día${dias === 1 ? '' : 's'} en esta columna` : ''}${p.retirado ? ' · el anuncio ya no está' : ''}</div></div>`; }).join('')}
     </div>`).join('')}</div>`;
   document.querySelectorAll('.caso').forEach((el) => {
     el.onclick = () => abrirFicha(el.dataset.id);
@@ -518,6 +727,183 @@ function vistaTablero() {
     col.ondragleave = () => col.classList.remove('sobre');
     col.ondrop = (ev) => { ev.preventDefault(); moverCaso(ev.dataTransfer.getData('text/plain'), col.dataset.etapa); vistaTablero(); pintarCabecera(); };
   });
+}
+
+/* ---------------- Documentos del caso (almacén privado) ---------------- */
+const TIPOS_DOC = { nota_simple: 'Nota simple', certificado: 'Certificado (IBI, comunidad…)', acuerdo: 'Acuerdo firmado', otro: 'Otro' };
+async function pintarDocumentos(p, c) {
+  const caja = $('#docs'); if (!caja || !c._id) return;
+  if (!puede.contacto(c)) { caja.innerHTML = ''; return; }
+  caja.innerHTML = '<h4 style="margin:14px 0 6px">📎 Documentos del caso</h4><p class="fuente">Cargando…</p>';
+  try {
+    const docs = await NB.listarDocs(c._id);
+    caja.innerHTML = `<h4 style="margin:14px 0 6px">📎 Documentos del caso <span class="eti">privados: solo dueño y negociador</span></h4>
+      ${docs.length ? `<table class="t">${docs.map((d) => `<tr><td><a href="#" data-doc="${h(d.id)}">${h(d.nombre)}</a><br><small style="color:var(--tenue)">${h(TIPOS_DOC[d.tipo] || d.tipo)} · ${fecha(d.creado)}</small></td><td class="n">${d.tipo === 'acuerdo' && MI.rol !== 'dueno' ? '' : `<button class="boton" data-quitar="${h(d.id)}">Quitar</button>`}</td></tr>`).join('')}</table>` : '<p class="fuente" style="margin:0">Aún no hay documentos.</p>'}
+      <div class="botones"><select id="docTipo">${Object.entries(TIPOS_DOC).map(([k, t]) => `<option value="${k}">${h(t)}</option>`).join('')}</select><label class="boton">⬆ Subir documento<input type="file" id="docArchivo" hidden></label></div>`;
+    caja.querySelectorAll('[data-doc]').forEach((a) => a.onclick = async (e) => { e.preventDefault(); const d = docs.find((x) => x.id === a.dataset.doc); try { window.open(await NB.urlDoc(d.ruta), '_blank', 'noopener'); } catch (er) { toast(er.message); } });
+    caja.querySelectorAll('[data-quitar]').forEach((b) => b.onclick = async () => { const d = docs.find((x) => x.id === b.dataset.quitar); if (!confirm(`¿Quitar «${d.nombre}»?`)) return; try { await NB.borrarDoc(d); pintarDocumentos(p, c); } catch (er) { toast(er.message); } });
+    $('#docArchivo').onchange = async (e) => { const f = e.target.files[0]; if (!f) return; if (f.size > 20e6) return toast('Máximo 20 MB por documento'); toast('Subiendo…'); try { await NB.subirDoc(c._id, f, $('#docTipo').value); toast('Subido'); pintarDocumentos(p, c); } catch (er) { toast('No se pudo subir: ' + er.message); } };
+  } catch (e) { caja.innerHTML = `<p class="aviso error">Documentos: ${h(e.message)}</p>`; }
+}
+
+/* ---------------- Hoy toca: próximas acciones que vencen hoy o están atrasadas ---------------- */
+function hoyToca() {
+  const hoy = hoyISO();
+  return Object.entries(leer(K.casos, {})).filter(([, c]) => c.seguido && ((c.proximaFecha && c.proximaFecha <= hoy) || diasEnColumna(c) > DIAS_PARADO))
+    .map(([id, c]) => ({ id, c, p: PISOS.find((x) => x.id === id) || RETIRADOS.find((x) => x.id === id) || (D.pisos || []).find((x) => x.id === id) }))
+    .filter((x) => x.p).sort((a, b) => (a.c.proximaFecha || '9999').localeCompare(b.c.proximaFecha || '9999'));
+}
+function vistaHoy() {
+  const hoy = hoyISO(), l = hoyToca();
+  $('#vista').innerHTML = `<div style="max-width:860px"><h2 style="margin:6px 0 4px">Hoy toca</h2>
+    <p style="color:var(--suave);margin:0 0 12px">Próximas acciones que vencen hoy o están atrasadas, y casos parados más de ${DIAS_PARADO} días.</p>
+    ${l.length ? `<div class="lista">${l.map(({ id, c, p }) => { const atras = c.proximaFecha && c.proximaFecha < hoy; return `<article class="tarjeta hoyt" data-id="${h(id)}" style="grid-template-columns:1fr"><div>
+      <h3>${h(p.catastro?.direccion || p.direccion)}</h3><div class="donde">${h(nombreMun(p.municipio))} · ${h(c.etapa)}${NB ? ' · 👤 ' + h(c.responsable ? nombreMiembro(c.responsable) : 'sin asignar') : ''}</div>
+      <div class="motivo"><b class="${atras ? 'atrasado' : ''}">${c.proximaFecha ? (atras ? `Atrasado desde el ${ddmm(c.proximaFecha)}` : 'Hoy') : `Parado ${diasEnColumna(c)} días`}</b> → ${h(c.siguiente || 'sin próxima acción')}</div></div></article>`; }).join('')}</div>` : '<div class="vacio">Nada vence hoy. 👌</div>'}</div>`;
+  document.querySelectorAll('#vista .tarjeta').forEach((t) => t.onclick = () => abrirFicha(t.dataset.id));
+}
+
+/* ---------------- Equipo (solo dueño; el servidor también lo comprueba) ---------------- */
+async function vistaEquipo() {
+  $('#vista').innerHTML = '<p class="fuente">Cargando el equipo…</p>';
+  let miembros = [], invit = [], reg = [];
+  try { [miembros, invit, reg] = await Promise.all([NB.miembros(), NB.invitaciones(), NB.registro(150)]); EQUIPO = miembros; }
+  catch (e) { $('#vista').innerHTML = `<div class="aviso error">${h(e.message)}</div>`; return; }
+  const pendientes = invit.filter((i) => !miembros.some((m) => m.email === i.email));
+  const opRol = (sel) => Object.entries(ROLES).map(([k, t]) => `<option value="${k}" ${sel === k ? 'selected' : ''}>${t}</option>`).join('');
+  $('#vista').innerHTML = `<div style="max-width:960px">
+    <h2 style="margin:6px 0 4px">Equipo</h2>
+    <p style="color:var(--suave);margin:0 0 12px">Qué ve cada rol: <b>Dueño</b> todo · <b>Negociador</b> radar, calculadora, plantillas y solo SUS casos con su perfil de contacto · <b>Captador</b> radar, «A mano» y crear casos en «Detectado» · <b>Solo lectura</b> radar y cifras.</p>
+    <section class="bloque"><h3>➕ Invitar</h3>
+      <form class="form" id="fInv" autocomplete="off"><div class="dos"><div><label>Correo</label><input id="invCorreo" type="email" required placeholder="persona@correo.com"></div><div><label>Rol</label><select id="invRol">${opRol('negociador')}</select></div></div>
+      <div class="botones"><button class="boton oro" type="submit">Invitar y sacar su enlace de acceso</button></div></form>
+      <div id="invRes"></div>
+      <p class="fuente">El enlace y el código de acceso se los mandas tú (WhatsApp o como quieras). Al entrar elegirá su propio PIN.</p></section>
+    <section class="bloque"><h3>👥 Miembros (${miembros.length})</h3><div class="tabla-scroll"><table class="t">
+      <tr><th>Persona</th><th>Rol</th><th>Acceso</th><th></th></tr>
+      ${miembros.map((m) => `<tr><td>${h(m.email)}${m.user_id === MI.user_id ? ' <span class="eti">tú</span>' : ''}</td><td><select data-rol="${h(m.user_id)}" ${!m.activo ? 'disabled' : ''}>${opRol(m.rol)}</select></td><td>${m.activo ? 'Activo' : '<span style="color:#FF9A9D">Quitado</span>'}</td>
+        <td class="n">${m.activo && m.user_id !== MI.user_id ? `<button class="boton" data-quitar="${h(m.user_id)}">Quitar acceso</button>` : ''} ${m.activo ? `<button class="boton" data-enlace="${h(m.email)}">Enlace de acceso</button>` : ''}</td></tr>`).join('')}
+      ${pendientes.map((i) => `<tr><td>${h(i.email)} <span class="eti">invitado, aún no ha entrado</span></td><td>${h(ROLES[i.rol])}</td><td>—</td><td class="n"><button class="boton" data-enlace="${h(i.email)}">Enlace de acceso</button></td></tr>`).join('')}
+    </table></div></section>
+    <section class="bloque"><h3>📜 Registro: quién hizo qué (últimos ${reg.length})</h3><div class="tabla-scroll"><table class="t">
+      <tr><th>Cuándo</th><th>Quién</th><th>Qué</th></tr>
+      ${reg.map((r) => `<tr><td class="num">${new Date(r.cuando).toLocaleString('es-ES', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}</td><td>${h(r.email || 'sistema')}</td><td>${h(r.accion)}${r.objeto ? ' · ' + h(r.objeto) : ''}${r.detalle ? ' · <small style="color:var(--tenue)">' + h(JSON.stringify(r.detalle)) + '</small>' : ''}</td></tr>`).join('')}
+    </table></div></section></div>`;
+  const mostrarEnlace = async (email) => {
+    const res = $('#invRes'); res.innerHTML = '<p class="fuente">Generando el enlace…</p>'; res.scrollIntoView({ block: 'nearest' });
+    try {
+      const { enlace, codigo } = await NB.enlaceAcceso(email);
+      const texto = `Hola. Te he dado acceso a LLAVES. Ábrelo en tu móvil: ${enlace}\nSi te pide un código, es: ${codigo}\nLuego elige tu PIN de 4 cifras.`;
+      res.innerHTML = `<div class="aviso abogado"><b>Acceso para ${h(email)}</b> (caduca en 1 hora)<br>Código: <b class="num" style="font-size:18px">${h(codigo)}</b>
+        <div class="botones"><a class="boton oro" href="https://wa.me/?text=${encodeURIComponent(texto)}" target="_blank" rel="noopener">Mandar por WhatsApp</a><button class="boton" id="bCopiarAcc">Copiar el mensaje</button></div></div>`;
+      $('#bCopiarAcc').onclick = () => navigator.clipboard?.writeText(texto).then(() => toast('Copiado'));
+    } catch (e) { res.innerHTML = `<div class="aviso error">${h(e.message)}</div>`; }
+  };
+  $('#fInv').onsubmit = async (e) => { e.preventDefault(); const email = $('#invCorreo').value.trim().toLowerCase(); try { await NB.invitar(email, $('#invRol').value); toast('Invitado'); await vistaEquipo(); await mostrarEnlace(email); } catch (er) { toast(er.message); } };
+  document.querySelectorAll('[data-enlace]').forEach((b) => b.onclick = () => mostrarEnlace(b.dataset.enlace));
+  document.querySelectorAll('[data-rol]').forEach((s2) => s2.onchange = async () => { try { await NB.cambiarRol(s2.dataset.rol, s2.value); toast('Rol cambiado'); vistaEquipo(); } catch (er) { toast(er.message); vistaEquipo(); } });
+  document.querySelectorAll('[data-quitar]').forEach((b) => b.onclick = async () => { if (!confirm('¿Quitar el acceso a LLAVES a esta persona? Sus casos quedan sin responsable.')) return; try { await NB.quitarAcceso(b.dataset.quitar); toast('Acceso quitado'); vistaEquipo(); } catch (er) { toast(er.message); } });
+}
+
+/* ---------------- Pasar la copia de seguridad de este aparato al equipo ---------------- */
+async function importarCopia(copia) {
+  let n = { casos: 0, mano: 0, cifras: 0 };
+  if (copia.mano) { const mano = leer(K.mano, []); for (const m of copia.mano) if (!mano.some((x) => x.id === m.id)) { mano.push(m); n.mano++; } guardar(K.mano, mano); await new Promise((r) => setTimeout(r, 50)); }
+  if (copia.ajp) { const a = leer(K.ajp, {}); for (const [id, v] of Object.entries(copia.ajp)) { a[id] = { ...(a[id] || {}), ...v }; n.cifras++; } ST[K.ajp] = a; }
+  if (copia.check) { const c = leer(K.check, {}); for (const [id, v] of Object.entries(copia.check)) c[id] = { ...(c[id] || {}), ...v }; ST[K.check] = c; }
+  if (copia.casos) {
+    const casos = leer(K.casos, {});
+    for (const [id, c] of Object.entries(copia.casos)) if (c.seguido && !casos[id]) { casos[id] = { ...c, contacto: undefined }; n.casos++; }
+    guardar(K.casos, casos);
+  }
+  if (copia.aj && MI.rol === 'dueno') guardar(K.aj, { ...leer(K.aj, {}), ...copia.aj });
+  return n;
+}
+
+/* ---------------- Galería de fotos del anuncio ---------------- */
+// Fotos de los bancos (Solvia, Aliseda). Las de los portales no se cargan desde aquí.
+const fotosDe = (p) => [...new Set([...(p.fotos || []), p.foto].filter(Boolean))].filter((u) => /^https:\/\//.test(u) && !/idealista|fotocasa|habitaclia|pisos\.com|milanuncios/.test(u)).map((u) => u.replace(/\\/g, '/'));
+function galeria(p) {
+  const f = fotosDe(p);
+  if (!f.length) return '';
+  return `<section class="bloque galeria-caja"><h3>📷 Fotos del anuncio <span class="eti">${f.length}</span></h3><div class="galeria">${f.map((u, i) => `<img src="${h(u)}" alt="Foto ${i + 1} del anuncio" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">`).join('')}</div></section>`;
+}
+function visor(fotos, i) {
+  const v = document.createElement('div'); v.className = 'visor'; v.setAttribute('role', 'dialog');
+  const pinta = () => { v.innerHTML = `<button class="cerrar" aria-label="Cerrar">✕</button><button class="ant" aria-label="Anterior">‹</button><img src="${h(fotos[i])}" alt="Foto ${i + 1} de ${fotos.length}" referrerpolicy="no-referrer"><button class="sig" aria-label="Siguiente">›</button><div class="pie-visor">${i + 1} / ${fotos.length}</div>`;
+    v.querySelector('.cerrar').onclick = () => v.remove(); v.querySelector('.ant').onclick = (e) => { e.stopPropagation(); i = (i - 1 + fotos.length) % fotos.length; pinta(); }; v.querySelector('.sig').onclick = (e) => { e.stopPropagation(); i = (i + 1) % fotos.length; pinta(); }; };
+  v.onclick = (e) => { if (e.target === v) v.remove(); };
+  let x0 = null; v.ontouchstart = (e) => { x0 = e.touches[0].clientX; }; v.ontouchend = (e) => { if (x0 == null) return; const dx = e.changedTouches[0].clientX - x0; if (Math.abs(dx) > 40) { i = (i + (dx < 0 ? 1 : -1) + fotos.length) % fotos.length; pinta(); } x0 = null; };
+  pinta(); document.body.appendChild(v);
+}
+
+/* ---------------- Búsqueda global: calle, referencia catastral, caso ---------------- */
+const normal = (t) => String(t || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+function buscar(q) {
+  const t = normal(q).trim(); if (t.length < 2) return [];
+  const palabras = t.split(/\s+/);
+  const casos = leer(K.casos, {});
+  const res = [];
+  for (const p of [...PISOS, ...RETIRADOS]) {
+    const c = casos[p.id];
+    const texto = normal([p.direccion, p.catastro?.direccion, p.catastro?.rc, p.catastro?.parcela, p.refCatastral, p.barrio, nombreMun(p.municipio), p.cp, p.catastro?.cp, p.fuente, c?.etapa, c?.siguiente, ...(c?.notas || []).map((n) => n.texto), (p.enlaces || []).map((e) => e.url).join(' ')].join(' '));
+    if (palabras.every((w) => texto.includes(w))) res.push({ p, c, enCaso: !!c?.seguido });
+  }
+  return res.sort((a, b) => Number(b.enCaso) - Number(a.enCaso)).slice(0, 15);
+}
+function iniciarBusqueda() {
+  const inp = $('#buscar'), caja = $('#resultados'); if (!inp) return;
+  const pinta = () => {
+    const r = buscar(inp.value);
+    caja.classList.toggle('oculto', !inp.value.trim());
+    caja.innerHTML = r.length ? r.map(({ p, c }) => `<button data-id="${h(p.id)}"><b>${h(p.catastro?.direccion || p.direccion)}</b><span>${h(nombreMun(p.municipio))} · ${eur(p.precio)}${p.catastro?.rc ? ' · ' + h(p.catastro.rc) : ''}${c?.seguido ? ' · <i>caso: ' + h(c.etapa) + '</i>' : ''}${p.retirado ? ' · retirado' : ''}</span></button>`).join('') : `<p class="fuente" style="padding:8px 12px;margin:0">Nada con «${h(inp.value)}».</p>`;
+    caja.querySelectorAll('[data-id]').forEach((b) => b.onclick = () => { caja.classList.add('oculto'); inp.value = ''; inp.blur(); abrirFicha(b.dataset.id); });
+  };
+  inp.oninput = pinta;
+  inp.onkeydown = (e) => { if (e.key === 'Escape') { inp.value = ''; pinta(); inp.blur(); } if (e.key === 'Enter') caja.querySelector('[data-id]')?.click(); };
+  document.addEventListener('keydown', (e) => { if (e.key === '/' && !/input|textarea|select/i.test(document.activeElement?.tagName)) { e.preventDefault(); inp.focus(); } });
+  document.addEventListener('click', (e) => { if (!e.target.closest('.buscador')) caja.classList.add('oculto'); });
+}
+
+/* ---------------- Cartera: dinero invertido, pendiente y beneficio previsto por caso ---------------- */
+const CONCEPTOS = { compra_extra: 'Compra (arras y otros pagos)', itp: 'ITP', notaria: 'Notaría, registro y gestoría', abogado: 'Abogado y procurador', llaves: 'Compensación por llaves', deudas: 'Deudas de IBI y comunidad', reforma: 'Reforma', espera: 'Gastos de espera (comunidad, IBI, seguro…)', otros: 'Otros' };
+// Lo que decía la calculadora (escenario normal) para cada concepto, con el precio de compra real si ya lo hay.
+function previstoPorConcepto(p, compra) {
+  const a = ajustesDe(p.id), t = TIPOS[p.tipo] || TIPOS.desconocido, m2 = p.valor?.m2 || p.m2Anuncio || 0, meses = (a.meses || t.meses)[1];
+  return { itp: a.itp * Math.max(compra, a.valorReferencia || 0), notaria: a.notariaRegistro, abogado: a.abogado, llaves: a.llaves, deudas: a.deudas, reforma: a.reformaM2 * m2, espera: meses * a.gastosMes, otros: 0, compra_extra: 0 };
+}
+function filaCartera(p, c) {
+  const compra = c.precioCompra || p.ofMax || 0;
+  const prev = previstoPorConcepto(p, compra);
+  const previstoGastos = Object.values(prev).reduce((x, y) => x + y, 0);
+  const real = {}; for (const g of c.gastos || []) real[g.concepto] = (real[g.concepto] || 0) + (Number(g.importe) || 0);
+  const realGastos = Object.values(real).reduce((x, y) => x + y, 0);
+  const invertido = (c.precioCompra || 0) + realGastos;
+  const previstoTotal = compra + previstoGastos;
+  const pendiente = Math.max(0, previstoTotal - invertido);
+  const valor = c.ingreso || p.calc?.valor || p.valor?.valor || 0;
+  const coste = Math.max(previstoTotal, invertido);
+  return { p, c, compra, prev, real, invertido, pendiente, previstoTotal, valor, beneficio: valor - coste, pct: coste ? (valor - coste) / coste : null, comprado: !!c.precioCompra };
+}
+function vistaCartera() {
+  const casos = leer(K.casos, {});
+  const filas = Object.entries(casos).filter(([, c]) => c.seguido).map(([id, c]) => { const p = PISOS.find((x) => x.id === id) || RETIRADOS.find((x) => x.id === id) || (D.pisos || []).find((x) => x.id === id); return p ? filaCartera(p.calc ? p : recalcular({ ...p }), c) : null; }).filter(Boolean)
+    .sort((a, b) => Number(b.comprado) - Number(a.comprado) || b.beneficio - a.beneficio);
+  const tot = filas.reduce((s2, f) => ({ invertido: s2.invertido + f.invertido, pendiente: s2.pendiente + f.pendiente, valor: s2.valor + f.valor, beneficio: s2.beneficio + f.beneficio, coste: s2.coste + Math.max(f.previstoTotal, f.invertido) }), { invertido: 0, pendiente: 0, valor: 0, beneficio: 0, coste: 0 });
+  $('#vista').innerHTML = `<div style="max-width:1100px"><h2 style="margin:6px 0 4px">Cartera</h2>
+    <p style="color:var(--suave);margin:0 0 12px">Por caso: lo invertido de verdad (compra + gastos apuntados), lo que falta según la calculadora (escenario normal) y el beneficio previsto (valor libre, o el ingreso real si ya se vendió o alquiló). Los gastos se apuntan en la ficha de cada caso.</p>
+    ${filas.length ? `<div class="tabla-scroll"><table class="t num cartera"><tr><th>Caso</th><th>Etapa</th><th class="n">Invertido</th><th class="n">Pendiente</th><th class="n">Valor / ingreso</th><th class="n">Beneficio previsto</th><th class="n">%</th></tr>
+      ${filas.map((f) => `<tr data-id="${h(f.p.id)}"><td data-l="Caso"><a href="#" data-abrir="${h(f.p.id)}">${h(f.p.catastro?.direccion || f.p.direccion)}</a><br><small style="color:var(--tenue)">${h(nombreMun(f.p.municipio))}${f.comprado ? ' · comprado a ' + eur(f.c.precioCompra) : ' · aún sin comprar (oferta máx. ' + eur(f.compra) + ')'}</small></td><td data-l="Etapa">${h(f.c.etapa)}</td><td class="n" data-l="Invertido">${eur(f.invertido)}</td><td class="n" data-l="Pendiente">${eur(f.pendiente)}</td><td class="n" data-l="Valor / ingreso">${eur(f.valor)}${f.c.ingreso ? ' <small>(real)</small>' : ''}</td><td class="n margen ${f.beneficio >= 0 ? 'pos' : 'neg'}" data-l="Beneficio previsto">${eur(f.beneficio)}</td><td class="n" data-l="%">${pct(f.pct)}</td></tr>
+        <tr class="detalle"><td colspan="7"><details><summary>Gastos reales frente a la calculadora</summary><table class="t"><tr><th>Concepto</th><th class="n">Calculadora</th><th class="n">Real</th><th class="n">Diferencia</th></tr>
+          ${Object.keys(CONCEPTOS).filter((k) => f.prev[k] || f.real[k]).map((k) => { const d = (f.real[k] || 0) - (f.prev[k] || 0); return `<tr><td>${h(CONCEPTOS[k])}</td><td class="n">${eur(f.prev[k] || 0)}</td><td class="n">${f.real[k] != null ? eur(f.real[k]) : '—'}</td><td class="n ${f.real[k] != null && d > 0 ? 'atrasado' : ''}">${f.real[k] != null ? (d > 0 ? '+' : '') + eur(d) : 'sin apuntar'}</td></tr>`; }).join('')}
+        </table></details></td></tr>`).join('')}
+      <tr class="total"><td data-l="">TOTAL (${filas.length} ${filas.length === 1 ? 'caso' : 'casos'})</td><td class="vacia"></td><td class="n" data-l="Invertido">${eur(tot.invertido)}</td><td class="n" data-l="Pendiente">${eur(tot.pendiente)}</td><td class="n" data-l="Valor / ingreso">${eur(tot.valor)}</td><td class="n" data-l="Beneficio previsto">${eur(tot.beneficio)}</td><td class="n" data-l="%">${pct(tot.coste ? tot.beneficio / tot.coste : null)}</td></tr></table></div>` : '<div class="vacio">Aún no hay casos en seguimiento.</div>'}</div>`;
+  document.querySelectorAll('[data-abrir]').forEach((a) => a.onclick = (e) => { e.preventDefault(); abrirFicha(a.dataset.abrir); });
+}
+
+/* ---------------- App instalable: funciona sin conexión con lo último que cargó ---------------- */
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === '127.0.0.1' || location.hostname === 'localhost')) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
 }
 
 /* ---------------- Plantillas ---------------- */
@@ -536,6 +922,8 @@ function vistaMano() {
   $('#vista').innerHTML = `
     <h2 style="margin:6px 0 4px">Un piso que has visto</h2>
     <p style="color:var(--suave);margin:0 0 12px;max-width:720px">Pega la dirección (y si la tienes, el enlace del anuncio). La web busca la finca en el Catastro, te deja elegir el piso, lo valora con los comparables del radar y te da el precio máximo de oferta. Se guarda en este dispositivo.</p>
+    <div class="form" style="margin-bottom:12px"><label>¿Te lo ha compartido la app de Idealista, Fotocasa, Habitaclia o pisos.com? Pega aquí el texto con el enlace</label>
+      <textarea id="mPegado" rows="3" placeholder="Piso en venta en Calle X, 12, L'Hospitalet - 65.000 € https://…"></textarea><div id="mPegadoRes" class="fuente"></div></div>
     <form class="form" id="formMano" autocomplete="off">
       <div><label>Dirección (calle y número)</label><input id="mDir" placeholder="Ej.: Carrer Major 1" required></div>
       <div class="dos">
@@ -558,6 +946,17 @@ function vistaMano() {
     <div class="botones"><button class="boton" id="mEnviar">✉️ Mandar los guardados al Mac (correo)</button></div>
     <p class="fuente">El correo va a tu Gmail con el asunto «LLAVES a mano»; la recogida diaria los añade al radar de todos tus dispositivos.</p>` : ''}`;
   $('#formMano').onsubmit = (e) => { e.preventDefault(); investigarMano(); };
+  // El enlace del portal solo se guarda: nunca se abre ni se lee desde aquí
+  $('#mPegado').oninput = () => {
+    const r = analizarPegado($('#mPegado').value); const res = [];
+    if (r.calle) { $('#mDir').value = [r.calle, r.numero].filter(Boolean).join(' '); res.push(`dirección: ${$('#mDir').value}`); }
+    if (r.municipio) { $('#mMun').value = r.municipio; res.push(D.municipios.find((m) => m.id === r.municipio)?.corto); }
+    if (r.precio && !r.alquiler) { $('#mPrecio').value = r.precio; res.push(eur(r.precio)); }
+    if (r.url) { $('#mUrl').value = r.url; res.push(r.fuente); }
+    if (r.planta) $('#mPl').value = r.planta;
+    if (r.tipo && r.tipo !== 'desconocido') $('#mTipo').value = r.tipo;
+    $('#mPegadoRes').innerHTML = res.length ? `Leído: ${res.map(h).join(' · ')}${r.alquiler ? ' · <b style="color:#FF9A9D">es de alquiler</b>' : ''}${!r.numero && r.calle ? ' · <b style="color:var(--ambar)">falta el número del portal</b>' : ''}${r.municipio ? '' : ' · <b style="color:var(--ambar)">municipio fuera de la zona o sin leer</b>'}` : '';
+  };
   document.querySelectorAll('#vista .tarjeta').forEach((t) => t.onclick = () => abrirFicha(t.dataset.id));
   const env = $('#mEnviar'); if (env) env.onclick = () => {
     const cuerpo = leer(K.mano, []).map((m) => `${m.direccion} | ${m.municipio} | ${m.precio} € | ${m.tipo} | ${m.catastro?.rc || m.catastro?.parcela || ''} | ${(m.enlaces || []).map((x) => x.url).join(' ')}`).join('\n');
@@ -677,6 +1076,10 @@ function vistaAjustes() {
       ${campo('itp', 'ITP (%)', 0.5, 100)}
     </div>
     <div class="botones"><button class="boton" id="gReset">Volver a los de fábrica</button></div>
+    ${NB ? `<h2 style="margin:22px 0 8px">Pasar mi copia al equipo</h2>
+    <p style="color:var(--suave);margin-top:0">Si tenías el seguimiento guardado en un aparato (versión anterior), carga aquí su copia de seguridad: los casos, las cifras de la calculadora y los pisos a mano pasan a ser compartidos.</p>
+    <div class="botones"><label class="boton oro">⬆ Subir copia al equipo<input type="file" id="bImportar" accept="application/json" hidden></label></div>
+    <p style="margin:14px 0 0">Has entrado como ${h(MI.email)} (${h(ROLES[MI.rol])}). <button class="boton" id="bSalir">Cerrar sesión en este aparato</button></p>` : ''}
     <h2 style="margin:22px 0 8px">Copia de seguridad</h2>
     <p style="color:var(--suave);margin-top:0">El seguimiento, tus cifras y los pisos a mano viven en este dispositivo. Descarga una copia para pasarla al otro (móvil ↔ ordenador) o guardarla.</p>
     <div class="botones"><button class="boton oro" id="bDescargar">⬇ Descargar copia</button><label class="boton">⬆ Cargar copia<input type="file" id="bCargar" accept="application/json" hidden></label></div>
@@ -694,4 +1097,12 @@ function vistaAjustes() {
     catch (err) { alert('No se pudo cargar: ' + err.message); }
   };
   $('#bOlvidar').onclick = () => { try { localStorage.removeItem(K.cod); } catch {} location.reload(); };
+  if (NB) {
+    $('#bImportar').onchange = async (e) => {
+      try { const c = JSON.parse(await e.target.files[0].text()); if (!c.llaves) throw new Error('no es una copia de LLAVES'); const n = await importarCopia(c); prepararPisos(); pintarCabecera(); toast(`Subido: ${n.casos} casos, ${n.mano} pisos a mano, cifras de ${n.cifras} pisos`); }
+      catch (er) { alert('No se pudo subir: ' + er.message); }
+    };
+    $('#bSalir').onclick = async () => { if (!confirm('Se borra la sesión de este aparato; para volver tendrás que entrar con tu correo.')) return; await NB.salir(); location.reload(); };
+    if (!puede.ajustesEquipo()) document.querySelectorAll('#vista input[data-k]').forEach((i) => { i.disabled = true; i.title = 'Solo el dueño cambia los valores del equipo'; });
+  }
 }
