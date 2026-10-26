@@ -252,6 +252,8 @@
   .carta .bts .btn { flex: 1; }
 
   /* ---------- ajustes ---------- */
+  .este-aparato { padding: 10px; border: 1px solid rgba(255,255,255,.12); border-radius: 12px; display: grid; gap: 6px; }
+  .este-aparato small { opacity: .7; } .alta-res .acciones { display: flex; gap: 8px; flex-wrap: wrap; }
   .ajustes { margin-top: 30px; font-size: 13px; color: var(--mu); display: flex; flex-direction: column; gap: 12px; }
   .ajustes label { display: flex; gap: 10px; align-items: center; }
   .ajustes input { accent-color: var(--oro); width: 17px; height: 17px; flex: none; }
@@ -324,8 +326,8 @@
     <div class="bloq">
       <div class="caja-fuerte" id="cf"><div class="r1"></div><div class="r2"></div><div class="nucleo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></div></div>
       <h1>Tu centro<br>de <span>mando</span></h1>
-      <p>Escribe el código de tus páginas. Solo se pide una vez en cada móvil.</p>
-      <div class="campo"><input type="password" id="codigo" placeholder="Código" autocomplete="current-password" autocapitalize="off"><button class="btn oro" id="entrar" type="button">Entrar</button></div>
+      <p>Escribe tu PIN de 4 cifras.</p>
+      <div class="campo"><button class="btn oro" id="entrar" type="button">Escribir el PIN</button></div>
       <div class="error" id="error"></div>
     </div>
   </div>
@@ -336,6 +338,10 @@
       <label><input type="checkbox" id="ver-viejos"> Enseñar también las antiguas o de un solo uso</label>
       <label id="op-safari"><input type="checkbox" id="forzar-safari"> Abrir las páginas en Safari (recomendado en el iPhone: ahí tienes la sesión de Claude)</label>
       <div><a href="#" id="borrar-uso">Poner a cero el contador de uso de este móvil</a></div>
+      <div class="este-aparato" id="este-aparato"><b>Este aparato</b><span id="estado-boveda"></span>
+        <div><a href="#" id="alta-otro">Dar de alta otro aparato (enlace para abrir allí)</a></div>
+        <div class="alta-res" id="alta-res" hidden></div>
+        <small>Las páginas con datos de clientes u ocupantes (APP, Reparto, VENDER, Central, LLAVES) guardan su clave larga en la bóveda de cada aparato, cifrada con el PIN. Con el PIN solo, sin la bóveda, no se lee nada.</small></div>
     </div>
     <div class="pie" id="pie"></div>
   </div>
@@ -343,6 +349,7 @@
 <div class="velo" id="velo" hidden></div>
 <div id="aviso" hidden role="status" aria-live="polite"></div>
 
+<script src="../comun/boveda.js"></script>
 <script>
 (function () {
   'use strict';
@@ -902,8 +909,8 @@
     var total = TODAS.length;
     $('pie').innerHTML = '<b>' + total + ' páginas en ' + D.grupos.length + ' proyectos</b> · lista del ' + fecha(D.actualizado) +
       '. Solo se abren con tu cuenta de Claude. El contador y las destacadas se guardan en este móvil. ' +
-      '<a href="#" id="salir" style="color:#97A1B2">Olvidar el código en este móvil</a>';
-    $('salir').onclick = function (e) { e.preventDefault(); e.stopPropagation(); escribir(K_COD, null); location.reload(); };
+      '<a href="#" id="salir" style="color:#97A1B2">Cerrar (pedirá el PIN otra vez)</a>';
+    $('salir').onclick = function (e) { e.preventDefault(); e.stopPropagation(); location.reload(); };
     var m = /^#p(\d+)$/.exec(location.hash || '');
     VISTA = m ? { tipo: 'proy', g: +m[1] } : { tipo: 'inicio' };
     try { history.replaceState(VISTA, '', location.hash || '#'); } catch (e) {}
@@ -912,20 +919,49 @@
     setInterval(function () { var r = $('imp-reloj'); if (r) r.textContent = relojTxt(); }, 15000);
   }
 
+  // Desde el 26/10/2026 la lista se abre con el PIN y no se guarda nada: se borra el código largo de versiones anteriores
+  // Si este móvil tenía el código largo guardado (versión anterior), se mete en la bóveda (lo usa LLAVES) y se borra de aquí.
+  function guardarCodigoLargo() {
+    var viejo = leer(K_COD);
+    if (!viejo || !window.Boveda) { escribir(K_COD, null); return; }
+    Boveda.abrir({ titulo: 'Guardar tus claves con el PIN', migrar: { codigo_largo: viejo } }).then(function (b) { if (b) { escribir(K_COD, null); pintarAparato(); } });
+  }
+  function pintarAparato() {
+    var e = $('estado-boveda'); if (!e) return;
+    e.textContent = window.Boveda && Boveda.existe() ? ' · dado de alta (bóveda con PIN)' : ' · sin dar de alta: la primera vez que abras la APP, Reparto, VENDER, Central o LLAVES te pedirá la clave y el PIN';
+    $('alta-otro').onclick = function (ev) {
+      ev.preventDefault();
+      if (!window.Boveda || !Boveda.existe()) { aviso('Este aparato aún no tiene bóveda'); return; }
+      Boveda.abrir({ titulo: 'Alta de otro aparato' }).then(function (b) {
+        if (!b) return;
+        return b.enlaceAlta(location.origin + location.pathname).then(function (u) {
+          var r = $('alta-res'); r.hidden = false;
+          r.innerHTML = '<p>Abre este enlace en el otro aparato y escribe el mismo PIN. No lo reenvíes a nadie: lleva tus claves (cifradas con el PIN).</p><div class="acciones"><button class="btn oro" id="alta-copiar" type="button">Copiar enlace</button>' + (navigator.share ? '<button class="btn" id="alta-compartir" type="button">Compartir…</button>' : '') + '</div>';
+          $('alta-copiar').onclick = function () { navigator.clipboard && navigator.clipboard.writeText(u).then(function () { aviso('Enlace copiado'); }); };
+          if ($('alta-compartir')) $('alta-compartir').onclick = function () { navigator.share({ title: 'Alta de aparato', url: u }).catch(function () {}); };
+        });
+      });
+    };
+  }
+  var _abrir = abrir;
+  abrir = function (d, nuevo) { _abrir(d, nuevo); pintarAparato(); guardarCodigoLargo();
+    // Enlace de alta (#alta=…): se importa la bóveda de otro aparato con el mismo PIN
+    if (/#alta=/.test(location.hash) && window.Boveda) Boveda.abrir({ titulo: 'Alta de este aparato' }).then(function (b) { if (b) aviso('Aparato dado de alta: ' + b.nombres().length + ' claves guardadas'); pintarAparato(); });
+  };
   if (window.__LZ_PRUEBA) { abrir(window.__LZ_PRUEBA, true); return; }
   fetch('../paginas.enc.json?t=' + Date.now(), { cache: 'no-store' }).then(function (r) {
     if (!r.ok) throw new Error('No encuentro la lista (' + r.status + ')');
     return r.json();
   }).then(function (sobre) {
-    function intentar(cod, callado) {
-      $('cf').classList.add('trabajando');
-      return descifrar(sobre, cod).then(function (d) { escribir(K_COD, cod); abrir(d, !callado); },
-        function () { $('cf').classList.remove('trabajando'); escribir(K_COD, null); $('bloqueado').hidden = false; if (!callado) $('error').textContent = 'Ese código no es.'; });
+    var lista = null;
+    function pedirPin() {
+      $('bloqueado').hidden = false;
+      Boveda.teclado({ titulo: 'Páginas', sub: 'Escribe tu PIN', alPin: function (pin) {
+        return descifrar(sobre, pin).then(function (d) { lista = d; return true; }, function () { return 'PIN incorrecto'; });
+      } }).then(function (ok) { if (ok === true && lista) { $('bloqueado').hidden = true; abrir(lista, true); } });
     }
-    $('entrar').onclick = function () { var c = $('codigo').value.trim(); if (c) { $('error').textContent = ''; intentar(c); } };
-    $('codigo').onkeydown = function (e) { if (e.key === 'Enter') $('entrar').onclick(); };
-    var guardado = leer(K_COD);
-    if (guardado) intentar(guardado, true); else $('bloqueado').hidden = false;
+    $('entrar').onclick = pedirPin;
+    pedirPin();
   }).catch(function (e) {
     $('bloqueado').hidden = false;
     $('error').textContent = 'No se ha podido cargar la lista: ' + e.message + '. Comprueba la conexión.';
