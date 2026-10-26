@@ -130,6 +130,7 @@ tr.total td{font-weight:900;color:var(--amarillo)}
 </div>
 <main id="main"></main>
 
+<script src="../comun/boveda.js"></script>
 <script>
 (function () {
   'use strict';
@@ -153,8 +154,19 @@ tr.total td{font-weight:900;color:var(--amarillo)}
   ];
   var S = { d: null, pes: 'rec', abierto: {}, cargando: false };
   function $(id) { return document.getElementById(id); }
-  function leer(k) { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } }
-  function guardar(k, v) { try { if (v) localStorage.setItem(k, v); else localStorage.removeItem(k); } catch (e) {} }
+  // La clave y la copia de los datos (con datos de clientes) van en la bóveda, cifradas con el PIN. El resto, en claro.
+  var V = null, EN_BOVEDA = { central_clave: 'central_clave', central_datos_v1: 'central_datos' };
+  function leerLS(k) { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } }
+  function leer(k) { if (EN_BOVEDA[k]) return V ? (V.leer(EN_BOVEDA[k]) || '') : ''; return leerLS(k); }
+  function guardar(k, v) { if (EN_BOVEDA[k]) { if (V) V.guardar(EN_BOVEDA[k], v || null); return; } try { if (v) localStorage.setItem(k, v); else localStorage.removeItem(k); } catch (e) {} }
+  function conBoveda(fn) {
+    if (V || DEMO || !window.Boveda) return fn();
+    var migrar = {}; ['central_clave', 'central_datos_v1'].forEach(function (k) { var x = leerLS(k); if (x) migrar[EN_BOVEDA[k]] = x; });
+    Boveda.abrir({ titulo: 'Central', migrar: migrar }).then(function (b) {
+      if (b) { V = b; try { localStorage.removeItem('central_clave'); localStorage.removeItem('central_datos_v1'); } catch (e) {} }
+      fn();
+    });
+  }
   function h(t) { return String(t == null ? '' : t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
   function eur(n) { return n == null || isNaN(n) ? '¿precio?' : Number(n).toLocaleString('es-ES', { minimumFractionDigits: n % 1 ? 2 : 0, maximumFractionDigits: 2 }) + ' €'; }
   var DEMO = /[?&]demo=1/.test(location.search) || window.CENTRAL_DEMO === true;
@@ -332,7 +344,7 @@ tr.total td{font-weight:900;color:var(--amarillo)}
     if (t.id === 'b-guardar') {
       var v = $('t-clave').value.trim(), m = v.match(/[?&]k=([^&\s]+)/), k = m ? decodeURIComponent(m[1]) : v;
       if (!/^[A-Za-z0-9_-]{20,}$/.test(k)) { $('m-aj').className = 'msg no'; $('m-aj').textContent = 'Eso no parece la clave. Copia el valor entero, sin espacios.'; return; }
-      guardar(K_CLAVE, k); guardar(K_DATOS, ''); S.d = null; S.pes = 'rec'; cargar(false); return;
+      conBoveda(function () { if (!V && !DEMO) { $('m-aj').textContent = 'Sin el PIN no se guarda la clave.'; return; } guardar(K_CLAVE, k); guardar(K_DATOS, ''); S.d = null; S.pes = 'rec'; cargar(false); }); return;
     }
     if (t.id === 'b-borrar') { guardar(K_CLAVE, ''); guardar(K_DATOS, ''); S.d = null; ajustes(); }
   });
@@ -346,9 +358,13 @@ tr.total td{font-weight:900;color:var(--amarillo)}
 
   // ---------- arranque: pinta al momento lo guardado y luego pide lo nuevo
   S.pes = leer(K_PES) || 'rec';
-  try { var g = leer(K_DATOS); if (g && !DEMO) S.d = JSON.parse(g); } catch (e) {}
-  if (S.d) pintar(true); else $('main').innerHTML = '<div class="vacio">Cargando…</div>';
-  cargar(false);
+  function seguir() {
+    try { var g = leer(K_DATOS); if (g && !DEMO) S.d = JSON.parse(g); } catch (e) {}
+    if (S.d) pintar(true); else $('main').innerHTML = '<div class="vacio">Cargando…</div>';
+    cargar(false);
+  }
+  var hayAlgo = DEMO || (window.Boveda && Boveda.existe()) || leerLS('central_clave') || /#alta=/.test(location.hash);
+  if (hayAlgo) conBoveda(seguir); else seguir(); // la 1.ª vez: se pega la clave y al guardarla se elige el PIN
   if ('serviceWorker' in navigator === false) {}
 
   // ---------- demo (?demo=1): datos INVENTADOS, para probar la página sin la app de Google
