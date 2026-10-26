@@ -67,12 +67,21 @@ export function valorLibre(piso, comparables, ministerio) {
   else if (oficial) { eurM2 = oficial; metodo = `Solo valor oficial del Ministerio (hay ${eur.length} comparables, hacen falta 5)`; avisos.push('Pocos comparables: el valor sale solo del dato oficial del municipio (tasaciones), que suele ir por encima del precio real en pisos viejos.'); }
   if (eurM2 && oficial && eur.length >= 5 && Math.abs(med - oficial) / oficial > 0.35) avisos.push(`Los comparables (${Math.round(med)} €/m²) y el Ministerio (${Math.round(oficial)} €/m²) se separan más de un 35 %: comprobar a mano.`);
   if (!m2) avisos.push('ERROR: no hay superficie ni en el anuncio ni en el Catastro; no se puede valorar.');
+  // Confianza del valor: cuántos comparables hay a menos de 1,5 km
+  const cerca15 = piso.lat && piso.lon ? comps.filter((c) => c.lat && c.lon && distanciaKm(piso, c) <= 1.5).length : 0;
+  const soloMinisterio = eur.length < 5;
+  const confianza = soloMinisterio || cerca15 < 5
+    ? { nivel: 'BAJA', cerca: cerca15, motivo: soloMinisterio ? `solo el dato del Ministerio (hay ${eur.length} comparables en el municipio)` : `${cerca15} comparable${cerca15 === 1 ? '' : 's'} a menos de 1,5 km (hacen falta 5)${piso.lat ? '' : '; el piso no tiene coordenadas'}` }
+    : cerca15 >= 8 ? { nivel: 'ALTA', cerca: cerca15, motivo: `${cerca15} comparables a menos de 1,5 km` }
+      : { nivel: 'MEDIA', cerca: cerca15, motivo: `${cerca15} comparables a menos de 1,5 km (con 8 sería alta)` };
+
   // Proindiviso: solo se compra una parte del piso
   const cuota = piso.cuota && piso.cuota > 0 && piso.cuota < 1 ? piso.cuota : 1;
   if (cuota < 1) avisos.push(`Se vende solo el ${(cuota * 100).toLocaleString('es-ES', { maximumFractionDigits: 2 })} % del piso: el valor libre es esa parte del total. Para tener el piso entero hay que comprar el resto o ir a una división de la cosa común (CONSULTAR ABOGADO).`);
   return {
     m2, origenM2, eurM2: eurM2 ? Math.round(eurM2) : null, cuota, valorEntero: m2 && eurM2 ? redondear(m2 * eurM2, 500) : null, valor: m2 && eurM2 ? redondear(m2 * eurM2 * cuota, 500) : null, metodo: metodo + (cuota < 1 ? ` × ${(cuota * 100).toLocaleString('es-ES', { maximumFractionDigits: 2 })} % que se vende` : ''), criterio,
     comparables: { n: eur.length, mediana: med ? Math.round(med) : null, p25: eur.length ? Math.round(cuartil(eur, 0.25)) : null, p75: eur.length ? Math.round(cuartil(eur, 0.75)) : null, muestra: usados.slice(0, 12) },
+    confianza,
     oficial: oficial ? { eurM2: Math.round(oficial), periodo: ministerio.periodo, fuente: ministerio.fuente, url: ministerio.url, tasaciones: min.tasaciones_mas5 || min.tasaciones } : null,
     avisos,
   };
@@ -120,10 +129,13 @@ export function calcular(piso, ajustesPiso = {}) {
       { concepto: `Reforma (${a.reformaM2} €/m² × ${Math.round(m2)} m²)`, importe: -fijos.reforma, tuyo: true },
       { concepto: `Espera: ${meses[i]} meses × ${a.gastosMes} €`, importe: -fijos.espera, tuyo: true },
       { concepto: 'Abogado' + (i === 2 ? ' (con juicio completo)' : ''), importe: -fijos.abogado, tuyo: true },
-      { concepto: 'PRECIO MÁXIMO DE OFERTA', importe: oferta, total: true },
+      { concepto: 'PRECIO MÁXIMO DE OFERTA (redondeado a 500 € hacia abajo)', importe: Math.floor(oferta / 500) * 500, total: true },
     ];
-    return { nombre, meses: meses[i], bajo70: oferta < 0.7 * valor, oferta: redondear(oferta, 500), costeTotal: Math.round(costeTotal), margen: Math.round(margen), margenPct: costeTotal ? margen / costeTotal : 0,
-      costePedido: costePedido && Math.round(costePedido), margenPedido: margenPedido == null ? null : Math.round(margenPedido), margenPedidoPct: costePedido ? margenPedido / costePedido : null, filas };
+    return { nombre, meses: meses[i], bajo70: oferta < 0.7 * valor, oferta: Math.floor(oferta / 500) * 500, costeTotal: Math.round(costeTotal), margen: Math.round(margen), margenPct: costeTotal ? margen / costeTotal : 0,
+      costePedido: costePedido && Math.round(costePedido), margenPedido: margenPedido == null ? null : Math.round(margenPedido), margenPedidoPct: costePedido ? margenPedido / costePedido : null,
+      // Rentabilidad al año = margen ÷ coste total ÷ (meses ÷ 12). Con menos de un mes se cuenta 1 (si no, sale disparada).
+      rentAnual: costeTotal ? margen / costeTotal / (Math.max(meses[i], 1) / 12) : null,
+      rentAnualPedido: costePedido ? margenPedido / costePedido / (Math.max(meses[i], 1) / 12) : null, filas };
   });
   return { valor, objetivo, descuento, ajustes: a, escenarios };
 }
@@ -138,9 +150,10 @@ export function semaforo(piso, calc) {
   const pide = piso.precio, max = normal.oferta;
   if (max <= 0) return { color: 'ROJO', motivo: 'Con estos costes no hay precio que deje margen.' };
   const ratio = pide / max;
+  const baja = piso.valor?.confianza?.nivel === 'BAJA';
   if (ratio > 1.4) return { color: 'ROJO', motivo: `Piden ${eur(pide)} y lo máximo razonable es ${eur(max)}: habría que bajarles más de un 30 %.` };
-  if (ratio <= 1 && !errores && piso.catastro?.exacta && (piso.valor?.comparables?.n || 0) >= 5) return { color: 'VERDE', motivo: `El precio pedido (${eur(pide)}) ya está por debajo del máximo de oferta (${eur(max)}) en el escenario normal.` };
-  if (ratio <= 1) return { color: 'AMARILLO', motivo: `Sale a cuenta (${eur(pide)} ≤ ${eur(max)}), pero hay datos por confirmar (${errores ? 'errores' : !piso.catastro?.exacta ? 'piso exacto en Catastro' : 'pocos comparables'}).` };
+  if (ratio <= 1 && !errores && piso.catastro?.exacta && !baja && (piso.valor?.comparables?.n || 0) >= 5) return { color: 'VERDE', motivo: `El precio pedido (${eur(pide)}) ya está por debajo del máximo de oferta (${eur(max)}) en el escenario normal.` };
+  if (ratio <= 1) return { color: 'AMARILLO', motivo: `Sale a cuenta (${eur(pide)} ≤ ${eur(max)}), pero hay datos por confirmar (${errores ? 'errores' : !piso.catastro?.exacta ? 'piso exacto en Catastro' : baja ? 'confianza del valor BAJA: ' + piso.valor.confianza.motivo : 'pocos comparables'}).` };
   return { color: 'AMARILLO', motivo: `Piden ${eur(pide)}; tendría sentido ofertando ${eur(max)} o menos (un ${Math.round((1 - 1 / ratio) * 100)} % menos).` };
 }
 
