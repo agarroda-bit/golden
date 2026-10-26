@@ -156,6 +156,8 @@
       });
     },
     borrarTodo: function () { escribirLS(K, null); escribirLS(K_FALLOS, null); },
+    teclado: teclado,
+    importarAlta: importarAlta,
     _interno: { clave: clave, cifrar: cifrar, descifrar: descifrar },
   };
 })();
