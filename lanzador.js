@@ -1,5 +1,7 @@
 /* Lanzador GOLDEN OCLOCK — abre una app de Apps Script con icono y nombre propios.
-   El enlace (con su clave) se pega UNA vez y se guarda solo en este móvil, DENTRO DE LA BÓVEDA (cifrado con el PIN).
+   Desde el 27/10/2026 se entra SOLO con el PIN (Boveda.acceso): la app de Google da un token de 30 días que va en la bóveda.
+   La clave larga queda como llave de emergencia en Ajustes (plegada) y, si ya estaba en este móvil, se sigue usando.
+   (Antes: el enlace con su clave se pegaba UNA vez y se guardaba solo en este móvil, DENTRO DE LA BÓVEDA, cifrado con el PIN.)
    Nunca se guarda en el servidor ni en este archivo. Desde el 26/10/2026 ya no queda en claro en el móvil. */
 (function () {
   'use strict';
@@ -155,25 +157,37 @@
     $('btn-borrar').onclick = function () { escribir(K_ENLACE, ''); ajustes(); msg('Enlace borrado de este móvil.', 'ok'); };
   }
 
-  // Abre la bóveda (o la crea con el PIN). Lo que hubiera en claro de versiones anteriores se mete dentro y se borra.
+  // Entra con el PIN (27/10/2026: Boveda.acceso; en un aparato nuevo el PIN lo comprueba la app y no se pega nada).
+  // Lo que hubiera en claro de versiones anteriores se mete dentro y se borra.
   function conBoveda() {
     if (B) return Promise.resolve(B);
     if (!window.Boveda) return Promise.resolve(null);
     var migrar = {}; var enClaro = leerLS(K_ENLACE); if (enClaro) migrar[SECRETO] = enClaro;
-    return Boveda.abrir({ titulo: C.titulo, migrar: migrar }).then(function (b) {
+    return (Boveda.acceso ? Boveda.acceso({ titulo: C.titulo, propia: SECRETO, migrar: migrar }) : Boveda.abrir({ titulo: C.titulo, migrar: migrar })).then(function (b) {
       if (b) { B = b; escribirLS(K_ENLACE, ''); }
       return B;
     });
   }
+  // El enlace con la credencial de la bóveda: la clave larga si la hay; si no, el token del PIN.
+  function montar(cred) {
+    var u = new URL((cred.indexOf('tk_') === 0 && C.baseToken) || C.base);
+    if (C.vista) u.searchParams.set(C.param || 'v', C.vista);
+    u.searchParams.set('k', cred); return u.toString();
+  }
+  function sinEntrar(texto) {
+    var s = $('splash'); s.style.display = 'flex'; $('splash-estado').textContent = texto;
+    $('splash-ayuda').style.display = 'block'; $('splash-ayuda').innerHTML = '<a href="#" id="splash-otra">Volver a probar</a>';
+    $('splash-otra').onclick = function (ev) { ev.preventDefault(); location.reload(); };
+    $('splash-ajustes').onclick = function (ev) { ev.preventDefault(); ajustes(); };
+  }
   document.addEventListener('DOMContentLoaded', function () {
-    var hayAlgo = (window.Boveda && Boveda.existe()) || leerLS(K_ENLACE) || /#alta=/.test(location.hash);
-    if (!hayAlgo) { ajustes(); return; } // primera vez en este móvil: se pega la clave y luego se elige el PIN
     conBoveda().then(function () {
+      if (!B) { sinEntrar('Sin el PIN no se abre.'); return; }
       var enlace = leer(K_ENLACE);
       // 27/10: sin enlace propio se usa la clave común de la bóveda (la de la APP, guardada desde cualquier página). Antes (19/10): solo VENDER con la de la APP.
-      if (!enlace && B && B.clave) { var com = validar(B.clave(SECRETO)); if (com.ok) enlace = com.url; }
-      if (enlace) { var r = validar(enlace); if (r.ok && r.url !== enlace) { enlace = r.url; escribir(K_ENLACE, enlace); } }
-      if (!enlace || location.hash === '#ajustes') ajustes(); else arrancar(enlace);
+      if (!enlace && B.credencial) { var cred = B.credencial(SECRETO); if (cred) enlace = montar(cred); }   // 27/10: clave común o token del PIN
+      if (enlace && enlace.indexOf('k=tk_') < 0) { var r = validar(enlace); if (r.ok && r.url !== enlace) { enlace = r.url; if (leer(K_ENLACE)) escribir(K_ENLACE, enlace); } }
+      if (location.hash === '#ajustes') ajustes(); else if (enlace) arrancar(enlace); else sinEntrar('La app no ha dado acceso. Vuelve a probar con tu PIN.');
     });
   });
 })();
