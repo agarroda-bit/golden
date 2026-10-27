@@ -63,6 +63,8 @@
   label.opcion input { margin-top:4px; width:18px; height:18px; accent-color:#FFCD00; }
   label.opcion small { display:block; color:#C9D8EE; font-size:13px; margin-top:2px; }
   .pie { margin-top:26px; font-size:12px; line-height:1.5; color:#C9D8EE; }
+  details.emergencia { margin-top:18px; color:#9DB0BC; }
+  details.emergencia summary { cursor:pointer; color:#9DB0BC; font-size:14px; }
 </style>
 </head>
 <body>
@@ -83,11 +85,12 @@
     <ol>
       <li>Toca el botón <b>Compartir</b> de Safari (el cuadrado con la flecha hacia arriba).</li>
       <li>Baja y toca <b>«Añadir a pantalla de inicio»</b> → <b>Añadir</b>.</li>
-      <li>Abre el icono nuevo y pega ahí el enlace. Lo que pegues aquí, en Safari, no pasa al icono.</li>
+      <li>Abre el icono nuevo y entra con tu PIN de 4 cifras.</li>
     </ol>
   </div>
 
-  <h2>Enlace de la app</h2>
+  <details class="emergencia">
+  <summary>Llave de emergencia · solo si el PIN no funciona</summary>
   <div class="caja">
     <div id="estado-guardado"></div>
     <div style="margin-top:8px">Pega <b>solo la clave</b> (el valor de <b>RD_CLAVE</b> en Apps Script → Configuración del proyecto → Propiedades) o el enlace entero del Reparto. Se guarda <b>solo en este móvil</b>; no se sube a ningún sitio.</div>
@@ -98,6 +101,7 @@
     </div>
     <div class="mensaje" id="mensaje"></div>
   </div>
+  </details>
 
   <h2>Cómo se abre</h2>
   <div class="caja">
@@ -118,7 +122,9 @@
 </div>
 
 <script>
-window.LZ = { id: 'reparto', titulo: 'GOLDEN EXPRESS', prefijo: 'AKfycbx4PX', vista: 'reparto', param: 'v', base: 'https://script.google.com/macros/s/AKfycbx4PXbqTiwRsR0be34u_2uHerB-h6uJgqj9_GB5IKl_bZj0rUTwwoheXqAQ6l401BqC/exec', marcoListo: false };
+window.LZ = { id: 'reparto', titulo: 'GOLDEN EXPRESS', prefijo: 'AKfycbx4PX', vista: 'reparto', param: 'v', base: 'https://script.google.com/macros/s/AKfycbx4PXbqTiwRsR0be34u_2uHerB-h6uJgqj9_GB5IKl_bZj0rUTwwoheXqAQ6l401BqC/exec', marcoListo: false,
+  // 27/10/2026: con el token del PIN se entra por la implementación de la APP (la de Reparto, @52, no conoce los tokens)
+  baseToken: 'https://script.google.com/macros/s/AKfycbwOLqVhaEyF0_Q8HulkLjmeTECJQIsxuA3yK0MDHE63S3H_031GVNy0ZHiSHKRiiBLj/exec' };
 </script>
 <script src="../comun/boveda.js"></script>
 <script src="../lanzador.js"></script>
