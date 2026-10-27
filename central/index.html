@@ -157,7 +157,8 @@ tr.total td{font-weight:900;color:var(--amarillo)}
   // La clave y la copia de los datos (con datos de clientes) van en la bóveda, cifradas con el PIN. El resto, en claro.
   var V = null, EN_BOVEDA = { central_clave: 'central_clave', central_datos_v1: 'central_datos' };
   function leerLS(k) { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } }
-  function leer(k) { if (EN_BOVEDA[k]) return V ? (V.leer(EN_BOVEDA[k]) || '') : ''; return leerLS(k); }
+  function leer(k) { if (k === K_CLAVE) return V ? (V.clave ? V.clave(K_CLAVE) : V.leer(K_CLAVE) || '') : '';   // 27/10: la suya o la clave común de la bóveda
+    if (EN_BOVEDA[k]) return V ? (V.leer(EN_BOVEDA[k]) || '') : ''; return leerLS(k); }
   function guardar(k, v) { if (EN_BOVEDA[k]) { if (V) V.guardar(EN_BOVEDA[k], v || null); return; } try { if (v) localStorage.setItem(k, v); else localStorage.removeItem(k); } catch (e) {} }
   function conBoveda(fn) {
     if (V || DEMO || !window.Boveda) return fn();
