@@ -28,16 +28,27 @@
   }
   function sobre() { try { return JSON.parse(leerLS(K) || 'null'); } catch (e) { return null; } }
 
+  // 27/10/2026 · clave_comun: la clave larga de la APP sirve en todas las páginas. Cualquier página sin clave propia usa esta,
+  // y cuando una página guarda la suya se copia también aquí. (Reparto no la escribe: puede llevar la RD_CLAVE, que solo vale allí.)
+  var COMUN = 'clave_comun', DAN_COMUN = ['enlace_app', 'enlace_vender', 'central_clave'];
+  function claveDe(v) {
+    v = String(v || ''); var m = v.match(/[?&]k=([^&\s#]+)/), c = m ? decodeURIComponent(m[1]) : v.trim();
+    return /^[A-Za-z0-9_-]{20,}$/.test(c) && c.indexOf('tk_') !== 0 ? c : '';
+  }
+
   // Una bóveda abierta: los secretos en memoria y la clave para volver a guardarlos.
   function abierta(k, sal, iter, secretos) {
     var cola = Promise.resolve();
+    if (!secretos[COMUN]) { for (var i = 0; i < DAN_COMUN.length; i++) { var c0 = claveDe(secretos[DAN_COMUN[i]]); if (c0) { secretos[COMUN] = c0; cola = cola.then(function () { return cifrar(k, secretos, sal, iter).then(function (s) { escribirLS(K, JSON.stringify(s)); }); }); break; } } }
     function persistir() {
       cola = cola.then(function () { return cifrar(k, secretos, sal, iter).then(function (s) { escribirLS(K, JSON.stringify(s)); }); });
       return cola;
     }
     return {
       leer: function (n) { return secretos[n] == null ? null : secretos[n]; },
-      guardar: function (n, v) { if (v == null || v === '') delete secretos[n]; else secretos[n] = v; return persistir(); },
+      guardar: function (n, v) { if (v == null || v === '') delete secretos[n]; else { secretos[n] = v; if (DAN_COMUN.indexOf(n) >= 0 && claveDe(v)) secretos[COMUN] = claveDe(v); } return persistir(); },
+      // La clave larga de esta página: la suya si la tiene; si no, la común.
+      clave: function (n) { return claveDe(secretos[n]) || secretos[COMUN] || ''; },
       borrar: function (n) { delete secretos[n]; return persistir(); },
       nombres: function () { return Object.keys(secretos); },
       // Enlace para dar de alta otro aparato: lleva la bóveda cifrada con el mismo PIN (sin la sesión de LLAVES, que va por correo).
