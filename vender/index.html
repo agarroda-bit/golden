@@ -63,6 +63,8 @@
   label.opcion input { margin-top:4px; width:18px; height:18px; accent-color:#3DDC97; }
   label.opcion small { display:block; color:#A8D5C2; font-size:13px; margin-top:2px; }
   .pie { margin-top:26px; font-size:12px; line-height:1.5; color:#A8D5C2; }
+  details.emergencia { margin-top:18px; color:#9DB0BC; }
+  details.emergencia summary { cursor:pointer; color:#9DB0BC; font-size:14px; }
 </style>
 </head>
 <body>
@@ -83,11 +85,12 @@
     <ol>
       <li>Toca el botón <b>Compartir</b> de Safari (el cuadrado con la flecha hacia arriba).</li>
       <li>Baja y toca <b>«Añadir a pantalla de inicio»</b> → <b>Añadir</b>.</li>
-      <li>Abre el icono nuevo y pega ahí el enlace. Lo que pegues aquí, en Safari, no pasa al icono.</li>
+      <li>Abre el icono nuevo y entra con tu PIN de 4 cifras.</li>
     </ol>
   </div>
 
-  <h2>Enlace de la app</h2>
+  <details class="emergencia">
+  <summary>Llave de emergencia · solo si el PIN no funciona</summary>
   <div class="caja">
     <div id="estado-guardado"></div>
     <div style="margin-top:8px">Pega <b>solo la clave</b> (la misma de la APP: el valor de <b>DB_CLAVE</b> en Apps Script → Configuración del proyecto → Propiedades) o el enlace entero de la APP. Se guarda <b>solo en este móvil</b>; no se sube a ningún sitio.</div>
@@ -98,6 +101,7 @@
     </div>
     <div class="mensaje" id="mensaje"></div>
   </div>
+  </details>
 
   <h2>Cómo se abre</h2>
   <div class="caja">
