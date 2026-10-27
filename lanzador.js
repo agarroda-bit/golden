@@ -170,8 +170,8 @@
     if (!hayAlgo) { ajustes(); return; } // primera vez en este móvil: se pega la clave y luego se elige el PIN
     conBoveda().then(function () {
       var enlace = leer(K_ENLACE);
-      // 19/10: VENDER usa la misma clave que la APP. Si en la bóveda ya está la de la APP, se aprovecha sin pegar nada.
-      if (!enlace && C.id === 'vender' && B) { var deApp = validar(B.leer('enlace_app') || ''); if (deApp.ok) { enlace = deApp.url; escribir(K_ENLACE, enlace); } }
+      // 27/10: sin enlace propio se usa la clave común de la bóveda (la de la APP, guardada desde cualquier página). Antes (19/10): solo VENDER con la de la APP.
+      if (!enlace && B && B.clave) { var com = validar(B.clave(SECRETO)); if (com.ok) enlace = com.url; }
       if (enlace) { var r = validar(enlace); if (r.ok && r.url !== enlace) { enlace = r.url; escribir(K_ENLACE, enlace); } }
       if (!enlace || location.hash === '#ajustes') ajustes(); else arrancar(enlace);
     });
