@@ -157,13 +157,13 @@ tr.total td{font-weight:900;color:var(--amarillo)}
   // La clave y la copia de los datos (con datos de clientes) van en la bóveda, cifradas con el PIN. El resto, en claro.
   var V = null, EN_BOVEDA = { central_clave: 'central_clave', central_datos_v1: 'central_datos' };
   function leerLS(k) { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } }
-  function leer(k) { if (k === K_CLAVE) return V ? (V.clave ? V.clave(K_CLAVE) : V.leer(K_CLAVE) || '') : '';   // 27/10: la suya o la clave común de la bóveda
+  function leer(k) { if (k === K_CLAVE) return V ? (V.credencial ? V.credencial(K_CLAVE) : V.leer(K_CLAVE) || '') : '';   // 27/10: la suya, la clave común o el token del PIN
     if (EN_BOVEDA[k]) return V ? (V.leer(EN_BOVEDA[k]) || '') : ''; return leerLS(k); }
   function guardar(k, v) { if (EN_BOVEDA[k]) { if (V) V.guardar(EN_BOVEDA[k], v || null); return; } try { if (v) localStorage.setItem(k, v); else localStorage.removeItem(k); } catch (e) {} }
   function conBoveda(fn) {
     if (V || DEMO || !window.Boveda) return fn();
     var migrar = {}; ['central_clave', 'central_datos_v1'].forEach(function (k) { var x = leerLS(k); if (x) migrar[EN_BOVEDA[k]] = x; });
-    Boveda.abrir({ titulo: 'Central', migrar: migrar }).then(function (b) {
+    (Boveda.acceso ? Boveda.acceso({ titulo: 'Central', propia: 'central_clave', migrar: migrar }) : Boveda.abrir({ titulo: 'Central', migrar: migrar })).then(function (b) {   // 27/10: solo PIN
       if (b) { V = b; try { localStorage.removeItem('central_clave'); localStorage.removeItem('central_datos_v1'); } catch (e) {} }
       fn();
     });
@@ -187,10 +187,11 @@ tr.total td{font-weight:900;color:var(--amarillo)}
     });
   }
   function cargar(forzar) {
-    if (!leer(K_CLAVE) && !DEMO) { ajustes(); return; }
+    if (!leer(K_CLAVE) && !DEMO) { sinEntrar('Sin el PIN no se abre.'); return; }   // 27/10: nunca la pantalla de la clave
     S.cargando = true; $('b-recargar').classList.add('gira');
     pedir(forzar ? { f: 'datos', forzar: '1' } : { f: 'datos' }).then(function (r) {
       S.cargando = false; $('b-recargar').classList.remove('gira');
+      if (!r.ok && /No autorizado/.test(r.error) && /^tk_/.test(leer(K_CLAVE))) { guardar(K_DATOS, ''); S.d = null; Boveda.olvidarToken(V).then(function () { sinEntrar('La sesión del PIN ha caducado. Vuelve a entrar con tu PIN.'); }); return; }
       if (!r.ok) { $('estado').textContent = r.error; if (/No autorizado/.test(r.error)) { guardar(K_DATOS, ''); } if (!S.d) pintar(); else aviso(r.error); return; }
       S.d = r.d; if (!DEMO) guardar(K_DATOS, JSON.stringify(r.d)); pintar(true);
     }).catch(function (e) { S.cargando = false; $('b-recargar').classList.remove('gira'); $('estado').textContent = 'Sin conexión: ' + (S.d ? 'datos de las ' + S.d.generado.slice(11) : 'sin datos'); });
@@ -315,8 +316,15 @@ tr.total td{font-weight:900;color:var(--amarillo)}
   function ajustes() {
     pestanas();
     $('estado').textContent = 'Ajustes';
-    $('main').innerHTML = '<div class="ajustes"><h3>Conectar esta página</h3><div class="lista"><div class="li"><span>Pega <b>la clave</b> (la misma de la APP; el compañero, la suya) o el enlace de la APP con la clave. Se guarda solo en este móvil.</span></div></div>' +
-      '<textarea id="t-clave" placeholder="clave o enlace…"></textarea><div class="acciones"><button class="btn tu" id="b-guardar">Guardar y abrir</button>' + (leer(K_CLAVE) ? '<button class="btn sec" id="b-borrar">Borrar de este móvil</button>' : '') + '</div><div class="msg" id="m-aj"></div></div>';
+    // 27/10/2026: se entra solo con el PIN. La clave larga queda plegada, como llave de emergencia. (Antes: «Conectar esta página / pega la clave».)
+    $('main').innerHTML = '<div class="ajustes"><h3>Ajustes</h3><div class="lista"><div class="li"><span>Esta página se abre con tu <b>PIN de 4 cifras</b>. No hay que pegar nada.</span></div></div>' +
+      '<details style="margin-top:14px;color:#9DB0BC"><summary style="cursor:pointer;color:#9DB0BC">Llave de emergencia · solo si el PIN no funciona</summary>' +
+      '<textarea id="t-clave" placeholder="clave larga o enlace…"></textarea><div class="acciones"><button class="btn tu" id="b-guardar">Guardar y abrir</button>' + (V && V.leer(K_CLAVE) ? '<button class="btn sec" id="b-borrar">Borrar de este móvil</button>' : '') + '</div><div class="msg" id="m-aj"></div></details></div>';
+  }
+  function sinEntrar(t) {
+    pestanas(); $('estado').textContent = t;
+    $('main').innerHTML = '<div class="vacio" style="color:#FF9A9D">' + h(t) + '</div><div class="acciones" style="justify-content:center"><button class="btn tu" id="b-otra">Volver a probar</button></div>';
+    $('b-otra').onclick = function () { location.reload(); };
   }
   function marcar(btn) {
     var seg = btn.getAttribute('data-seg'), que = btn.getAttribute('data-marcar'), m = $('m-' + seg), p = { f: 'marcar', seg: seg, que: que };
@@ -364,8 +372,7 @@ tr.total td{font-weight:900;color:var(--amarillo)}
     if (S.d) pintar(true); else $('main').innerHTML = '<div class="vacio">Cargando…</div>';
     cargar(false);
   }
-  var hayAlgo = DEMO || (window.Boveda && Boveda.existe()) || leerLS('central_clave') || /#alta=/.test(location.hash);
-  if (hayAlgo) conBoveda(seguir); else seguir(); // la 1.ª vez: se pega la clave y al guardarla se elige el PIN
+  conBoveda(seguir); // 27/10/2026: siempre el PIN (en un aparato nuevo lo comprueba la app). Antes, la 1.ª vez se pegaba la clave.
   if ('serviceWorker' in navigator === false) {}
 
   // ---------- demo (?demo=1): datos INVENTADOS, para probar la página sin la app de Google
