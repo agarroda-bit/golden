@@ -49,6 +49,8 @@
       guardar: function (n, v) { if (v == null || v === '') delete secretos[n]; else { secretos[n] = v; if (DAN_COMUN.indexOf(n) >= 0 && claveDe(v)) secretos[COMUN] = claveDe(v); } return persistir(); },
       // La clave larga de esta página: la suya si la tiene; si no, la común.
       clave: function (n) { return claveDe(secretos[n]) || secretos[COMUN] || ''; },
+      // Lo que se manda a la app como k=: la clave larga si la hay (llave de emergencia, no caduca); si no, el token del PIN.
+      credencial: function (n) { var c = claveDe(secretos[n]) || secretos[COMUN] || ''; if (c) return c; return Number(secretos[T_CADUCA] || 0) > Date.now() ? (secretos[T_TOKEN] || '') : ''; },
       borrar: function (n) { delete secretos[n]; return persistir(); },
       nombres: function () { return Object.keys(secretos); },
       // Enlace para dar de alta otro aparato: lleva la bóveda cifrada con el mismo PIN (sin la sesión de LLAVES, que va por correo).
@@ -57,6 +59,34 @@
         return cifrar(k, copia, sal, iter).then(function (s) { return (base || location.origin + '/golden/paginas/') + '#alta=' + encodeURIComponent(btoa(JSON.stringify(s))); });
       },
     };
+  }
+
+  // ---------- Acceso con PIN contra la app de Google (27/10/2026) ----------
+  // La app guarda solo la huella del PIN; con el PIN bueno devuelve un token de 30 días que va aquí, en la bóveda.
+  // 5 PIN fallados seguidos en la app → bloqueo de 30 min y aviso a Telegram. La clave larga sigue valiendo de emergencia.
+  var APP = 'https://script.google.com/macros/s/AKfycbwOLqVhaEyF0_Q8HulkLjmeTECJQIsxuA3yK0MDHE63S3H_031GVNy0ZHiSHKRiiBLj/exec';
+  var T_TOKEN = 'token_golden', T_CADUCA = 'token_caduca', RENOVAR_MS = 7 * 86400000;
+  function app(params) {
+    var u = new URL(APP); u.searchParams.set('v', 'pin'); Object.keys(params).forEach(function (n) { u.searchParams.set(n, params[n]); });
+    return fetch(u.toString(), { method: 'GET', redirect: 'follow', cache: 'no-store' }).then(function (r) { return r.text(); }).then(function (t) {
+      try { return JSON.parse(t); } catch (e) {
+        return { ok: false, caida: true, error: /No autorizado/.test(t) ? 'La app de Google aún no tiene el acceso con PIN (falta subir la versión nueva).' : 'La app de Google no responde bien ahora mismo. Prueba en un minuto.' };
+      }
+    }, function () { return { ok: false, caida: true, error: 'Sin conexión con la app de Google. Mira la cobertura y vuelve a probar.' }; });
+  }
+  // Con la bóveda ya abierta y el PIN en la mano: consigue (o renueva) el token. Devuelve {ok} o {ok:false, error}.
+  function asegurarToken(B, pin) {
+    var cad = Number(B.leer(T_CADUCA) || 0);
+    if (B.leer(T_TOKEN) && cad - Date.now() > RENOVAR_MS) return Promise.resolve({ ok: true });
+    return app({ f: 'entrar', p: pin }).then(function (r) {
+      if (r.ok && r.token) return Promise.all([B.guardar(T_TOKEN, r.token), B.guardar(T_CADUCA, String(r.caduca))]).then(function () { return { ok: true }; });
+      // La app aún no tiene PIN: si este aparato tiene la clave larga, el PIN se da de alta con ella (una sola vez, sin pedir nada).
+      if (r.sinPin && B.leer(COMUN)) return app({ f: 'alta', p: pin, k: B.leer(COMUN) }).then(function (r2) {
+        if (r2.ok && r2.token) return Promise.all([B.guardar(T_TOKEN, r2.token), B.guardar(T_CADUCA, String(r2.caduca))]).then(function () { return { ok: true }; });
+        return r2;
+      });
+      return r;
+    });
   }
 
   // ---------- Teclado del PIN ----------
@@ -151,7 +181,72 @@
     return true;
   }
 
+  // Entrar en una página con el PIN y nada más. Devuelve Promise<bóveda abierta> (con .credencial(nombre) para la k=) o null si se cancela.
+  // - Aparato con bóveda: el PIN la abre aquí y, si hace falta, pide el token a la app.
+  // - Aparato o navegador nuevo: el PIN se comprueba en la app; si es bueno, se crea la bóveda con ese PIN y el token dentro.
+  // Nunca pide la clave larga: si la app falla, el error sale en el propio teclado y se puede reintentar.
+  function acceso(opc) {
+    opc = opc || {};
+    importarAlta();
+    var titulo = opc.titulo || 'GOLDEN OCLOCK', propia = opc.propia || '', resultado = null, s = sobre();
+    function listo(B) {
+      return B.credencial(propia) ? true : 'La app no ha dado acceso. Prueba otra vez.';
+    }
+    if (s) {
+      var sal = deb64(s.sal);
+      return teclado({
+        titulo: titulo, sub: 'Escribe tu PIN',
+        alPin: function (pin) {
+          var abrir = resultado ? Promise.resolve(resultado) : clave(pin, sal, s.iter).then(function (k) {
+            return descifrar(k, s).then(function (secretos) { escribirLS(K_FALLOS, '0'); resultado = abierta(k, sal, s.iter, secretos); return resultado; });
+          });
+          return abrir.then(function (B) {
+            var migrar = opc.migrar || {}, ps = [];
+            Object.keys(migrar).forEach(function (n) { if (migrar[n] && B.leer(n) == null) ps.push(B.guardar(n, migrar[n])); });
+            return Promise.all(ps).then(function () { return asegurarToken(B, pin); }).then(function (r) {
+              if (r.ok) return listo(B);
+              if (B.credencial(propia)) return true;   // la app falla pero este aparato tiene la clave larga: se entra con ella
+              return r.error || 'La app no ha dado acceso.';
+            });
+          }, function () {
+            var n = Number(leerLS(K_FALLOS) || 0) + 1; escribirLS(K_FALLOS, String(n));
+            if (n >= MAX_FALLOS) { escribirLS(K, null); escribirLS(K_FALLOS, null); return { cerrar: true, valor: 'bloqueada' }; }   // se vuelve a empezar como aparato nuevo
+            return 'PIN incorrecto · te quedan ' + (MAX_FALLOS - n) + ' intento' + (MAX_FALLOS - n === 1 ? '' : 's');
+          });
+        },
+        extra: [{ texto: 'He olvidado el PIN: borrar la bóveda de este aparato', accion: function (r) { if (confirm('Se borran de este aparato las claves guardadas. Luego entras con el PIN de siempre. ¿Seguro?')) { escribirLS(K, null); escribirLS(K_FALLOS, null); r('borrada'); } else r(null); } }],
+      }).then(function (ok) {
+        if (ok === true) return resultado;
+        if (ok === 'borrada' || ok === 'bloqueada') return acceso(opc);
+        return null;
+      });
+    }
+    // Sin bóveda en este aparato: el PIN lo comprueba la app.
+    return teclado({
+      titulo: titulo, sub: 'Escribe tu PIN',
+      alPin: function (pin) {
+        return app({ f: 'entrar', p: pin }).then(function (r) {
+          if (r.sinPin) return 'La app aún no tiene tu PIN. Ábrela una vez en el móvil donde ya entras y vuelve aquí.';
+          if (!r.ok || !r.token) return r.error || 'La app no ha dado acceso.';
+          var sal = crypto.getRandomValues(new Uint8Array(16)), secretos = opc.migrar ? JSON.parse(JSON.stringify(opc.migrar)) : {};
+          secretos[T_TOKEN] = r.token; secretos[T_CADUCA] = String(r.caduca);
+          return clave(pin, sal, ITER).then(function (k) {
+            return cifrar(k, secretos, sal, ITER).then(function (sb) {
+              escribirLS(K, JSON.stringify(sb)); escribirLS(K_FALLOS, '0');
+              resultado = abierta(k, sal, ITER, secretos);   // si el navegador no deja guardar (modo privado), se entra igual: solo vale para esta visita
+              return true;
+            });
+          });
+        });
+      },
+    }).then(function (ok) { return ok === true ? resultado : null; });
+  }
+  // La app dice «No autorizado» con un token: se olvida (al volver a entrar con el PIN se pide otro).
+  function olvidarToken(B) { return B ? Promise.all([B.guardar(T_TOKEN, null), B.guardar(T_CADUCA, null)]) : Promise.resolve(); }
+
   window.Boveda = {
+    acceso: acceso,
+    olvidarToken: olvidarToken,
     existe: function () { return !!sobre(); },
     MAX_FALLOS: MAX_FALLOS,
     // Abre la bóveda (o la crea). migrar: {nombre: valor} de claves que ya estaban en claro en este aparato.
@@ -169,6 +264,6 @@
     borrarTodo: function () { escribirLS(K, null); escribirLS(K_FALLOS, null); },
     teclado: teclado,
     importarAlta: importarAlta,
-    _interno: { clave: clave, cifrar: cifrar, descifrar: descifrar },
+    _interno: { clave: clave, cifrar: cifrar, descifrar: descifrar, app: app },
   };
 })();
