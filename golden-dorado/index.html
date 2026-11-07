@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Panel Golden Dorado</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root { --negro:#0D0D0F; --carbon:#141418; --borde:#26262C; --oro:#E8B64C; --oroP:#9A7128; --humo:#8A8A92; --claro:#FAF7F0; --verde:#3DDC97; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:var(--negro); color:var(--claro); font-family:'Space Grotesk',Helvetica,Arial,sans-serif; line-height:1.55; padding-bottom:70px; }
+  .tit { font-family:'Archivo Black','Arial Black',sans-serif; letter-spacing:1.5px; }
+  main { max-width:860px; margin:0 auto; padding:0 16px; }
+
+  /* héroe */
+  .heroe { text-align:center; padding:46px 16px 30px; background:radial-gradient(ellipse at 50% -30%, #2E2512 0%, var(--negro) 62%); }
+  .sello { width:120px; height:120px; margin:0 auto 16px; animation:girar 24s linear infinite; }
+  @keyframes girar { to { transform:rotate(360deg); } }
+  .heroe h1 { font-family:'Archivo Black',sans-serif; font-size:clamp(28px,7vw,46px); letter-spacing:3px; color:var(--claro); }
+  .heroe h1 b { color:var(--oro); }
+  .eslogan { color:var(--oro); letter-spacing:4px; font-size:13px; margin-top:6px; text-transform:uppercase; }
+  .fecha { color:var(--humo); font-size:12px; margin-top:10px; }
+
+  /* contadores */
+  .contadores { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin:26px 0; }
+  .cont { background:var(--carbon); border:1px solid var(--borde); border-radius:14px; padding:16px 10px; text-align:center; }
+  .cont .num { font-family:'Archivo Black',sans-serif; font-size:30px; color:var(--oro); }
+  .cont .que { color:var(--humo); font-size:12px; margin-top:4px; }
+
+  h2 { font-family:'Archivo Black',sans-serif; font-size:19px; letter-spacing:2px; margin:40px 0 14px; color:var(--claro); border-left:4px solid var(--oro); padding-left:10px; }
+  h2 small { display:block; font-family:'Space Grotesk',sans-serif; font-weight:400; letter-spacing:0; font-size:12px; color:var(--humo); }
+
+  .caja { background:var(--carbon); border:1px solid var(--borde); border-radius:14px; padding:16px; margin-bottom:12px; }
+  .caja h3 { color:var(--oro); font-size:15px; margin-bottom:6px; }
+  .caja p, .caja li { font-size:14px; color:#C9C9CF; }
+  .caja ul { padding-left:18px; }
+
+  .chips { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+  .chip { width:40px; height:40px; border-radius:10px; border:1px solid var(--borde); position:relative; }
+  .chip span { position:absolute; top:44px; left:50%; transform:translateX(-50%); font-size:9px; color:var(--humo); white-space:nowrap; }
+
+  /* colección */
+  .modelos { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  @media (max-width:640px){ .modelos { grid-template-columns:1fr; } }
+  .modelo { background:var(--carbon); border:1px solid var(--borde); border-radius:14px; padding:18px; text-align:center; }
+  .modelo svg { width:72%; max-width:230px; margin:0 auto; display:block; }
+  .modelo h3 { font-family:'Archivo Black',sans-serif; letter-spacing:2px; margin-top:12px; }
+  .modelo .precio { color:var(--oro); font-weight:700; font-size:18px; }
+  .modelo .mini { color:var(--humo); font-size:12px; margin-top:6px; }
+
+  /* presupuesto barras */
+  .fila-pres { margin-bottom:10px; }
+  .fila-pres .cab { display:flex; justify-content:space-between; font-size:13px; margin-bottom:4px; }
+  .fila-pres .cab b { color:var(--oro); }
+  .barra { height:10px; background:#1E1E24; border-radius:6px; overflow:hidden; }
+  .barra i { display:block; height:100%; width:0; background:linear-gradient(90deg,var(--oroP),var(--oro)); border-radius:6px; transition:width 1.2s ease; }
+  .total-pres { display:flex; justify-content:space-between; border-top:1px solid var(--oroP); margin-top:12px; padding-top:10px; font-weight:700; font-size:16px; }
+  .total-pres b { color:var(--verde); }
+
+  /* fábricas */
+  table { width:100%; border-collapse:collapse; font-size:12.5px; }
+  th { text-align:left; color:var(--humo); font-weight:500; padding:6px 8px; border-bottom:1px solid var(--borde); }
+  td { padding:7px 8px; border-bottom:1px solid #1C1C22; color:#C9C9CF; }
+  td b { color:var(--claro); }
+  .ok { color:var(--verde); }
+
+  /* línea de tiempo */
+  .tiempo { position:relative; margin:10px 0 0 10px; padding-left:24px; }
+  .tiempo::before { content:""; position:absolute; left:0; top:6px; bottom:6px; width:3px; background:#1E1E24; border-radius:3px; }
+  .tiempo .linea { position:absolute; left:0; top:6px; width:3px; height:0; background:linear-gradient(var(--oro),var(--oroP)); border-radius:3px; transition:height 1.6s ease; }
+  .hito { position:relative; padding:0 0 22px; }
+  .hito::before { content:""; position:absolute; left:-30px; top:4px; width:13px; height:13px; border-radius:50%; background:var(--negro); border:3px solid var(--oroP); }
+  .hito.oro::before { background:var(--oro); border-color:var(--oro); }
+  .hito h4 { font-size:14px; color:var(--claro); }
+  .hito h4 span { color:var(--oro); font-family:'Archivo Black',sans-serif; font-size:11px; letter-spacing:1px; margin-right:8px; }
+  .hito p { font-size:12.5px; color:var(--humo); }
+
+  /* pendiente */
+  .pend { display:flex; gap:10px; align-items:flex-start; background:var(--carbon); border:1px solid var(--borde); border-radius:12px; padding:12px 14px; margin-bottom:8px; }
+  .pend .n { font-family:'Archivo Black',sans-serif; color:var(--negro); background:var(--oro); min-width:26px; height:26px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:13px; }
+  .pend p { font-size:13.5px; color:#C9C9CF; }
+  .pend p b { color:var(--claro); }
+  footer { text-align:center; color:var(--humo); font-size:12px; margin-top:46px; padding:0 16px; }
+  .aparece { opacity:0; transform:translateY(14px); transition:all .6s ease; }
+  .aparece.visto { opacity:1; transform:none; }
+</style>
+</head>
+<body>
+
+<div class="heroe">
+  <svg class="sello" viewBox="0 0 200 200" aria-hidden="true">
+    <circle cx="100" cy="100" r="84" fill="none" stroke="#9A7128" stroke-width="5" stroke-dasharray="2.5 4.5"/>
+    <circle cx="100" cy="100" r="72" fill="none" stroke="#E8B64C" stroke-width="2"/>
+    <circle cx="100" cy="97" r="26" fill="#E8B64C"/>
+    <g stroke="#E8B64C" stroke-width="5" stroke-linecap="round">
+      <line x1="100" y1="46" x2="100" y2="60"/><line x1="100" y1="134" x2="100" y2="148"/>
+      <line x1="49" y1="97" x2="63" y2="97"/><line x1="137" y1="97" x2="151" y2="97"/>
+      <line x1="64" y1="61" x2="74" y2="71"/><line x1="136" y1="61" x2="126" y2="71"/>
+      <line x1="64" y1="133" x2="74" y2="123"/><line x1="136" y1="133" x2="126" y2="123"/>
+    </g>
+    <text x="100" y="106" text-anchor="middle" font-family="Archivo Black, Arial Black" font-size="24" fill="#0D0D0F">GD</text>
+  </svg>
+  <h1>GOLDEN <b>DORADO</b></h1>
+  <div class="eslogan">Oro de ley propia</div>
+  <div class="fecha">Estudio completo · 7 de noviembre de 2026 · todo el detalle en la carpeta «Golden Dorado» de Obsidian</div>
+</div>
+
+<main>
+  <div class="contadores">
+    <div class="cont"><div class="num" data-fin="2670">0</div><div class="que">€ de tu bolsillo (de 3.000)</div></div>
+    <div class="cont"><div class="num" data-fin="50">0</div><div class="que">relojes, serie numerada</div></div>
+    <div class="cont"><div class="num" data-fin="15">0</div><div class="que">ventas y cubres gastos</div></div>
+    <div class="cont"><div class="num" data-fin="11">0</div><div class="que">fábricas ya contactadas</div></div>
+  </div>
+
+  <h2 class="aparece">LA MARCA <small>De 3 direcciones estudiadas, ganó «Oro Urbano»</small></h2>
+  <div class="caja aparece">
+    <h3>Oro Urbano — por qué</h3>
+    <p>Automáticos de verdad (Seiko NH35, acero 316L, zafiro) con estética de calle: negro y oro, serie corta numerada, garantía atendida en España. Es el público que Rodri ya sabe mover por TikTok, y el hueco está vacío: las micromarcas europeas se han ido a 400-1.000 € y la única española del tramo (Luxmento) cerró.</p>
+    <div class="chips">
+      <div class="chip" style="background:#0D0D0F"><span>negro</span></div>
+      <div class="chip" style="background:#E8B64C"><span>oro vivo</span></div>
+      <div class="chip" style="background:#9A7128"><span>oro profundo</span></div>
+      <div class="chip" style="background:#8A8A92"><span>humo</span></div>
+      <div class="chip" style="background:#FAF7F0"><span>claro</span></div>
+    </div>
+  </div>
+
+  <h2 class="aparece">LA COLECCIÓN <small>2 modelos, un mismo corazón automático</small></h2>
+  <div class="modelos aparece">
+    <div class="modelo">
+      <svg viewBox="0 0 240 240" aria-label="LINGOTE">
+        <defs>
+          <linearGradient id="pa" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#D9DBE0"/><stop offset="55%" stop-color="#9FA3AB"/><stop offset="100%" stop-color="#7E828A"/></linearGradient>
+          <radialGradient id="pn" cx="38%" cy="30%" r="90%"><stop offset="0%" stop-color="#34343C"/><stop offset="60%" stop-color="#17171B"/><stop offset="100%" stop-color="#0A0A0C"/></radialGradient>
+        </defs>
+        <rect x="52" y="52" width="136" height="136" rx="52" fill="url(#pa)" stroke="#4E525A" stroke-width="2"/>
+        <circle cx="120" cy="120" r="62" fill="#2E2E34"/><circle cx="120" cy="120" r="58" fill="url(#pn)"/>
+        <g fill="#E8B64C"><rect x="117" y="68" width="6" height="13"/><rect x="117" y="159" width="6" height="13"/><rect x="68" y="117" width="13" height="6"/><rect x="159" y="117" width="13" height="6"/></g>
+        <g><polygon points="117,124 117,92 120,86 123,92 123,124" fill="#E8B64C" transform="rotate(312 120 120)"/><polygon points="118,124 118,76 120,71 122,76 122,124" fill="#E8B64C" transform="rotate(66 120 120)"/><circle cx="120" cy="120" r="4" fill="#E8B64C"/></g>
+        <rect x="186" y="110" width="9" height="20" rx="4" fill="#C79A3F"/>
+      </svg>
+      <h3>LINGOTE</h3>
+      <div class="precio">249–269 €</div>
+      <div class="mini">Cojín 40 mm · soleil negro, verde o full oro · brazalete acero · 10 ATM</div>
+    </div>
+    <div class="modelo">
+      <svg viewBox="0 0 240 240" aria-label="CANDELA">
+        <defs>
+          <radialGradient id="pc" cx="40%" cy="32%" r="90%"><stop offset="0%" stop-color="#232327"/><stop offset="60%" stop-color="#121214"/><stop offset="100%" stop-color="#080809"/></radialGradient>
+        </defs>
+        <circle cx="120" cy="120" r="70" fill="url(#pa)" stroke="#4E525A" stroke-width="2"/>
+        <circle cx="120" cy="120" r="63" fill="#0D0D0F"/>
+        <polygon points="120,62 115,71 125,71" fill="#E8B64C"/>
+        <circle cx="120" cy="120" r="52" fill="url(#pc)" stroke="#9A7128" stroke-width="1.4"/>
+        <g fill="#EDEAE0" stroke="#9A7128" stroke-width="1">
+          <rect x="114" y="74" width="12" height="8" rx="2"/><circle cx="120" cy="163" r="5"/><circle cx="77" cy="120" r="5"/><circle cx="163" cy="120" r="5"/><circle cx="141" cy="83" r="4"/><circle cx="99" cy="83" r="4"/><circle cx="83" cy="99" r="4"/><circle cx="157" cy="99" r="4"/><circle cx="83" cy="141" r="4"/><circle cx="157" cy="141" r="4"/><circle cx="99" cy="157" r="4"/><circle cx="141" cy="157" r="4"/>
+        </g>
+        <g><polygon points="116,126 116,96 120,86 124,96 124,126" fill="#E8B64C" transform="rotate(312 120 120)"/><polygon points="118,126 118,78 120,72 122,78 122,126" fill="#E8B64C" transform="rotate(66 120 120)"/><circle cx="120" cy="120" r="4" fill="#E8B64C"/></g>
+        <rect x="188" y="111" width="9" height="18" rx="4" fill="#C79A3F"/>
+      </svg>
+      <h3>CANDELA</h3>
+      <div class="precio">289 €</div>
+      <div class="mini">Diver 41 mm · bisel 120 clics · lume BGW9 · caucho FKM · 10 ATM</div>
+    </div>
+  </div>
+  <div class="caja aparece" style="margin-top:12px"><p>Los dos con <b>Seiko NH35 automático, zafiro antirreflejos y acero 316L</b>, fondo con el sello moneda acuñado y tarjeta numerada 001-050. Preventa: LINGOTE 199 € · CANDELA 231 € (precio de lanzamiento).</p></div>
+
+  <h2 class="aparece">EL DINERO <small>Lo que pones tú — la preventa paga el resto</small></h2>
+  <div class="caja aparece" id="presupuesto">
+    <div class="fila-pres"><div class="cab"><span>Anuncios de captación de lista</span><b>800 €</b></div><div class="barra"><i data-w="89"></i></div></div>
+    <div class="fila-pres"><div class="cab"><span>Depósito 30 % del lote de 50</span><b>675 €</b></div><div class="barra"><i data-w="75"></i></div></div>
+    <div class="fila-pres"><div class="cab"><span>Shopify + dominio + apps (año 1)</span><b>470 €</b></div><div class="barra"><i data-w="52"></i></div></div>
+    <div class="fila-pres"><div class="cab"><span>Fotos y muestras a creadores</span><b>300 €</b></div><div class="barra"><i data-w="33"></i></div></div>
+    <div class="fila-pres"><div class="cab"><span>Marca EUIPO (900 − 700 del bono pyme)</span><b>225 €</b></div><div class="barra"><i data-w="25"></i></div></div>
+    <div class="fila-pres"><div class="cab"><span>Muestras de fábrica (2 uds)</span><b>200 €</b></div><div class="barra"><i data-w="22"></i></div></div>
+    <div class="total-pres"><span>TOTAL de tu bolsillo</span><b>2.670 € ✓ &lt; 3.000</b></div>
+    <p style="font-size:12.5px;color:#8A8A92;margin-top:8px">El 70 % del lote (1.575 €), envío+aduana (260 €), IVA (~527 €, recuperable), packaging (250 €) y los anuncios de lanzamiento (700 €) los paga la preventa: 30 ventas × 199 € = 5.970 €. Punto de equilibrio: 15 relojes. Excel con fórmulas: «Modelo Golden Dorado.xlsx».</p>
+  </div>
+
+  <h2 class="aparece">LAS FÁBRICAS <small>11 contactadas esta noche desde tu Alibaba — respuestas en tu chat</small></h2>
+  <div class="caja aparece" style="overflow-x:auto">
+    <table>
+      <tr><th>Fábrica (Shenzhen/Guangzhou)</th><th>Años</th><th>Nota</th><th>Estado</th></tr>
+      <tr><td><b>Shenzhen Super Time</b> · finalista nº1 del estudio</td><td>8</td><td>—</td><td class="ok">enviado 21:51</td></tr>
+      <tr><td><b>Shenzhen Happy Time</b> · diver NH35, MOQ 50</td><td>13</td><td>4,9★ (50)</td><td class="ok">enviado 21:51</td></tr>
+      <tr><td><b>Shenzhen Eston</b> · diver OEM sin marca</td><td>7</td><td>4,8★ (228)</td><td class="ok">respondió</td></tr>
+      <tr><td><b>Shenzhen Timebalife</b> · verificada, diseño propio</td><td>13</td><td>4,7★ (20)</td><td class="ok">respondió</td></tr>
+      <tr><td><b>Guangzhou Watch Home</b> · finalista del estudio</td><td>6</td><td>3,9★ (8)</td><td class="ok">respondió</td></tr>
+      <tr><td>JP Time · San He Xing Ye · HK Watch Home · Pagani · Sehai (Tandorio) · Yubenyi</td><td>2-13</td><td>—</td><td class="ok">enviados</td></tr>
+    </table>
+    <p style="font-size:12.5px;color:#8A8A92;margin-top:8px">A todas se les pidió: precio 50/100/300 uds (NH35, zafiro, 316L, 10 ATM, logo en esfera y fondo), coste y plazo de muestra, personalización, pago por Trade Assurance y test de presión por unidad. Checklist de muestra completo en la nota Proveedores.</p>
+  </div>
+
+  <h2 class="aparece">LA HOJA DE RUTA <small>90 días desde que digas «adelante»</small></h2>
+  <div class="caja aparece">
+    <div class="tiempo" id="tiempo">
+      <div class="linea" id="linea-tiempo"></div>
+      <div class="hito oro"><h4><span>SEM 1</span>Decisión + dominios + redes + marca EUIPO con bono</h4><p>goldendoradowatches.com libre · @goldendoradowatches libre en TikTok e Instagram · bono SME antes del 4/12</p></div>
+      <div class="hito"><h4><span>SEM 2</span>Cotizaciones y muestras</h4><p>Negociar con las que respondan; 2-3 muestras con logo (~200 €) · consulta fiscalista</p></div>
+      <div class="hito"><h4><span>SEM 3-4</span>Shopify + contenido diario</h4><p>Tienda Basic con Bizum · empieza la serie «marca desde cero» en TikTok</p></div>
+      <div class="hito"><h4><span>SEM 5-6</span>Muestra en casa + lista de espera</h4><p>Checklist y test de presión · anuncios de captación (800 €) · 300-600 apuntados</p></div>
+      <div class="hito oro"><h4><span>SEM 7-8</span>Encargo del lote (30 %)</h4><p>Fábrica ganadora elegida con la muestra en la mano · fecha de entrega por escrito · antes del Año Nuevo chino</p></div>
+      <div class="hito oro"><h4><span>SEM 9-10</span>PREVENTA</h4><p>Lista 24 h antes · 50 uds numeradas · con 30 ventas se paga todo el lote</p></div>
+      <div class="hito"><h4><span>SEM 11-12</span>Producción con QC semanal</h4><p>Fotos y vídeo de fábrica · packaging · etiquetas GPSR y manual en castellano</p></div>
+      <div class="hito"><h4><span>SEM 13</span>Llega el lote y se entrega</h4><p>QC de recepción a las 50 · envíos de preventa · campaña de lanzamiento del stock restante</p></div>
+    </div>
+  </div>
+
+  <h2 class="aparece">LO QUE TE TOCA A TI <small>Nadie más puede hacer esto</small></h2>
+  <div class="aparece">
+    <div class="pend"><div class="n">1</div><p><b>Decir «adelante»</b> (o corregir): dirección Oro Urbano, 2 modelos, precios 249/269/289 €.</p></div>
+    <div class="pend"><div class="n">2</div><p><b>Comprar dominios</b> (~30 €) y <b>crear las cuentas</b> @goldendoradowatches en TikTok e Instagram, hoy mejor que mañana.</p></div>
+    <div class="pend"><div class="n">3</div><p><b>Bono SME Fund + marca EUIPO</b> (900 €, recuperas 700): necesita tu certificado digital. Antes del 4 de diciembre.</p></div>
+    <div class="pend"><div class="n">4</div><p><b>Contestar a las fábricas</b> que ya han respondido en tu chat de Alibaba (o decirle a Claude que siga la conversación).</p></div>
+    <div class="pend"><div class="n">5</div><p><b>Consulta fiscalista</b> (30 min): recargo de equivalencia sí o no. Cambia los números del IVA.</p></div>
+    <div class="pend"><div class="n">6</div><p><b>Abrir Shopify y Shopify Payments</b> con tus datos y activar Bizum.</p></div>
+    <div class="pend"><div class="n">7</div><p><b>Pagar muestras (~200 €)</b> por Trade Assurance cuando haya 2-3 cotizaciones buenas.</p></div>
+    <div class="pend"><div class="n">8</div><p><b>Grabar 10 min al día</b> con el guion que toque (los 30 están escritos en la nota Contenido).</p></div>
+  </div>
+
+  <footer>
+    GOLDEN DORADO · estudio del 7 de noviembre de 2026 · hecho por Claude ·
+    detalle completo en Obsidian → carpeta «Golden Dorado» (14 notas + Excel + web de prueba)
+  </footer>
+</main>
+
+<script>
+  // contadores animados
+  function animaNum(el) {
+    var fin = parseInt(el.dataset.fin, 10), ini = null;
+    function paso(t) {
+      if (!ini) ini = t;
+      var p = Math.min((t - ini) / 1200, 1);
+      el.textContent = Math.round(fin * (1 - Math.pow(1 - p, 3))).toLocaleString('es-ES');
+      if (p < 1) requestAnimationFrame(paso);
+    }
+    requestAnimationFrame(paso);
+  }
+  var vistos = new WeakSet();
+  var io = new IntersectionObserver(function (entradas) {
+    entradas.forEach(function (e) {
+      if (!e.isIntersecting || vistos.has(e.target)) return;
+      vistos.add(e.target);
+      if (e.target.classList.contains('aparece')) e.target.classList.add('visto');
+      if (e.target.classList.contains('num')) animaNum(e.target);
+      if (e.target.id === 'presupuesto') e.target.querySelectorAll('.barra i').forEach(function (b) { b.style.width = b.dataset.w + '%'; });
+      if (e.target.id === 'tiempo') document.getElementById('linea-tiempo').style.height = '100%';
+    });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.aparece, .num, #presupuesto, #tiempo').forEach(function (el) { io.observe(el); });
+</script>
+</body>
+</html>
