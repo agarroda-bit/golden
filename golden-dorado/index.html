@@ -178,6 +178,21 @@
     <p style="font-size:12.5px;color:#8A8A92;margin-top:8px">El 70 % del lote (1.575 €), envío+aduana (260 €), IVA (~527 €, recuperable), packaging (250 €) y los anuncios de lanzamiento (700 €) más el kit de recambios (300 €) los paga la preventa: 30 ventas × 199 € = 5.970 €. Punto de equilibrio: 17 relojes (con envío asegurado de 13 €). Excel con fórmulas: «Modelo Golden Dorado.xlsx».</p>
   </div>
 
+  <h2 class="aparece">LA LISTA DE ESPERA <small>Ya está en marcha — tú solo comparte el enlace</small></h2>
+  <div class="caja aparece" style="text-align:center">
+    <div style="font-family:'Archivo Black',sans-serif;font-size:44px;color:#E8B64C" id="apuntados">—</div>
+    <div style="color:#8A8A92;font-size:13px;margin-bottom:12px">apuntados ahora mismo (se actualiza solo)</div>
+    <p style="font-size:14px;color:#C9C9CF"><b style="color:#FAF7F0">El enlace para compartir:</b><br>
+    <a href="https://agarroda-bit.github.io/golden/dorado-lista/" style="color:#E8B64C;word-break:break-all">agarroda-bit.github.io/golden/dorado-lista/</a></p>
+    <p style="font-size:13.5px;color:#C9C9CF;margin-top:12px;border-top:1px solid #26262C;padding-top:12px">
+    <b style="color:#E8B64C">LA REGLA DEL 10 DE DICIEMBRE:</b> si para el 10/12 hay
+    <b style="color:#3DDC97">300 o más apuntados</b>, se encarga el lote (30-50 uds según cotizaciones).
+    Entre 150 y 299 → lote de 30 con HK Watch Home. Menos de 150 → no se encarga: más
+    contenido y el lanzamiento se desliza al Día del Padre.</p>
+    <p style="font-size:12px;color:#8A8A92;margin-top:8px">¿Por qué 300? Una lista convierte a preventa el 3-8 % (media ≈ 5 %): 300 apuntados ≈ 15 preventas = el punto de equilibrio, y las ventas del orgánico de TikTok van aparte.</p>
+    <p style="font-size:12px;color:#8A8A92;margin-top:6px">Cada alta recibe el correo de bienvenida automático; los apuntados se guardan en la hoja «Golden Dorado — Lista de espera» de tu Drive.</p>
+  </div>
+
   <h2 class="aparece">LAS FÁBRICAS <small>11 contactadas esta noche desde tu Alibaba — respuestas en tu chat</small></h2>
   <div class="caja aparece" style="overflow-x:auto">
     <table>
@@ -282,6 +297,16 @@
     });
   }, { threshold: 0.15 });
   document.querySelectorAll('.aparece, .num, #presupuesto, #tiempo').forEach(function (el) { io.observe(el); });
+
+  // contador en vivo de la lista de espera (JSONP contra el Apps Script)
+  window.pintaApuntados = function (d) {
+    try { if (d && d.ok) document.getElementById('apuntados').textContent = d.total; } catch (e) {}
+  };
+  (function () {
+    var s = document.createElement('script');
+    s.src = 'https://script.google.com/macros/s/AKfycbw9WJlfM0EXf-qqvCKJOCDuZhOjDZ-vUSnx4KnkvaZDd0nVQSGEG9Shz1JuMi_EAQCe/exec?callback=pintaApuntados&_=' + Date.now();
+    document.body.appendChild(s);
+  })();
 </script>
 </body>
 </html>
