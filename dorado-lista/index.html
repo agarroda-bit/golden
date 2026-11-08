@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GOLDEN DORADO — Lista de espera</title>
+<meta name="description" content="50 relojes automáticos numerados. Entra en la lista: la verás 24 h antes y con precio de lanzamiento.">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root { --negro:#0D0D0F; --carbon:#141418; --borde:#26262C; --oro:#E8B64C; --oroP:#9A7128; --humo:#8A8A92; --claro:#FAF7F0; --verde:#3DDC97; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:var(--negro); color:var(--claro); font-family:'Space Grotesk',Helvetica,Arial,sans-serif; line-height:1.55; min-height:100vh;
+         display:flex; flex-direction:column; align-items:center; padding:40px 16px 60px;
+         background-image:radial-gradient(ellipse at 50% -20%, #2E2512 0%, var(--negro) 62%); }
+  .sello { width:110px; height:110px; animation:girar 24s linear infinite; margin-bottom:14px; }
+  @keyframes girar { to { transform:rotate(360deg); } }
+  h1 { font-family:'Archivo Black','Arial Black',sans-serif; font-size:clamp(26px,7vw,40px); letter-spacing:3px; text-align:center; }
+  h1 b { color:var(--oro); }
+  .eslogan { color:var(--oro); letter-spacing:4px; font-size:12px; margin:6px 0 22px; text-transform:uppercase; }
+  .caja { background:var(--carbon); border:1px solid var(--borde); border-radius:16px; padding:24px 20px; max-width:430px; width:100%; text-align:center; }
+  .caja p { color:#C9C9CF; font-size:15px; }
+  .caja p b { color:var(--oro); }
+  .sellos { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin:16px 0 20px; }
+  .sellos span { border:1px solid var(--borde); border-radius:16px; padding:4px 11px; color:var(--humo); font-size:12px; }
+  form { display:flex; flex-direction:column; gap:10px; }
+  input[type=email] { background:var(--negro); border:1px solid var(--oroP); border-radius:10px; padding:14px; color:var(--claro); font-family:inherit; font-size:16px; text-align:center; }
+  input[type=email]:focus { outline:none; border-color:var(--oro); }
+  button { background:var(--oro); color:var(--negro); font-weight:700; font-family:inherit; font-size:16px; border:none; border-radius:10px; padding:14px; cursor:pointer; letter-spacing:0.5px; }
+  button:disabled { opacity:0.6; cursor:wait; }
+  .nota { color:var(--humo); font-size:11.5px; margin-top:12px; }
+  .nota a { color:var(--humo); }
+  #gracias { display:none; }
+  #gracias h2 { font-family:'Archivo Black',sans-serif; color:var(--verde); font-size:20px; letter-spacing:1px; margin-bottom:8px; }
+  .contador { margin-top:22px; color:var(--humo); font-size:13px; }
+  .contador b { color:var(--oro); font-family:'Archivo Black',sans-serif; font-size:17px; }
+  .redes { margin-top:26px; color:var(--humo); font-size:13px; text-align:center; }
+  .redes b { color:var(--claro); }
+</style>
+</head>
+<body>
+  <svg class="sello" viewBox="0 0 200 200" aria-hidden="true">
+    <circle cx="100" cy="100" r="84" fill="none" stroke="#9A7128" stroke-width="5" stroke-dasharray="2.5 4.5"/>
+    <circle cx="100" cy="100" r="72" fill="none" stroke="#E8B64C" stroke-width="2"/>
+    <circle cx="100" cy="97" r="26" fill="#E8B64C"/>
+    <g stroke="#E8B64C" stroke-width="5" stroke-linecap="round">
+      <line x1="100" y1="46" x2="100" y2="60"/><line x1="100" y1="134" x2="100" y2="148"/>
+      <line x1="49" y1="97" x2="63" y2="97"/><line x1="137" y1="97" x2="151" y2="97"/>
+      <line x1="64" y1="61" x2="74" y2="71"/><line x1="136" y1="61" x2="126" y2="71"/>
+      <line x1="64" y1="133" x2="74" y2="123"/><line x1="136" y1="133" x2="126" y2="123"/>
+    </g>
+    <text x="100" y="106" text-anchor="middle" font-family="Archivo Black, Arial Black" font-size="24" fill="#0D0D0F">GD</text>
+  </svg>
+  <h1>GOLDEN <b>DORADO</b></h1>
+  <div class="eslogan">Oro de ley propia</div>
+
+  <div class="caja">
+    <div id="formulario">
+      <p><b>50 relojes automáticos. Numerados a mano. No habrá más.</b></p>
+      <p style="margin-top:8px">Mecánica japonesa, acero quirúrgico, cristal de zafiro y descaro. Marca española con garantía de 3 años atendida aquí.</p>
+      <div class="sellos">
+        <span>Automático Seiko NH35</span><span>Zafiro</span><span>316L</span><span>10 ATM</span>
+      </div>
+      <p style="margin-bottom:14px">Apúntate y verás la preventa <b>24 horas antes que nadie y con precio de lanzamiento (−20 %)</b>.</p>
+      <form id="alta">
+        <input type="email" id="email" placeholder="tu@correo.com" required autocomplete="email" inputmode="email">
+        <button type="submit" id="boton">ENTRAR EN LA LISTA</button>
+      </form>
+      <p class="nota">Solo usamos tu correo para avisarte del lanzamiento. Te das de baja respondiendo BAJA. Sin spam, palabra de la casa.</p>
+    </div>
+    <div id="gracias">
+      <h2>DENTRO ⚡</h2>
+      <p>Eres de los primeros. Te acaba de llegar un correo de bienvenida (mira promociones/spam la primera vez).</p>
+      <p style="margin-top:10px">Mientras llega el día, estamos enseñando TODO el proceso de montar la marca en TikTok: <b style="color:#E8B64C">@goldendoradowatches</b>.</p>
+    </div>
+    <div class="contador" id="contador" style="display:none">Ya somos <b id="n">—</b> en la lista</div>
+  </div>
+
+  <div class="redes">Síguenos: <b>@goldendoradowatches</b> en TikTok e Instagram</div>
+
+<script>
+  var EXEC = 'https://script.google.com/macros/s/AKfycbw9WJlfM0EXf-qqvCKJOCDuZhOjDZ-vUSnx4KnkvaZDd0nVQSGEG9Shz1JuMi_EAQCe/exec';
+
+  // contador por JSONP
+  window.pintaTotal = function (d) {
+    try {
+      if (d && d.ok && typeof d.total === 'number' && d.total > 0) {
+        document.getElementById('n').textContent = d.total;
+        document.getElementById('contador').style.display = 'block';
+      }
+    } catch (e) {}
+  };
+  (function () {
+    var s = document.createElement('script');
+    s.src = EXEC + '?callback=pintaTotal';
+    document.body.appendChild(s);
+  })();
+
+  document.getElementById('alta').addEventListener('submit', function (ev) {
+    ev.preventDefault();
+    var email = document.getElementById('email').value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return;
+    var boton = document.getElementById('boton');
+    boton.disabled = true; boton.textContent = 'UN SEGUNDO…';
+    var datos = new FormData();
+    datos.append('email', email);
+    fetch(EXEC, { method: 'POST', body: datos, mode: 'no-cors' })
+      .catch(function () {})
+      .finally(function () {
+        document.getElementById('formulario').style.display = 'none';
+        document.getElementById('gracias').style.display = 'block';
+        var s = document.createElement('script');
+        s.src = EXEC + '?callback=pintaTotal&_=' + Date.now();
+        document.body.appendChild(s);
+      });
+  });
+</script>
+</body>
+</html>
