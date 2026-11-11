@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="color-scheme" content="light">
+<title>Catálogo sin compra</title>
+<style>
+  /* Diseño propio: centralita de llamadas. Grafito + coral, números grandes. Cada texto con su color. */
+  * { box-sizing: border-box; margin: 0; }
+  html, body { max-width: 100%; overflow-x: hidden; }
+  body { background: #ECEEF4; color: #1C1B22; font: 15px/1.45 -apple-system, "Segoe UI", Roboto, sans-serif; padding-bottom: 76px; }
+  button, input, a { font: inherit; }
+  header { background: #1C1B22; color: #F4F2F8; padding: 16px 16px 14px; }
+  header .marca { color: #FF7A59; font: 700 11px/1 ui-monospace, Menlo, monospace; letter-spacing: .16em; text-transform: uppercase; }
+  header h1 { color: #F4F2F8; font: 800 26px/1.1 -apple-system, "Segoe UI", sans-serif; letter-spacing: -.02em; margin-top: 6px; }
+  header .sub { color: #B9B5C8; font-size: 13px; margin-top: 4px; }
+  .kpis { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 14px; }
+  .kpi { background: #2A2833; border: 1px solid #3A3745; border-radius: 12px; padding: 10px 8px; min-width: 0; }
+  .kpi b { display: block; color: #FF7A59; font: 800 28px/1 ui-monospace, Menlo, monospace; font-variant-numeric: tabular-nums; }
+  .kpi b.verde { color: #5BE0A0; }
+  .kpi b.gris { color: #B9B5C8; font-size: 20px; }
+  .kpi span { display: block; color: #CFCBDD; font-size: 11.5px; line-height: 1.3; margin-top: 5px; }
+  .cuadre { color: #B9B5C8; font-size: 12px; margin-top: 10px; }
+  .cuadre summary { color: #E6E3F0; cursor: pointer; }
+  .cuadre ul { padding-left: 18px; margin-top: 6px; color: #CFCBDD; }
+  .cuadre li { color: #CFCBDD; }
+  .ajustes { background: #FFF3BF; border: 1.5px solid #E0A526; border-radius: 12px; padding: 10px 12px; margin: 12px 0; display: grid; gap: 8px; }
+  .ajustes label { display: block; color: #3B2F00; font-weight: 800; font-size: 12.5px; text-transform: uppercase; letter-spacing: .02em; }
+  .ajustes input { width: 100%; border: 1.5px solid #E0A526; border-radius: 8px; padding: 8px 10px; background: #FFFFFF; color: #1C1B22; font-size: 15px; }
+  .ajustes small { color: #5C4A00; font-size: 12px; }
+  nav { position: sticky; top: 0; z-index: 5; background: #ECEEF4; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 10px 12px; border-bottom: 1px solid #D5D7E2; }
+  nav button { border: 2px solid #1C1B22; background: #FFFFFF; color: #1C1B22; border-radius: 12px; padding: 9px 6px; font-weight: 800; font-size: 14px; }
+  nav button.on { background: #1C1B22; color: #FFFFFF; }
+  nav button small { color: inherit; font-weight: 600; }
+  main { max-width: 760px; margin: 0 auto; padding: 0 12px; }
+  .filtros { display: flex; gap: 6px; flex-wrap: wrap; margin: 10px 0 8px; }
+  .filtros button { border: 1.5px solid #C9CBD8; background: #FFFFFF; color: #1C1B22; border-radius: 999px; padding: 5px 11px; font-size: 13px; font-weight: 700; }
+  .filtros button.on { background: #E2553B; border-color: #E2553B; color: #FFFFFF; }
+  .buscar { width: 100%; border: 1.5px solid #C9CBD8; border-radius: 10px; padding: 9px 10px; font-size: 15px; color: #1C1B22; background: #FFFFFF; margin-bottom: 10px; }
+  .nota { background: #FFFFFF; color: #3B3947; border: 1px solid #D5D7E2; border-radius: 12px; padding: 10px 12px; font-size: 13.5px; margin: 10px 0; }
+  .nota b { color: #1C1B22; }
+  .tarjeta { background: #FFFFFF; border: 1px solid #D5D7E2; border-left: 6px solid #E2553B; border-radius: 14px; padding: 12px; margin-bottom: 10px; }
+  .tarjeta.vuelve { border-left-color: #8C5AE0; }
+  .tarjeta.hecho { border-left-color: #1D8A4E; }
+  .tarjeta.baja { opacity: .5; border-left-color: #8A8797; }
+  .cab { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .nom { color: #1C1B22; font-weight: 800; font-size: 18px; overflow-wrap: anywhere; }
+  .pts { color: #8A8797; font: 700 11px ui-monospace, Menlo, monospace; white-space: nowrap; }
+  .chips { display: flex; gap: 5px; flex-wrap: wrap; margin: 6px 0 8px; }
+  .chip { font-size: 11.5px; font-weight: 700; border-radius: 6px; padding: 2px 7px; background: #F0F1F6; color: #3B3947; }
+  .chip.dias { background: #FFE6DF; color: #9A2F17; }
+  .chip.vuelve { background: #EDE4FC; color: #5A2FB0; }
+  .chip.aissa { background: #E3F0FF; color: #1A4F94; }
+  .chip.ult { background: #E4F6EC; color: #135E35; }
+  .chip.nuevo { background: #1C1B22; color: #FFFFFF; }
+  .wa3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+  .wa3 a { display: block; text-align: center; text-decoration: none; background: #1D8A4E; color: #FFFFFF; border-radius: 10px; padding: 9px 4px; font-weight: 800; font-size: 13px; line-height: 1.2; }
+  .wa3 a span { display: block; color: #CFF2DD; font-weight: 600; font-size: 11px; }
+  details.msgs { margin: 8px 0 2px; }
+  details.msgs summary { color: #5E5B6B; font-size: 12.5px; cursor: pointer; }
+  .msg { background: #F6F7FA; color: #3B3947; border-radius: 8px; padding: 7px 9px; margin-top: 6px; font-size: 13px; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .msg b { color: #1C1B22; }
+  .res { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 5px; margin-top: 8px; }
+  .res button { border: 1.5px solid #C9CBD8; background: #FFFFFF; color: #1C1B22; border-radius: 9px; padding: 7px 2px; font-size: 12.5px; font-weight: 700; }
+  .res button.on-escrito, .res button.on-llamado { background: #1C1B22; border-color: #1C1B22; color: #FFFFFF; }
+  .res button.on-no_contesta { background: #8A8797; border-color: #8A8797; color: #FFFFFF; }
+  .res button.on-respondio { background: #E0A526; border-color: #E0A526; color: #1C1B22; }
+  .res button.on-venta { background: #1D8A4E; border-color: #1D8A4E; color: #FFFFFF; }
+  .res button.on-baja { background: #B4232A; border-color: #B4232A; color: #FFFFFF; }
+  .hist { color: #5E5B6B; font-size: 12px; margin-top: 6px; display: flex; justify-content: space-between; gap: 6px; align-items: center; }
+  .hist button { border: 0; background: none; color: #E2553B; font-weight: 700; font-size: 12px; padding: 2px 4px; }
+  .numero { color: #1C1B22; font: 800 30px/1.1 ui-monospace, Menlo, monospace; letter-spacing: .02em; margin: 6px 0 8px; font-variant-numeric: tabular-nums; }
+  .llam { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .llam a, .llam button { display: block; text-align: center; text-decoration: none; border-radius: 10px; padding: 10px 4px; font-weight: 800; font-size: 14px; border: 2px solid #1C1B22; background: #FFFFFF; color: #1C1B22; }
+  .llam a.tel { background: #E2553B; border-color: #E2553B; color: #FFFFFF; }
+  .mas { display: block; width: 100%; border: 2px dashed #C9CBD8; background: #FFFFFF; color: #1C1B22; border-radius: 12px; padding: 12px; font-weight: 800; margin: 4px 0 16px; }
+  .vacio { color: #5E5B6B; text-align: center; padding: 30px 10px; }
+  .pie { position: fixed; left: 0; right: 0; bottom: 0; background: #1C1B22; padding: 8px 12px calc(8px + env(safe-area-inset-bottom)); display: grid; grid-template-columns: 1fr 1fr; gap: 8px; z-index: 6; }
+  .pie button { border: 0; border-radius: 10px; padding: 11px 6px; font-weight: 800; font-size: 14px; background: #FF7A59; color: #1C1B22; }
+  .pie button.sec { background: #3A3745; color: #F4F2F8; }
+  #gate { max-width: 360px; margin: 0 auto; padding: 40px 20px; text-align: center; }
+  #gate h2 { color: #1C1B22; font-size: 20px; margin-bottom: 6px; }
+  #gate p { color: #5E5B6B; font-size: 14px; margin-bottom: 14px; }
+  #pin { width: 170px; font: 800 30px ui-monospace, Menlo, monospace; text-align: center; letter-spacing: 12px; border: 2px solid #1C1B22; border-radius: 12px; padding: 8px; color: #1C1B22; background: #FFFFFF; }
+  #gate label { display: block; color: #3B3947; font-size: 13px; margin-top: 12px; }
+  #gate button { display: block; margin: 14px auto 0; background: #E2553B; color: #FFFFFF; border: 0; border-radius: 12px; padding: 12px 28px; font-weight: 800; font-size: 15px; }
+  #mal { color: #B4232A; font-weight: 700; margin-top: 10px; min-height: 20px; }
+  .toast { position: fixed; left: 50%; bottom: calc(70px + env(safe-area-inset-bottom)); transform: translateX(-50%); background: #1C1B22; color: #FFFFFF; padding: 9px 14px; border-radius: 10px; font-size: 14px; z-index: 9; max-width: calc(100% - 32px); }
+</style>
+</head>
+<body>
+<header>
+  <div class="marca">GOLDEN OCLOCK · Linktree</div>
+  <h1>Catálogo sin compra</h1>
+  <div class="sub" id="sub">Pidieron el catálogo hace 7 días o más y no han comprado. Los mensajes los mandas tú, a mano.</div>
+  <div class="kpis" id="kpis" hidden></div>
+  <details class="cuadre" id="cuadre" hidden></details>
+</header>
+<div id="gate">
+  <h2>PIN</h2>
+  <p>Escribe el PIN de 4 cifras de Páginas.</p>
+  <input id="pin" type="password" inputmode="numeric" maxlength="4" autocomplete="off">
+  <label><input type="checkbox" id="rec" checked> Recordar 30 días en este aparato</label>
+  <button id="abrir">Abrir</button>
+  <div id="mal"></div>
+</div>
+<nav id="nav" hidden>
+  <button data-t="escribir" class="on">✍️ Escribir <small id="nEsc"></small></button>
+  <button data-t="llamar">📞 Llamar esta semana <small id="nLla"></small></button>
+</nav>
+<main id="main" hidden></main>
+<div class="pie" id="pie" hidden>
+  <button class="sec" id="btnCopiar">Copiar estado</button>
+  <button id="btnExportar">Exportar</button>
+</div>
+<div class="toast" id="toast" hidden></div>
+<script src="app.js"></script>
+</body>
+</html>
