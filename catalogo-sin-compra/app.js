@@ -35,8 +35,16 @@ async function claveDePin(pin, sobre, extraible) {
     base, { name: 'AES-GCM', length: 256 }, !!extraible, ['decrypt']);
 }
 async function arranca() {
+  const SOBRE = fetch('datos.enc.json', { cache: 'no-store' }).then((r) => r.json());
+  let ocupado = false;
+  $('#abrir').onclick = async () => {
+    if (ocupado) return;
+    ocupado = true;
+    try { await abrir(); } finally { ocupado = false; }
+  };
+  $('#pin').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('#abrir').click(); });
   let sobre;
-  try { sobre = await fetch('datos.enc.json', { cache: 'no-store' }).then((r) => r.json()); }
+  try { sobre = await SOBRE; }
   catch (e) { $('#mal').textContent = 'No se pudo cargar la lista. Recarga la página.'; return; }
   try {
     const g = JSON.parse(lee(K.llave, 'null'));
@@ -46,7 +54,12 @@ async function arranca() {
       return entra();
     }
   } catch (e) {}
-  $('#abrir').onclick = async () => {
+  async function abrir() {
+    if (D) return;
+    if (!sobre) {
+      $('#mal').textContent = 'Cargando la lista…';
+      try { sobre = await SOBRE; } catch (e) { $('#mal').textContent = 'No se pudo cargar la lista. Recarga la página.'; return; }
+    }
     const bloq = Number(lee(K.bloqueo, 0));
     if (bloq > Date.now()) { $('#mal').textContent = 'Bloqueado. Prueba en ' + Math.ceil((bloq - Date.now()) / 60000) + ' min.'; return; }
     const pin = $('#pin').value.trim();
@@ -67,8 +80,7 @@ async function arranca() {
       if (f >= 5) { pon(K.bloqueo, String(Date.now() + 30 * 60000)); try { localStorage.removeItem(K.fallos); } catch (x) {} }
       $('#mal').textContent = f >= 5 ? '5 fallos: bloqueado 30 minutos.' : 'PIN incorrecto (' + f + ' de 5).';
     }
-  };
-  $('#pin').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('#abrir').click(); });
+  }
 }
 
 /* ---------- fechas y números ---------- */
