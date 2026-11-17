@@ -272,6 +272,16 @@
     .proy:active, .fila:active, .mini:active, .dtile:active, .rk:active { transform: scale(.98); }
   }
   @keyframes sube { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  /* ---------- Lo último (17/11/2026) ---------- */
+  .ult { margin:14px 0 6px; padding:14px; border-radius:16px; border:1px solid rgba(233,185,73,.38);
+    background:linear-gradient(150deg,rgba(233,185,73,.16),rgba(233,185,73,.03) 62%),#0F131B; }
+  .ult-cab { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:8px; }
+  .ult-cab .k { font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:#E9B949; font-weight:700; }
+  .ult-cab h2 { margin:2px 0 0; font-size:20px; color:#F2EFE8; }
+  .ult-cab button { appearance:none; border:1px solid rgba(233,185,73,.5); background:transparent; color:#E9B949;
+    border-radius:999px; padding:8px 12px; font:600 13px/1 inherit; cursor:pointer; white-space:nowrap; }
+  .ult .lista { margin:0; }
+  .dia-cab { margin:18px 0 6px; font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:#E9B949; font-weight:700; }
   /* ---------- imprescindibles GOLDEN OCLOCK (19/10/2026) ---------- */
   .imp { margin-top: 16px; position: relative; border-radius: 26px; padding: 2px; overflow: hidden; background: #2A2110; isolation: isolate; }
   .imp::before { content: ""; position: absolute; left: 50%; top: 50%; width: 200%; aspect-ratio: 1; transform: translate(-50%, -50%); z-index: -1;
@@ -578,6 +588,32 @@
     });
     return h + '</div></div></section>';
   }
+  // Lo último: todas las páginas de la más nueva a la más vieja (17/11/2026)
+  function cronologicas() {
+    return TODAS.filter(function (p) { return p.fecha; }).map(function (p, i) { return [p, i]; })
+      .sort(function (a, b) { return (b[0].fecha || '').localeCompare(a[0].fecha || '') || (a[1] - b[1]); })
+      .map(function (x) { return x[0]; });
+  }
+  function fechaLarga(f) {
+    var ms = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+    var p = (f || '').split('-'); if (p.length !== 3) return f || '';
+    var ay = hoyStr(new Date(Date.now() - 864e5)); var pre = f === hoyStr() ? 'Hoy · ' : f === ay ? 'Ayer · ' : '';
+    return pre + (+p[2]) + ' de ' + ms[+p[1] - 1] + ' de ' + p[0];
+  }
+  function bloqueUltimos() {
+    var L = cronologicas().slice(0, 5); if (!L.length) return '';
+    return '<section class="ult" aria-label="Lo último"><div class="ult-cab"><div><div class="k">Lo último</div><h2>Del más nuevo al más viejo</h2></div>' +
+      '<button type="button" data-crono>Ver todo</button></div><div class="lista">' + L.map(function (p) { return fila(p, true); }).join('') + '</div></section>';
+  }
+  function cronologia() {
+    var L = cronologicas(), h = '<button class="volver" type="button" data-volver>' + svg('atras', 2.2) + 'Inicio</button>' +
+      titulo('Todas por fecha', L.length + ' páginas · de la más nueva a la más vieja'), dia = '';
+    L.forEach(function (p) {
+      if (p.fecha !== dia) { if (dia) h += '</div>'; dia = p.fecha; h += '<div class="dia-cab">' + esc(fechaLarga(dia)) + '</div><div class="lista">'; }
+      h += fila(p, true);
+    });
+    return h + (dia ? '</div>' : '');
+  }
   function hero() {
     var tot = totalAperturas(), activas = TODAS.filter(function (p) { return !p.viejo; }).length;
     return '<section class="hero">' +
@@ -660,7 +696,7 @@
   }
   function carrusel(t, ps, nota) { if (!ps.length) return ''; return titulo(t, nota) + '<div class="carr">' + ps.map(mini).join('') + '</div>'; }
   function inicio() {
-    var h = bloqueImprescindibles() + hero();
+    var h = bloqueUltimos() + bloqueImprescindibles() + hero();
     if (!(D.imprescindibles && D.imprescindibles.length)) h += titulo('Apps') + '<div class="apps">' +
       '<a class="app" href="../app/" data-instalar><img src="../iconos/icono_app_180.png" alt=""><div><div class="n">GOLDEN</div><div class="d">La APP</div></div></a>' +
       '<a class="app" href="../reparto/" data-instalar><img src="../iconos/icono_reparto_180.png" alt=""><div><div class="n">Reparto</div><div class="d">Entregas</div></div></a></div>';
@@ -718,10 +754,10 @@
     if (Q) {
       var r = $('resultados'); if (r) { r.innerHTML = busqueda(Q); return; }
     }
-    var html = VISTA.tipo === 'proy' ? proyecto(VISTA.g) : inicio();
+    var html = VISTA.tipo === 'proy' ? proyecto(VISTA.g) : VISTA.tipo === 'crono' ? cronologia() : inicio();
     cont.className = animar && !QUIETO ? 'entra' : '';
-    cont.innerHTML = html + (VISTA.tipo === 'proy' ? '' : '');
-    if (VISTA.tipo !== 'proy') {
+    cont.innerHTML = html;
+    if (VISTA.tipo === 'inicio') {
       var b = $('buscar'); b.value = Q; b.oninput = buscar;
       // capa de resultados debajo del buscador
       var res = document.createElement('div'); res.id = 'resultados'; b.parentNode.insertAdjacentElement('afterend', res);
@@ -842,13 +878,13 @@
   /* ---------- navegación ---------- */
   function ir(v, push) {
     VISTA = v; Q = ''; EDITAR = false; pintar(true); window.scrollTo(0, 0);
-    if (push) try { history.pushState(v, '', v.tipo === 'proy' ? '#p' + v.g : '#'); } catch (e) {}
+    if (push) try { history.pushState(v, '', v.tipo === 'proy' ? '#p' + v.g : v.tipo === 'crono' ? '#todo' : '#'); } catch (e) {}
   }
   window.addEventListener('popstate', function (e) { VISTA = (e.state && e.state.tipo) ? e.state : { tipo: 'inicio' }; Q = ''; if (D) pintar(true); });
 
   /* ---------- toques ---------- */
   document.addEventListener('click', function (ev) {
-    var t = ev.target.closest ? ev.target.closest('[data-fav],[data-copiar],[data-proy],[data-volver],[data-instalar],[data-mover],[data-editar],[data-orden],[data-sorpresa],[data-sugerir],[data-otra],[data-dia],[data-url]') : null;
+    var t = ev.target.closest ? ev.target.closest('[data-fav],[data-copiar],[data-proy],[data-crono],[data-volver],[data-instalar],[data-mover],[data-editar],[data-orden],[data-sorpresa],[data-sugerir],[data-otra],[data-dia],[data-url]') : null;
     if (!t) { if (ev.target.id === 'velo') $('velo').hidden = true; return; }
     if (t.hasAttribute('data-instalar')) {
       if (t.hasAttribute('data-imp')) apuntar(t.getAttribute('href'));
@@ -886,7 +922,8 @@
       return;
     }
     if (t.hasAttribute('data-proy')) { ir({ tipo: 'proy', g: +t.getAttribute('data-proy') }, true); return; }
-    if (t.hasAttribute('data-volver')) { if (history.state && history.state.tipo === 'proy') history.back(); else ir({ tipo: 'inicio' }, true); return; }
+    if (t.hasAttribute('data-crono')) { ir({ tipo: 'crono' }, true); return; }
+    if (t.hasAttribute('data-volver')) { if (history.state && (history.state.tipo === 'proy' || history.state.tipo === 'crono')) history.back(); else ir({ tipo: 'inicio' }, true); return; }
     if (t.hasAttribute('data-url')) { if (t.hasAttribute('data-cerrar')) $('velo').hidden = true; if (EDITAR && t.classList.contains('dtile')) return; abrirFuera(t.getAttribute('data-url')); }
   });
   document.addEventListener('keydown', function (ev) {
@@ -912,7 +949,7 @@
       '<a href="#" id="salir" style="color:#97A1B2">Cerrar (pedirá el PIN otra vez)</a>';
     $('salir').onclick = function (e) { e.preventDefault(); e.stopPropagation(); location.reload(); };
     var m = /^#p(\d+)$/.exec(location.hash || '');
-    VISTA = m ? { tipo: 'proy', g: +m[1] } : { tipo: 'inicio' };
+    VISTA = m ? { tipo: 'proy', g: +m[1] } : location.hash === '#todo' ? { tipo: 'crono' } : { tipo: 'inicio' };
     try { history.replaceState(VISTA, '', location.hash || '#'); } catch (e) {}
     pintar(true);
     if (recienDesbloqueado) chispas();
